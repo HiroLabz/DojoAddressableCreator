@@ -1,0 +1,22 @@
+{
+    "name": "Dojo.Game.Editor",
+    "rootNamespace": "Dojo.Game.Editor",
+    "references": [
+        "Dojo.Game",
+        "Dojo.Framework",
+        "Unity.Addressables",
+        "Unity.Addressables.Editor",
+        "Unity.ResourceManager"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

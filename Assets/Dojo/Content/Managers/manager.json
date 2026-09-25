@@ -1,0 +1,18 @@
+{
+    "version": 1,
+    "agents": [
+        {
+            "id": 100,
+            "name": "You",
+            "description": "Runs the floor: hires the agents, signs off the spend, and answers for the numbers.",
+            "workId": "management",
+            "hiroAgentId": "",
+            "hiroSlug": "",
+            "origin": "",
+            "status": "",
+            "isolationMode": "",
+            "areaCellSize": 0.25,
+            "area": []
+        }
+    ]
+}

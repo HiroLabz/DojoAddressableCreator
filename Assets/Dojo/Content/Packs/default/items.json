@@ -1,0 +1,136 @@
+{
+    "pack": "default",
+    "version": 1,
+    "items": [
+        {
+            "id": "default.defaultchair",
+            "category": "furnitures",
+            "name": "default_chair",
+            "address": "default/default_chair",
+            "icon": "default/Thumbnails/default_chair",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultchairblue",
+            "category": "furnitures",
+            "name": "default_chair_blue",
+            "address": "default/default_chair_blue",
+            "icon": "default/Thumbnails/default_chair_blue",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultchairred",
+            "category": "furnitures",
+            "name": "default_chair_red",
+            "address": "default/default_chair_red",
+            "icon": "default/Thumbnails/default_chair_red",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultfloor1",
+            "category": "floors",
+            "name": "default_floor_1",
+            "address": "default/default_floor_1",
+            "icon": "default/Thumbnails/default_floor_1",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultmonitor1",
+            "category": "appliances",
+            "name": "default_monitor_1",
+            "address": "default/default_monitor_1",
+            "icon": "default/Thumbnails/default_monitor_1",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaulttableorange",
+            "category": "tables",
+            "name": "default_table_orange",
+            "address": "default/default_table_orange",
+            "icon": "default/Thumbnails/default_table_orange",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaulttablewhite",
+            "category": "tables",
+            "name": "default_table_white",
+            "address": "default/default_table_white",
+            "icon": "default/Thumbnails/default_table_white",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultwall1",
+            "category": "walls",
+            "name": "default_wall_1",
+            "address": "default/default_wall_1",
+            "icon": "default/Thumbnails/default_wall_1",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultwall2",
+            "category": "walls",
+            "name": "default_wall_2",
+            "address": "default/default_wall_2",
+            "icon": "default/Thumbnails/default_wall_2",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultwall3",
+            "category": "walls",
+            "name": "default_wall_3",
+            "address": "default/default_wall_3",
+            "icon": "default/Thumbnails/default_wall_3",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        }
+    ]
+}

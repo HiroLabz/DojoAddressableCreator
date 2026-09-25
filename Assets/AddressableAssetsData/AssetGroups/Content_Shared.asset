@@ -1,0 +1,203 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Content_Shared
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Content_Shared
+  m_GUID: 91eddfd755a24474f913333d2904c549
+  m_SerializeEntries:
+  - m_GUID: 01315f3862c56a641a7692dd45216283
+    m_Address: default/Textures/default_wall_3_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 04b3cd70738be2d41ac282f999c1cd1d
+    m_Address: default/Textures/default_table_orange_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 066756eab016f3345836d6acb9a18d57
+    m_Address: default/Materials/Material_0.007
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 071045fdf9786394080dd0229909a363
+    m_Address: default/Textures/default_chair_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0b1cb99cf1c51a645a8d138cd881c12d
+    m_Address: default/Textures/default_chair_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0f421b99bce99cc45aa243b1d21eeb5e
+    m_Address: default/Materials/Material_0.008
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 16b3469a351864949a3b182bdff0c672
+    m_Address: default/Textures/default_floor_1_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1cb16d5a13d70144987c9d1c6f432952
+    m_Address: default/Textures/default_table_orange_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 23308ea834f38c74cb34afb7c7c7de1c
+    m_Address: default/Textures/default_monitor_1_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2e46fb829a6ae84468ccc05361f95c14
+    m_Address: default/Textures/default_wall_3_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 333662a11715bd445af55ae719f3dfb5
+    m_Address: default/Textures/default_table_white_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4348827cc0d4d2943bfa5667bcc08815
+    m_Address: default/Textures/default_wall_2_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4990bce5d10520a41b4b52f4aeaf8b72
+    m_Address: default/Textures/default_monitor_1_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6d51e20f42cd451469ffa0cb097d1ef5
+    m_Address: default/Materials/Material_0.001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7a2fddbbfe6c06141b6686f1fc1d4d97
+    m_Address: default/Textures/default_table_white_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8b449ef8bc06c6a43ba3f07152a6afd9
+    m_Address: default/Textures/default_wall_1_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8b70469addbee44468f000b949df6fa6
+    m_Address: default/Textures/default_chair_blue_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 91ce59241a89e714abb6a7b785df07a0
+    m_Address: default/Textures/default_chair_blue_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9aa92551a3cbe184182a46e6677a0b5f
+    m_Address: default/Textures/default_wall_2_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ae01241501acf7f458df1c072656c7d4
+    m_Address: default/Textures/default_wall_1_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b555e4e425da5ad4d90de4545a48a645
+    m_Address: default/Materials/Material_0.006
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b8228b391141fcd428b564702d4dcd5d
+    m_Address: default/Materials/Material_0.004
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b82413e61fcc91348bfd820392029a16
+    m_Address: default/Materials/Material_0.009
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bc87a92c166e4484489ceedeec5e5703
+    m_Address: default/Textures/default_floor_1_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dea190b183b4b1d499ad9e9d3865fcd2
+    m_Address: default/Materials/Material_0.003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f0e836c37b2cc564fa2a73862085911b
+    m_Address: default/Materials/Material_0.005
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f41b23c21a7321847bf5cc48216dc969
+    m_Address: default/Materials/Material_0
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f700205c1ec05ca44a6b0ec80fc57597
+    m_Address: default/Textures/default_chair_red_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f876fcd1590f040449d4eafb74f1f6c3
+    m_Address: default/Textures/default_chair_red_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fae3737cbd2ace743a6b7b6868fa2607
+    m_Address: default/Materials/Material_0.002
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 878d66ff5773b60499b24cccd4ffc09c, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 9bcca088eee3dd549bd3362b990545c1, type: 2}
+    - {fileID: 11400000, guid: 09c90ea1cd9834143b675a322bdacc00, type: 2}
