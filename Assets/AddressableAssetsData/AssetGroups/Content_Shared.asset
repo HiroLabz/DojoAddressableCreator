@@ -39,6 +39,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 08f6cc1a337923e4d82e462cd4ad2fb9
+    m_Address: strawberry/Textures/default_chair_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0b1cb99cf1c51a645a8d138cd881c12d
     m_Address: default/Textures/default_chair_albedo
     m_ReadOnly: 0
@@ -50,6 +56,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0f6e2eb541a9c564a973ddf9a71908ff
+    m_Address: strawberry/Materials/Material_0.003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1613bd808e7c699458abf374ab12be0f
+    m_Address: strawberry/Textures/default_floor_1_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 16b3469a351864949a3b182bdff0c672
     m_Address: default/Textures/default_floor_1_albedo
@@ -63,6 +81,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 219d89878b97ac54d9251eee38bdbdeb
+    m_Address: strawberry/Textures/default_wall_1_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 23308ea834f38c74cb34afb7c7c7de1c
     m_Address: default/Textures/default_monitor_1_normal
     m_ReadOnly: 0
@@ -75,11 +99,41 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2e5c10b66896da9489c499b20611bbc0
+    m_Address: strawberry/Materials/Material_0.009
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 333662a11715bd445af55ae719f3dfb5
     m_Address: default/Textures/default_table_white_normal
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 33977f1a7af4cad4ba890f744555dced
+    m_Address: strawberry/Textures/default_wall_3_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 33a4e0a893484364fbc719680813e967
+    m_Address: strawberry/Textures/default_monitor_1_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3a89851e486e93a45901fa6f954c57db
+    m_Address: strawberry/Textures/default_chair_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3fed8449116270d46818d5ff525a926b
+    m_Address: strawberry/Textures/default_table_orange_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4348827cc0d4d2943bfa5667bcc08815
     m_Address: default/Textures/default_wall_2_normal
@@ -87,11 +141,41 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 479a4da0807e62743b4694038b814c76
+    m_Address: strawberry/Textures/default_wall_2_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 48088452c43f053499a2613577efde9b
+    m_Address: strawberry/Textures/default_table_white_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4866c9e723016094f8811be55ce7c150
+    m_Address: strawberry/Materials/Material_0.004
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4990bce5d10520a41b4b52f4aeaf8b72
     m_Address: default/Textures/default_monitor_1_albedo
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5c1486f31a69ce243856160780851f96
+    m_Address: strawberry/Textures/default_chair_red_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6d26f8673d910094987755bc1a9ffaa3
+    m_Address: strawberry/Materials/Material_0
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6d51e20f42cd451469ffa0cb097d1ef5
     m_Address: default/Materials/Material_0.001
@@ -99,11 +183,53 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 77d6d2aa5f5bb4a43981c4679a5a36a8
+    m_Address: strawberry/Materials/Material_0.007
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 788c2a90b86a62e4c978e7ef01fa1c23
+    m_Address: strawberry/Materials/Material_0.008
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7a2fddbbfe6c06141b6686f1fc1d4d97
     m_Address: default/Textures/default_table_white_albedo
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7a35742576358714ea60b57f223b3971
+    m_Address: strawberry/Textures/default_chair_red_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7bfa946d163efbb499df97aa66fb1ace
+    m_Address: strawberry/Textures/default_floor_1_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 82015a21666e4f24f87cba521c88f059
+    m_Address: strawberry/Textures/default_wall_1_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 825a5c5d4aa31344d837067bcc7fbc2f
+    m_Address: strawberry/Textures/default_wall_2_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8a736a2a423ac044a96d62e0e354a60a
+    m_Address: strawberry/Materials/Material_0.005
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8b449ef8bc06c6a43ba3f07152a6afd9
     m_Address: default/Textures/default_wall_1_albedo
@@ -123,11 +249,35 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 939c145e25e8f2742b2ed229439e9b02
+    m_Address: default/World/world
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9756ce580ed92c64e8ca921275b7348e
+    m_Address: strawberry/Textures/default_table_orange_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9aa92551a3cbe184182a46e6677a0b5f
     m_Address: default/Textures/default_wall_2_albedo
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b9c422225d912b429bf8da8598bd71e
+    m_Address: strawberry/Materials/Material_0.006
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a4dbdb0e48ffcb744b5f4fd23c535bf8
+    m_Address: strawberry/Textures/default_monitor_1_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ae01241501acf7f458df1c072656c7d4
     m_Address: default/Textures/default_wall_1_normal
@@ -159,11 +309,35 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bf4ec7ec23cd56642969f3607c2530eb
+    m_Address: strawberry/Materials/Material_0.002
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c40f792713a14de4685b55a01af841ae
+    m_Address: strawberry/Textures/default_chair_blue_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cf2bcf8c8ecf6ab4494b1563c9e79d3f
+    m_Address: strawberry/Materials/Material_0.001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dea190b183b4b1d499ad9e9d3865fcd2
     m_Address: default/Materials/Material_0.003
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e51ba2740d1fd154080d77ba997f57fa
+    m_Address: strawberry/Textures/default_table_white_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f0e836c37b2cc564fa2a73862085911b
     m_Address: default/Materials/Material_0.005
@@ -176,6 +350,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f68d5665fdc246040a45af94388b9bfd
+    m_Address: strawberry/Textures/default_chair_blue_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f700205c1ec05ca44a6b0ec80fc57597
     m_Address: default/Textures/default_chair_red_albedo
@@ -194,6 +374,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ff98ab345b184cd468a4033eb6340ee9
+    m_Address: strawberry/Textures/default_wall_3_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 878d66ff5773b60499b24cccd4ffc09c, type: 2}

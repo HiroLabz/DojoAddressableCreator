@@ -15,50 +15,20 @@ MonoBehaviour:
   m_GroupName: Content_Placeables
   m_GUID: aca34312995e6b74689646b129ff2fd1
   m_SerializeEntries:
-  - m_GUID: 001a5b72d51be584f87049e8006748bd
-    m_Address: strawberry/(Prb)BookPile3
+  - m_GUID: 0cf83f2d27b2fb34b9cd517e301388f8
+    m_Address: strawberry/default_wall_1
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 006df3955015ad3408131429ecd18f38
-    m_Address: strawberry/(Prb)LoungeChair
+  - m_GUID: 1ec64030ed9feee4f858b88c103386ef
+    m_Address: strawberry/default_monitor_1
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 163fc232aa15e5842a4761755c57514d
-    m_Address: strawberry/(Prb)CoffeTable
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 17c76b2fd2ced0d4db068162241681ba
-    m_Address: strawberry/(Prb)SeparatorDoor
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 18b506748205c15418c9f3eb91230ab4
-    m_Address: strawberry/(Prb)Plant2
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 20dd0eb6689a78e4ebaa9a1bd207aa0b
-    m_Address: strawberry/(Prb)DocumentHolder
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 25325fd2fb1efb34bbf735a0829951a4
-    m_Address: strawberry/(Prb)Drawer3
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2bf06897f6836864292029259d0e6c20
-    m_Address: strawberry/(Prb)BookPile5
+  - m_GUID: 22fe59fab85ac764f8f4595df1356939
+    m_Address: strawberry/default_table_orange
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
@@ -69,23 +39,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 31188f45b9b9a9a4980914b096754220
-    m_Address: strawberry/(Prb)Sofa3
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 32085844b28776545adc1dc21cbc4610
     m_Address: default/default_wall_3
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 32fa5f777d54662428b19c421d8cc20a
-    m_Address: strawberry/(Prb)BigDrawer
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 34085427c2e97934f87fbb8a3a147d2e
     m_Address: default/default_chair_red
@@ -93,104 +51,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 35ffeebaf9c951b4cb2ddd117ecb3787
-    m_Address: strawberry/(Prb)Clock
+  - m_GUID: 458308f0c43310c4ab34e90089eabc0d
+    m_Address: strawberry/default_chair_blue
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3a81d12054827b14aac5bb525ccd8c18
-    m_Address: strawberry/(Prb)Shelves3
+  - m_GUID: 5979e6c010b56a64b846b8731e47dea7
+    m_Address: strawberry/default_chair_red
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3d41223b443c2734fb0190f8d21c256d
-    m_Address: strawberry/(Prb)Fatboy
+  - m_GUID: 6b249fa5f679dd74398d08d64feb57a4
+    m_Address: strawberry/default_wall_2
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3e9b1d8b41cf8424aa571a726b26839f
-    m_Address: strawberry/(Prb)Stapler
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3ff1a3bae0952784b8b301c645ccc44f
-    m_Address: strawberry/(Prb)PCCase
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4580beabf1415b44ca961a5d9aed2e4f
-    m_Address: strawberry/(Prb)BookPile1
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4ada1bc878187f7428c095815f4e83d2
-    m_Address: strawberry/(Prb)DeskPlant
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4ed41e5c600469046b1e92b8a983d814
-    m_Address: strawberry/(Prb)Microwave
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 5f1acf00ba783d6469c6f462f40dc64a
-    m_Address: strawberry/(Prb)Printer
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 5f41e198ad4da994783f608954ada7c4
-    m_Address: strawberry/(Prb)CeilingLight1
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 687274763ca2a7547aab45509f46f78e
-    m_Address: strawberry/(Prb)BookOpen
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6a5d0be327dd10649a81bf2bd83f4b9e
-    m_Address: strawberry/(Prb)WaterDispenser
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6abbd224c262f0f41826ee973287d8a0
-    m_Address: strawberry/(Prb)BookPile2
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6b7366ce4ebbbc243af7f5156b2aae38
-    m_Address: strawberry/(Prb)BookPile7
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6db42db8c72db0646a7ca38d7915b702
-    m_Address: strawberry/(Prb)Projector
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 73534fa92ab79594f89f85bf78f85084
-    m_Address: strawberry/(Prb)TrashCan
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 866e84630187ed64fa298d4909b77294
-    m_Address: strawberry/(Prb)Shelves1
+  - m_GUID: 7d07125ead86ad34683e56e3ffbbe403
+    m_Address: strawberry/default_floor_1
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
@@ -201,26 +81,14 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 952d4e11fa4f0d541a14d1a63869608b
-    m_Address: strawberry/(Prb)PC
+  - m_GUID: 99eba9f6a26fba948a4767dd6c26c96f
+    m_Address: strawberry/default_table_white
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 99c357eaafbf3e147bb739a4c0d8002e
-    m_Address: strawberry/(Prb)Window
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9fde843783647944e801afa7d2710352
-    m_Address: strawberry/(Prb)BookPile6
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a3e8b745c42f67440aa572f4081e6908
-    m_Address: strawberry/(Prb)Drawer2
+  - m_GUID: 9e94b7192d1cc4344a843b191bb9aadd
+    m_Address: strawberry/default_wall_3
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
@@ -231,38 +99,14 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: aeda1bcd1ae89e94491914f0d445b664
-    m_Address: strawberry/(Prb)PlantBox
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: afa7f1a0e90e7f14d9a46af4d534c64b
     m_Address: default/default_chair
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: afed46391ca095a469fc8e3afaba2e18
-    m_Address: strawberry/(Prb)Mug
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b2c26b2429faf3d4895a434d2c36771c
-    m_Address: strawberry/(Prb)CeilingLight2
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b6b072dd16871534f95cd4828b637ae2
-    m_Address: strawberry/(Prb)DeskLight
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bc6b0972268eb3e4490384588ff2afb7
-    m_Address: strawberry/(Prb)Plant1
+  - m_GUID: b0f99412d6000f046a819131bdf27f8a
+    m_Address: strawberry/default_chair
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
@@ -273,59 +117,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: be0c267556cd675489668cf13b64b6d9
-    m_Address: strawberry/(Prb)ConferenceTable
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c17bfb85c50f08e4797b12da68ca8477
-    m_Address: strawberry/(Prb)CoffePot
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c3b72538424e40146b7b937e0b9b8cbf
-    m_Address: strawberry/(Prb)Desk2
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c68148b5d1bc0c5478b0a7315a3fb483
-    m_Address: strawberry/(Prb)OfficeChair
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c7eb2da37ea2eee4e8f5ff5a5694abe8
     m_Address: default/default_monitor_1
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: cb255746940351d449309eeb0807a1be
-    m_Address: strawberry/(Prb)Sofa1
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d16a58c3e2ecef842bab704f21c171bb
-    m_Address: strawberry/(Prb)DeskPrinter
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: db94aa723c26a0a408953b22ecad1cf7
-    m_Address: strawberry/(Prb)PenHolder
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: dd555abd994101a408bb5de5e05e707c
-    m_Address: strawberry/(Prb)BookPile4
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e1baa99316f52f54fab923ec9d06bfad
     m_Address: default/default_table_white
@@ -333,71 +129,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e2c114b064260b04dbbc7f69dc5299a3
-    m_Address: strawberry/(Prb)VendingMachine
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: eb7e5d67c0428f54d935586efee04419
-    m_Address: strawberry/(Prb)CeilingFan
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ef98609766904344b8fdec40ff8e9fe7
-    m_Address: strawberry/(Prb)KitchenModule
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f345d7ff834586741b735b955bf385a9
-    m_Address: strawberry/(Prb)Separator
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f4d9be762e6188c4bbc67cac4a576786
-    m_Address: strawberry/(Prb)Sofa2
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f4f4b36d7a323df48b7f8c2d5112b256
-    m_Address: strawberry/(Prb)YogaBall
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f715f5e133a16f045aebe6be09b877a4
-    m_Address: strawberry/(Prb)Drawer1
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f7ad68e200a26ee40a44278eac638b6a
     m_Address: default/default_wall_1
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f9f4b53bb3d42524aa6d3021478b5657
-    m_Address: strawberry/(Prb)Desk1
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: fb84013d4c41d73429c74b959e67a88d
-    m_Address: strawberry/(Prb)Shelves2
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: fc3f2b0923c4bec4daafb3527b2bc6fe
-    m_Address: strawberry/(Prb)SmokeDetector
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 878d66ff5773b60499b24cccd4ffc09c, type: 2}

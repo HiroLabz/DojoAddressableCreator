@@ -3,336 +3,11 @@
     "version": 1,
     "items": [
         {
-            "id": "strawberry.bigdrawer",
-            "category": "drawers",
-            "name": "BigDrawer",
-            "address": "strawberry/(Prb)BigDrawer",
-            "icon": "strawberry/Thumbnails/PrbBigDrawer",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.bookopen",
-            "category": "others",
-            "name": "BookOpen",
-            "address": "strawberry/(Prb)BookOpen",
-            "icon": "strawberry/Thumbnails/PrbBookOpen",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.bookpile1",
-            "category": "others",
-            "name": "BookPile1",
-            "address": "strawberry/(Prb)BookPile1",
-            "icon": "strawberry/Thumbnails/PrbBookPile1",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.bookpile2",
-            "category": "others",
-            "name": "BookPile2",
-            "address": "strawberry/(Prb)BookPile2",
-            "icon": "strawberry/Thumbnails/PrbBookPile2",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.bookpile3",
-            "category": "others",
-            "name": "BookPile3",
-            "address": "strawberry/(Prb)BookPile3",
-            "icon": "strawberry/Thumbnails/PrbBookPile3",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.bookpile4",
-            "category": "others",
-            "name": "BookPile4",
-            "address": "strawberry/(Prb)BookPile4",
-            "icon": "strawberry/Thumbnails/PrbBookPile4",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.bookpile5",
-            "category": "others",
-            "name": "BookPile5",
-            "address": "strawberry/(Prb)BookPile5",
-            "icon": "strawberry/Thumbnails/PrbBookPile5",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.bookpile6",
-            "category": "others",
-            "name": "BookPile6",
-            "address": "strawberry/(Prb)BookPile6",
-            "icon": "strawberry/Thumbnails/PrbBookPile6",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.bookpile7",
-            "category": "others",
-            "name": "BookPile7",
-            "address": "strawberry/(Prb)BookPile7",
-            "icon": "strawberry/Thumbnails/PrbBookPile7",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.ceilingfan",
-            "category": "appliances",
-            "name": "CeilingFan",
-            "address": "strawberry/(Prb)CeilingFan",
-            "icon": "strawberry/Thumbnails/PrbCeilingFan",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.ceilinglight1",
-            "category": "appliances",
-            "name": "CeilingLight1",
-            "address": "strawberry/(Prb)CeilingLight1",
-            "icon": "strawberry/Thumbnails/PrbCeilingLight1",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.ceilinglight2",
-            "category": "appliances",
-            "name": "CeilingLight2",
-            "address": "strawberry/(Prb)CeilingLight2",
-            "icon": "strawberry/Thumbnails/PrbCeilingLight2",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.clock",
-            "category": "appliances",
-            "name": "Clock",
-            "address": "strawberry/(Prb)Clock",
-            "icon": "strawberry/Thumbnails/PrbClock",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.coffepot",
-            "category": "others",
-            "name": "CoffePot",
-            "address": "strawberry/(Prb)CoffePot",
-            "icon": "strawberry/Thumbnails/PrbCoffePot",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.coffetable",
-            "category": "tables",
-            "name": "CoffeTable",
-            "address": "strawberry/(Prb)CoffeTable",
-            "icon": "strawberry/Thumbnails/PrbCoffeTable",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.conferencetable",
-            "category": "tables",
-            "name": "ConferenceTable",
-            "address": "strawberry/(Prb)ConferenceTable",
-            "icon": "strawberry/Thumbnails/PrbConferenceTable",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.desk1",
-            "category": "tables",
-            "name": "Desk1",
-            "address": "strawberry/(Prb)Desk1",
-            "icon": "strawberry/Thumbnails/PrbDesk1",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.desk2",
-            "category": "tables",
-            "name": "Desk2",
-            "address": "strawberry/(Prb)Desk2",
-            "icon": "strawberry/Thumbnails/PrbDesk2",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.desklight",
-            "category": "appliances",
-            "name": "DeskLight",
-            "address": "strawberry/(Prb)DeskLight",
-            "icon": "strawberry/Thumbnails/PrbDeskLight",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.deskplant",
-            "category": "plants",
-            "name": "DeskPlant",
-            "address": "strawberry/(Prb)DeskPlant",
-            "icon": "strawberry/Thumbnails/PrbDeskPlant",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.deskprinter",
-            "category": "appliances",
-            "name": "DeskPrinter",
-            "address": "strawberry/(Prb)DeskPrinter",
-            "icon": "strawberry/Thumbnails/PrbDeskPrinter",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.documentholder",
-            "category": "others",
-            "name": "DocumentHolder",
-            "address": "strawberry/(Prb)DocumentHolder",
-            "icon": "strawberry/Thumbnails/PrbDocumentHolder",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.drawer1",
-            "category": "drawers",
-            "name": "Drawer1",
-            "address": "strawberry/(Prb)Drawer1",
-            "icon": "strawberry/Thumbnails/PrbDrawer1",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.drawer2",
-            "category": "drawers",
-            "name": "Drawer2",
-            "address": "strawberry/(Prb)Drawer2",
-            "icon": "strawberry/Thumbnails/PrbDrawer2",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.drawer3",
-            "category": "drawers",
-            "name": "Drawer3",
-            "address": "strawberry/(Prb)Drawer3",
-            "icon": "strawberry/Thumbnails/PrbDrawer3",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.fatboy",
+            "id": "strawberry.defaultchair",
             "category": "furnitures",
-            "name": "Fatboy",
-            "address": "strawberry/(Prb)Fatboy",
-            "icon": "strawberry/Thumbnails/PrbFatboy",
+            "name": "default_chair",
+            "address": "strawberry/default_chair",
+            "icon": "strawberry/Thumbnails/default_chair",
             "target": "",
             "footprint": {
                 "x": 0,
@@ -341,24 +16,11 @@
             "data": ""
         },
         {
-            "id": "strawberry.kitchenmodule",
-            "category": "appliances",
-            "name": "KitchenModule",
-            "address": "strawberry/(Prb)KitchenModule",
-            "icon": "strawberry/Thumbnails/PrbKitchenModule",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.loungechair",
+            "id": "strawberry.defaultchairblue",
             "category": "furnitures",
-            "name": "LoungeChair",
-            "address": "strawberry/(Prb)LoungeChair",
-            "icon": "strawberry/Thumbnails/PrbLoungeChair",
+            "name": "default_chair_blue",
+            "address": "strawberry/default_chair_blue",
+            "icon": "strawberry/Thumbnails/default_chair_blue",
             "target": "",
             "footprint": {
                 "x": 0,
@@ -367,37 +29,11 @@
             "data": ""
         },
         {
-            "id": "strawberry.microwave",
-            "category": "appliances",
-            "name": "Microwave",
-            "address": "strawberry/(Prb)Microwave",
-            "icon": "strawberry/Thumbnails/PrbMicrowave",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.mug",
-            "category": "others",
-            "name": "Mug",
-            "address": "strawberry/(Prb)Mug",
-            "icon": "strawberry/Thumbnails/PrbMug",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.officechair",
+            "id": "strawberry.defaultchairred",
             "category": "furnitures",
-            "name": "OfficeChair",
-            "address": "strawberry/(Prb)OfficeChair",
-            "icon": "strawberry/Thumbnails/PrbOfficeChair",
+            "name": "default_chair_red",
+            "address": "strawberry/default_chair_red",
+            "icon": "strawberry/Thumbnails/default_chair_red",
             "target": "",
             "footprint": {
                 "x": 0,
@@ -406,11 +42,24 @@
             "data": ""
         },
         {
-            "id": "strawberry.pc",
+            "id": "strawberry.defaultfloor1",
+            "category": "floors",
+            "name": "default_floor_1",
+            "address": "strawberry/default_floor_1",
+            "icon": "strawberry/Thumbnails/default_floor_1",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "strawberry.defaultmonitor1",
             "category": "appliances",
-            "name": "PC",
-            "address": "strawberry/(Prb)PC",
-            "icon": "strawberry/Thumbnails/PrbPC",
+            "name": "default_monitor_1",
+            "address": "strawberry/default_monitor_1",
+            "icon": "strawberry/Thumbnails/default_monitor_1",
             "target": "",
             "footprint": {
                 "x": 0,
@@ -419,11 +68,11 @@
             "data": ""
         },
         {
-            "id": "strawberry.pccase",
-            "category": "appliances",
-            "name": "PCCase",
-            "address": "strawberry/(Prb)PCCase",
-            "icon": "strawberry/Thumbnails/PrbPCCase",
+            "id": "strawberry.defaulttableorange",
+            "category": "tables",
+            "name": "default_table_orange",
+            "address": "strawberry/default_table_orange",
+            "icon": "strawberry/Thumbnails/default_table_orange",
             "target": "",
             "footprint": {
                 "x": 0,
@@ -432,11 +81,11 @@
             "data": ""
         },
         {
-            "id": "strawberry.penholder",
-            "category": "others",
-            "name": "PenHolder",
-            "address": "strawberry/(Prb)PenHolder",
-            "icon": "strawberry/Thumbnails/PrbPenHolder",
+            "id": "strawberry.defaulttablewhite",
+            "category": "tables",
+            "name": "default_table_white",
+            "address": "strawberry/default_table_white",
+            "icon": "strawberry/Thumbnails/default_table_white",
             "target": "",
             "footprint": {
                 "x": 0,
@@ -445,76 +94,11 @@
             "data": ""
         },
         {
-            "id": "strawberry.plant1",
-            "category": "plants",
-            "name": "Plant1",
-            "address": "strawberry/(Prb)Plant1",
-            "icon": "strawberry/Thumbnails/PrbPlant1",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.plant2",
-            "category": "plants",
-            "name": "Plant2",
-            "address": "strawberry/(Prb)Plant2",
-            "icon": "strawberry/Thumbnails/PrbPlant2",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.plantbox",
-            "category": "plants",
-            "name": "PlantBox",
-            "address": "strawberry/(Prb)PlantBox",
-            "icon": "strawberry/Thumbnails/PrbPlantBox",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.printer",
-            "category": "appliances",
-            "name": "Printer",
-            "address": "strawberry/(Prb)Printer",
-            "icon": "strawberry/Thumbnails/PrbPrinter",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.projector",
-            "category": "appliances",
-            "name": "Projector",
-            "address": "strawberry/(Prb)Projector",
-            "icon": "strawberry/Thumbnails/PrbProjector",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.separator",
+            "id": "strawberry.defaultwall1",
             "category": "walls",
-            "name": "Separator",
-            "address": "strawberry/(Prb)Separator",
-            "icon": "strawberry/Thumbnails/PrbSeparator",
+            "name": "default_wall_1",
+            "address": "strawberry/default_wall_1",
+            "icon": "strawberry/Thumbnails/default_wall_1",
             "target": "",
             "footprint": {
                 "x": 0,
@@ -523,11 +107,11 @@
             "data": ""
         },
         {
-            "id": "strawberry.separatordoor",
+            "id": "strawberry.defaultwall2",
             "category": "walls",
-            "name": "SeparatorDoor",
-            "address": "strawberry/(Prb)SeparatorDoor",
-            "icon": "strawberry/Thumbnails/PrbSeparatorDoor",
+            "name": "default_wall_2",
+            "address": "strawberry/default_wall_2",
+            "icon": "strawberry/Thumbnails/default_wall_2",
             "target": "",
             "footprint": {
                 "x": 0,
@@ -536,167 +120,11 @@
             "data": ""
         },
         {
-            "id": "strawberry.shelves1",
-            "category": "furnitures",
-            "name": "Shelves1",
-            "address": "strawberry/(Prb)Shelves1",
-            "icon": "strawberry/Thumbnails/PrbShelves1",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.shelves2",
-            "category": "furnitures",
-            "name": "Shelves2",
-            "address": "strawberry/(Prb)Shelves2",
-            "icon": "strawberry/Thumbnails/PrbShelves2",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.shelves3",
-            "category": "furnitures",
-            "name": "Shelves3",
-            "address": "strawberry/(Prb)Shelves3",
-            "icon": "strawberry/Thumbnails/PrbShelves3",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.smokedetector",
-            "category": "appliances",
-            "name": "SmokeDetector",
-            "address": "strawberry/(Prb)SmokeDetector",
-            "icon": "strawberry/Thumbnails/PrbSmokeDetector",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.sofa1",
-            "category": "furnitures",
-            "name": "Sofa1",
-            "address": "strawberry/(Prb)Sofa1",
-            "icon": "strawberry/Thumbnails/PrbSofa1",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.sofa2",
-            "category": "furnitures",
-            "name": "Sofa2",
-            "address": "strawberry/(Prb)Sofa2",
-            "icon": "strawberry/Thumbnails/PrbSofa2",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.sofa3",
-            "category": "furnitures",
-            "name": "Sofa3",
-            "address": "strawberry/(Prb)Sofa3",
-            "icon": "strawberry/Thumbnails/PrbSofa3",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.stapler",
-            "category": "others",
-            "name": "Stapler",
-            "address": "strawberry/(Prb)Stapler",
-            "icon": "strawberry/Thumbnails/PrbStapler",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.trashcan",
-            "category": "others",
-            "name": "TrashCan",
-            "address": "strawberry/(Prb)TrashCan",
-            "icon": "strawberry/Thumbnails/PrbTrashCan",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.vendingmachine",
-            "category": "appliances",
-            "name": "VendingMachine",
-            "address": "strawberry/(Prb)VendingMachine",
-            "icon": "strawberry/Thumbnails/PrbVendingMachine",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.waterdispenser",
-            "category": "appliances",
-            "name": "WaterDispenser",
-            "address": "strawberry/(Prb)WaterDispenser",
-            "icon": "strawberry/Thumbnails/PrbWaterDispenser",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.window",
+            "id": "strawberry.defaultwall3",
             "category": "walls",
-            "name": "Window",
-            "address": "strawberry/(Prb)Window",
-            "icon": "strawberry/Thumbnails/PrbWindow",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "strawberry.yogaball",
-            "category": "furnitures",
-            "name": "YogaBall",
-            "address": "strawberry/(Prb)YogaBall",
-            "icon": "strawberry/Thumbnails/PrbYogaBall",
+            "name": "default_wall_3",
+            "address": "strawberry/default_wall_3",
+            "icon": "strawberry/Thumbnails/default_wall_3",
             "target": "",
             "footprint": {
                 "x": 0,
