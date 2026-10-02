@@ -69,6 +69,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 709a9e4ffef247d6a240be4ab8b88b1c
+    m_Address: default/default_grayFloor
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7d07125ead86ad34683e56e3ffbbe403
     m_Address: strawberry/default_floor_1
     m_ReadOnly: 0
@@ -99,6 +105,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aaec9c2c982dc5c47b17d8d95dd6f5b8
+    m_Address: default/default_elevator
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: afa7f1a0e90e7f14d9a46af4d534c64b
     m_Address: default/default_chair
     m_ReadOnly: 0
@@ -111,8 +123,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bc3efb788555e204f8c3e6ca5bad7365
+    m_Address: default/default_dojo_animated_pin
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bdd9a38a9104950459f011bc9586f0dd
     m_Address: default/default_wall_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c09b45738ca7dde43800be88697a3069
+    m_Address: default/default_stairs
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -125,6 +149,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e1baa99316f52f54fab923ec9d06bfad
     m_Address: default/default_table_white
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e4750c08ba573c14286d368219f44fdb
+    m_Address: default/default_location_pin_red
     m_ReadOnly: 0
     m_SerializedLabels:
     - default

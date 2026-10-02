@@ -131,6 +131,71 @@
                 "y": 0
             },
             "data": ""
+        },
+        {
+            "id": "default.defaultgrayfloor",
+            "category": "floors",
+            "name": "default_grayFloor",
+            "address": "default/default_grayFloor",
+            "icon": "default/Thumbnails/default_grayFloor",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultelevator",
+            "category": "others",
+            "name": "default_elevator",
+            "address": "default/default_elevator",
+            "icon": "default/Thumbnails/default_elevator",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultstairs",
+            "category": "others",
+            "name": "default_stairs",
+            "address": "default/default_stairs",
+            "icon": "default/Thumbnails/default_stairs",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultlocationpinred",
+            "category": "others",
+            "name": "default_location_pin_red",
+            "address": "default/default_location_pin_red",
+            "icon": "default/Thumbnails/default_location_pin_red",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultdojoanimatedpin",
+            "category": "others",
+            "name": "default_dojo_animated_pin",
+            "address": "default/default_dojo_animated_pin",
+            "icon": "default/Thumbnails/default_dojo_animated_pin",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
         }
     ]
 }

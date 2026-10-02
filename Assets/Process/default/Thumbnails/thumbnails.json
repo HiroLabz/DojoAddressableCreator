@@ -1,5 +1,5 @@
 {
-    "generatedUtc": "2026-09-28T13:12:33.5712541Z",
+    "generatedUtc": "2026-10-02T17:07:25.0080555Z",
     "pixelSize": 256,
     "sourceFolder": "Assets/Process/default/Prefabs",
     "pack": "default",
@@ -38,6 +38,28 @@
             "pack": "default"
         },
         {
+            "prefabId": "bc3efb788555e204f8c3e6ca5bad7365",
+            "prefabName": "default_dojo_animated_pin",
+            "prefabPath": "Assets/Process/default/Prefabs/default_dojo_animated_pin.prefab",
+            "prefabResource": "default/default_dojo_animated_pin",
+            "thumbnailId": "d0211a4dc28fb314b9a2e5f9f4fa4f56",
+            "thumbnailFile": "default_dojo_animated_pin.png",
+            "thumbnailPath": "Assets/Process/default/Thumbnails/default_dojo_animated_pin.png",
+            "thumbnailResource": "default/Thumbnails/default_dojo_animated_pin",
+            "pack": "default"
+        },
+        {
+            "prefabId": "aaec9c2c982dc5c47b17d8d95dd6f5b8",
+            "prefabName": "default_elevator",
+            "prefabPath": "Assets/Process/default/Prefabs/default_elevator.prefab",
+            "prefabResource": "default/default_elevator",
+            "thumbnailId": "4cd0e71315a704e47b6cbe31154c6bb7",
+            "thumbnailFile": "default_elevator.png",
+            "thumbnailPath": "Assets/Process/default/Thumbnails/default_elevator.png",
+            "thumbnailResource": "default/Thumbnails/default_elevator",
+            "pack": "default"
+        },
+        {
             "prefabId": "a89f100444dabc14691edf441bf5e3a9",
             "prefabName": "default_floor_1",
             "prefabPath": "Assets/Process/default/Prefabs/default_floor_1.prefab",
@@ -49,6 +71,28 @@
             "pack": "default"
         },
         {
+            "prefabId": "709a9e4ffef247d6a240be4ab8b88b1c",
+            "prefabName": "default_grayFloor",
+            "prefabPath": "Assets/Process/default/Prefabs/default_grayFloor.prefab",
+            "prefabResource": "default/default_grayFloor",
+            "thumbnailId": "1a7e95b1566b60a4ba5b27c3994533c7",
+            "thumbnailFile": "default_grayFloor.png",
+            "thumbnailPath": "Assets/Process/default/Thumbnails/default_grayFloor.png",
+            "thumbnailResource": "default/Thumbnails/default_grayFloor",
+            "pack": "default"
+        },
+        {
+            "prefabId": "e4750c08ba573c14286d368219f44fdb",
+            "prefabName": "default_location_pin_red",
+            "prefabPath": "Assets/Process/default/Prefabs/default_location_pin_red.prefab",
+            "prefabResource": "default/default_location_pin_red",
+            "thumbnailId": "cf2878169ea8b3d4cbbd1f73cb675241",
+            "thumbnailFile": "default_location_pin_red.png",
+            "thumbnailPath": "Assets/Process/default/Thumbnails/default_location_pin_red.png",
+            "thumbnailResource": "default/Thumbnails/default_location_pin_red",
+            "pack": "default"
+        },
+        {
             "prefabId": "c7eb2da37ea2eee4e8f5ff5a5694abe8",
             "prefabName": "default_monitor_1",
             "prefabPath": "Assets/Process/default/Prefabs/default_monitor_1.prefab",
@@ -57,6 +101,17 @@
             "thumbnailFile": "default_monitor_1.png",
             "thumbnailPath": "Assets/Process/default/Thumbnails/default_monitor_1.png",
             "thumbnailResource": "default/Thumbnails/default_monitor_1",
+            "pack": "default"
+        },
+        {
+            "prefabId": "c09b45738ca7dde43800be88697a3069",
+            "prefabName": "default_stairs",
+            "prefabPath": "Assets/Process/default/Prefabs/default_stairs.prefab",
+            "prefabResource": "default/default_stairs",
+            "thumbnailId": "0ec0965071b08144b8ef24e2c29a46db",
+            "thumbnailFile": "default_stairs.png",
+            "thumbnailPath": "Assets/Process/default/Thumbnails/default_stairs.png",
+            "thumbnailResource": "default/Thumbnails/default_stairs",
             "pack": "default"
         },
         {

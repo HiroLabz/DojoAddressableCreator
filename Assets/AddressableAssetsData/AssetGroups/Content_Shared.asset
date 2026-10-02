@@ -63,6 +63,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 156e9fbb308636b4e81e8a0897baf9eb
+    m_Address: default/Materials/Pin_Orb_Blue
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1613bd808e7c699458abf374ab12be0f
     m_Address: strawberry/Textures/default_floor_1_albedo
     m_ReadOnly: 0
@@ -105,6 +111,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2e87a3dde688ed047a2981f0e44085e4
+    m_Address: default/World/default_world_picture
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 333662a11715bd445af55ae719f3dfb5
     m_Address: default/Textures/default_table_white_normal
     m_ReadOnly: 0
@@ -123,11 +135,23 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 39d2d03f9ec1c4041b287ec6899ae36d
+    m_Address: default/Materials/Pin_Orb_Highlight
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3a89851e486e93a45901fa6f954c57db
     m_Address: strawberry/Textures/default_chair_albedo
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3c8bd692a64fbc84d9ef910f42234c78
+    m_Address: default/Materials/elevator_shaft
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3fed8449116270d46818d5ff525a926b
     m_Address: strawberry/Textures/default_table_orange_normal
@@ -137,6 +161,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4348827cc0d4d2943bfa5667bcc08815
     m_Address: default/Textures/default_wall_2_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 465b8781db2bba2408d72e5071b883c4
+    m_Address: default/Materials/Pin_OrbRing_Navy
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -170,6 +200,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 68ca4ac834511d24c830e4625910ae39
+    m_Address: default/Materials/elevator_lamp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6d26f8673d910094987755bc1a9ffaa3
     m_Address: strawberry/Materials/Material_0
@@ -303,6 +339,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b92873fb4ba6e8845a22f34c31601adb
+    m_Address: default/Meshes/connector_cube
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bc87a92c166e4484489ceedeec5e5703
     m_Address: default/Textures/default_floor_1_normal
     m_ReadOnly: 0
@@ -315,11 +357,29 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c347934e5d4b51a47b9947fe7095d5d4
+    m_Address: default/Materials/stairs_steps
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c40f792713a14de4685b55a01af841ae
     m_Address: strawberry/Textures/default_chair_blue_albedo
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c5f09809cf74410689ee7827f381182d
+    m_Address: default/Materials/grayFloor
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cb54006d5a584af448978ea1e8993afe
+    m_Address: default/Materials/Pin_Orb_Diamond
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cf2bcf8c8ecf6ab4494b1563c9e79d3f
     m_Address: strawberry/Materials/Material_0.001
@@ -327,8 +387,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d0eb7d76eb23194478ebc1102216fcce
+    m_Address: default/Materials/LocationPin_Red
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d4a11eac345b49cd88498e76ff2f750f
+    m_Address: default/Textures/grayFloor_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dea190b183b4b1d499ad9e9d3865fcd2
     m_Address: default/Materials/Material_0.003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: df3aefb32828b894eaf3fb27b01643d9
+    m_Address: default/Materials/elevator_doors
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -338,6 +416,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e8ce287c96bb41b4bad3e11cf1194566
+    m_Address: default/Materials/Pin_OrbRing_Pale
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ea8ddeb47c3c8b544bfed1eb29af3eb4
+    m_Address: default/Materials/Pin_Body_Red
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f0e836c37b2cc564fa2a73862085911b
     m_Address: default/Materials/Material_0.005
