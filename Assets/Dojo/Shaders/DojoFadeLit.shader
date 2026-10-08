@@ -1,10 +1,12 @@
-// URP Lit with one addition: a floor can fade out in a dot pattern while the camera changes floor.
+// URP Lit with one addition: a floor can turn into a hologram and fade out while an elevator ride
+// changes floor - a glowing edge sweeps out from the elevator, the floor behind it turns cyan and
+// see-through-looking, and its scan lines thin out to nothing.
 //
 // Everything else is URP 17.3.0's Lit.shader, copied as it was, so a material switched to this shader
 // keeps its look, its values and its keywords. The fade is the HLSLINCLUDE below and the five Dojo*
-// fragment wrappers, one in front of each pass that draws or writes depth. Shadow and depth passes
-// skip the same pixels as the colour pass; a pass that did not would leave a hole the shape of the
-// object, or a solid shadow under a floor that has gone.
+// fragment wrappers, one in front of each pass that draws or writes depth. Depth passes cut the same
+// lines as the colour pass; one that did not would leave the floor's depth behind where its lines
+// are gone. A hologram casts no shadow, so the shadow pass lets go of the floor once it has turned.
 //
 // The same file lives in DojoAddressableCreator, whose pack materials use it. Keep the two identical,
 // and copy URP's Lit.shader again if the URP version ever changes.
@@ -101,36 +103,166 @@ Shader "Dojo/Fade Lit"
 
         HLSLINCLUDE
         // How far a renderer has faded is the low 8 bits of its shader user value
-        // (MeshRenderer.SetShaderUserValue): 0 shown .. 255 gone. The game sets it on the renderers
-        // filed under a fading floor - the same list that hides a floor - so a part that reaches up
-        // near the next floor, like an elevator roof, still fades with its own, and two floors can
-        // fade at once, each at its own pace. A renderer nobody set is 0: shown, as everywhere else
-        // (the content project's thumbnails included).
+        // (MeshRenderer.SetShaderUserValue): 0 shown .. 255 gone; bit 8 says the floor is arriving
+        // rather than leaving. The game sets it on the renderers filed under a fading floor - the
+        // same list that hides a floor - so a part that reaches up near the next floor, like an
+        // elevator roof, still fades with its own. A renderer nobody set is 0: shown, as everywhere
+        // else (the content project's thumbnails included).
+        //
+        // Leaving, as the fade goes from 0 to 1. Over the first half a glowing edge spreads out from
+        // the elevator (_DojoSweep) and the floor behind it turns to hologram: cyan, faces lit by how
+        // far they turn from the camera so it reads as see-through, scan lines with bright cores for
+        // the bloom. Over the second half the lines thin out until none is left.
+        // Arriving runs the other way, 1 to 0: lines appear and fill out into a whole hologram, then
+        // the solid floor spreads out from the elevator behind the edge.
+        //
+        // Defined ahead of the pass's own includes, so what those declare - the screen size, the
+        // time, the matrices - is handed in by the DOJO_* macros, which expand inside the wrappers
+        // after them.
 
-        // One cell of a 2x2 ordered-dither matrix: 0, 2 / 3, 1.
-        float DojoBayer2(float2 cell)
+        static const float3 DojoHoloColour = float3(0.20, 0.80, 1.00);
+
+        #define DOJO_HOLO_LINES 180.0   // lines across the screen's height
+        #define DOJO_HOLO_DRIFT 0.6     // lines a second the pattern drifts up by
+        #define DOJO_HOLO_SWEEP 0.5     // the part of the fade the sweep takes; the lines thin out after
+        #define DOJO_HOLO_GLOW 1.2      // how far past full brightness each line's thin core goes
+        #define DOJO_HOLO_EDGE 1.4      // how bright the sweeping edge is, for the bloom to catch
+
+        // Set by the game when a fade starts: the elevator on the floor (world x, z), how far from it
+        // the floor reaches, and how wide the glowing edge is, in metres. A reach of 0 - never set -
+        // turns the whole floor at once.
+        float4 _DojoSweep;
+
+        // How far a renderer has faded: 0 shown .. 1 gone.
+        float DojoFaded(uint userValue)
         {
-            return 2.0 * abs(cell.x - cell.y) + cell.y;
+            return (float)(userValue & 255u) / 255.0;
         }
 
-        // Whether this pixel of a renderer with this user value is skipped.
-        bool DojoFloorFaded(uint userValue, float2 pixel)
+        // Whether the floor is arriving (fading in) rather than leaving.
+        bool DojoArriving(uint userValue)
         {
-            float faded = (float)(userValue & 255u) / 255.0;
+            return (userValue & 256u) != 0u;
+        }
+
+        // The sweep at a point on the floor: how far it has turned to hologram (0 solid .. 1
+        // hologram), and how much of the glowing edge is passing over it.
+        void DojoSweepAt(float faded, bool arriving, float2 pointXZ, out float holo, out float edge)
+        {
+            float reach = _DojoSweep.z;
+            float width = max(_DojoSweep.w, 0.01);
+
+            if (reach <= 0.0)
+            {
+                holo = 1.0;
+                edge = 0.0;
+                return;
+            }
+
+            float swept = saturate(faded / DOJO_HOLO_SWEEP);
+            float distanceOut = distance(pointXZ, _DojoSweep.xy);
+
+            // Leaving: the hologram spreads out, from nothing at the elevator to past the far end.
+            // Arriving: the solid floor spreads out instead - starting a width short of the
+            // elevator, so none of it shows while the lines are still filling in - and the hologram
+            // is what lies beyond it.
+            float radius = arriving
+                ? (1.0 - swept) * (reach + width) - width
+                : swept * (reach + width);
+            holo = arriving
+                ? saturate((distanceOut - radius) / width)
+                : saturate((radius - distanceOut) / width);
+
+            // The edge glows where the change is half done.
+            float middleOfChange = arriving ? radius + width * 0.5 : radius - width * 0.5;
+            float sweeping = swept > 0.0 && swept < 1.0 ? 1.0 : 0.0;
+            edge = sweeping * saturate(1.0 - abs(distanceOut - middleOfChange) / width);
+        }
+
+        // A pixel's height on screen counted upward, whichever way this platform and target count
+        // rows, so the drift goes up everywhere. OpenGL - WebGL included - counts up from the
+        // bottom; the rest count down from the top, except into a target drawn upside down.
+        // The compiler's own platform flags, because URP's UNITY_UV_STARTS_AT_TOP is not defined
+        // yet here, and never is on OpenGL.
+        float DojoScreenUp(float row, float screenHeight, float projectionFlip)
+        {
+        #if defined(SHADER_API_GLES3) || defined(SHADER_API_GLCORE) || defined(SHADER_API_GLES)
+            return row;
+        #else
+            return projectionFlip > 0.0 ? screenHeight - row : row;
+        #endif
+        }
+
+        // Where a pixel sits across its line: 0 .. 1.
+        float DojoHoloPhase(float up, float screenHeight, float time)
+        {
+            return frac(up * DOJO_HOLO_LINES / screenHeight - time * DOJO_HOLO_DRIFT);
+        }
+
+        // How much of each line is still drawn: all of it while the sweep runs, then less and less,
+        // none at all once the fade is complete.
+        float DojoHoloWidth(float faded)
+        {
+            return 1.0 - saturate((faded - DOJO_HOLO_SWEEP) / (1.0 - DOJO_HOLO_SWEEP));
+        }
+
+        // Whether a pixel is cut away: it falls between the lines.
+        bool DojoFloorCut(uint userValue, float up, float screenHeight, float time)
+        {
+            float faded = DojoFaded(userValue);
 
             if (faded <= 0.0)
             {
                 return false;
             }
 
-            // A 4x4 ordered dither: 16 thresholds spread evenly over each 4x4 block of pixels.
-            float2 cell = fmod(floor(pixel), 4.0);
-            float rank = 4.0 * DojoBayer2(fmod(cell, 2.0)) + DojoBayer2(floor(cell * 0.5));
-            return faded > (rank + 0.5) / 16.0;
+            return DojoHoloPhase(up, screenHeight, time) >= DojoHoloWidth(faded);
         }
 
-        // Used inside the wrappers, after the pass's own includes have defined the user value.
-        #define DOJO_FLOOR_CLIP(positionCS) if (DojoFloorFaded(unity_RendererUserValue, (positionCS).xy)) { clip(-1.0); }
+        // The colour a fading floor is drawn in. Where the sweep has passed: the hologram - dark
+        // cyan carrying the floor's own light and shade, so tiles, marks and furniture still read,
+        // a little lighter on faces turned from the camera, and thin scan-line cores that go past
+        // full brightness for the bloom. Elsewhere: the floor as it is. The edge glows as it passes.
+        float3 DojoHologram(float3 lit, uint userValue, float up, float screenHeight, float time,
+            float3 positionWS, float3 normalWS, float3 viewWS)
+        {
+            float faded = DojoFaded(userValue);
+
+            if (faded <= 0.0)
+            {
+                return lit;
+            }
+
+            float holo, edge;
+            DojoSweepAt(faded, DojoArriving(userValue), positionWS.xz, holo, edge);
+
+            float luminance = saturate(dot(lit, float3(0.299, 0.587, 0.114)));
+            float turned = pow(1.0 - saturate(dot(normalWS, viewWS)), 1.5);
+            float width = DojoHoloWidth(faded);
+            float phase = DojoHoloPhase(up, screenHeight, time);
+            float middle = width > 0.0 ? saturate(1.0 - abs(phase / width * 2.0 - 1.0)) : 0.0;
+            float core = middle * middle;
+            core *= core;
+            float3 body = DojoHoloColour * (0.05 + 0.65 * luminance + 0.25 * turned + 0.15 * middle
+                + DOJO_HOLO_GLOW * core);
+
+            return lerp(lit, body, holo) + DojoHoloColour * (DOJO_HOLO_EDGE * edge);
+        }
+
+        // Used inside the wrappers, after the pass's own includes have declared what they read.
+        #define DOJO_UP(positionCS) DojoScreenUp((positionCS).y, _ScaledScreenParams.y, _ProjectionParams.x)
+        #define DOJO_FLOOR_CLIP(positionCS) if (DojoFloorCut(unity_RendererUserValue, DOJO_UP(positionCS), _ScaledScreenParams.y, _Time.y)) { clip(-1.0); }
+        #define DOJO_FLOOR_SHADOW_CLIP if (DojoFaded(unity_RendererUserValue) > DOJO_HOLO_SWEEP) { clip(-1.0); }
+
+        // The world position is rebuilt from the pixel's depth: the forward pass only carries one
+        // with some keywords. Skipped outright for a renderer that is not fading.
+        #define DOJO_FLOOR_TINT(colour, positionCS, normal) \
+            if (DojoFaded(unity_RendererUserValue) > 0.0) \
+            { \
+                float3 dojoPositionWS = ComputeWorldSpacePosition(GetNormalizedScreenSpaceUV(positionCS), (positionCS).z, UNITY_MATRIX_I_VP); \
+                colour = DojoHologram(colour, unity_RendererUserValue, DOJO_UP(positionCS), _ScaledScreenParams.y, _Time.y, \
+                    dojoPositionWS, normalize(normal), normalize(GetCameraPositionWS() - dojoPositionWS)); \
+            }
         ENDHLSL
 
         // ------------------------------------------------------------------
@@ -236,6 +368,7 @@ Shader "Dojo/Fade Lit"
                     , outRenderingLayers
             #endif
                 );
+                DOJO_FLOOR_TINT(outColor.rgb, input.positionCS, input.normalWS);
             }
             ENDHLSL
         }
@@ -291,7 +424,7 @@ Shader "Dojo/Fade Lit"
             half4 DojoShadowPassFragment(Varyings input) : SV_TARGET
             {
                 UNITY_SETUP_INSTANCE_ID(input);
-                DOJO_FLOOR_CLIP(input.positionCS);
+                DOJO_FLOOR_SHADOW_CLIP;
                 return ShadowPassFragment(input);
             }
             ENDHLSL
