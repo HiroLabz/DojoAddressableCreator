@@ -1,0 +1,16 @@
+{
+    "name": "Dojo.Inventory",
+    "rootNamespace": "Dojo.Inventory",
+    "references": [
+        "Dojo.Framework"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
