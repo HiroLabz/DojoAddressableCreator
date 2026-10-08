@@ -39,6 +39,13 @@ namespace Dojo.Game.Placement
                  "same kind of authored choice and the same loader will want it.")]
         [SerializeField] GameObject managerPrefab;
 
+        [Header("Characters")]
+        [Tooltip("Bring agents and the manager into the world. Off while the project concentrates " +
+                 "on building: a load places no one and bakes no navigation, the Agents and You " +
+                 "tabs are hidden, and a save keeps whatever agents and manager the world already " +
+                 "had rather than dropping them.")]
+        [SerializeField] bool characters = false;
+
         [Header("Auto save")]
         [Tooltip("Write the current world back to disk whenever anything in it is added, moved, " +
                  "rotated, deleted or painted. Only ever writes over the world already selected; " +
@@ -60,6 +67,8 @@ namespace Dojo.Game.Placement
         public int MaxFloors => Mathf.Max(0, maxFloors);
 
         /// <summary>Whether a change to the world writes itself to disk shortly afterwards.</summary>
+        public bool Characters => characters;
+
         public bool AutoSave => autoSave;
 
         /// <summary>

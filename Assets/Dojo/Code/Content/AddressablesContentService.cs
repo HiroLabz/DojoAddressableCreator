@@ -27,12 +27,18 @@ namespace Dojo.Content
         readonly ContentSettings settings;
 
         /// <summary>
-        /// Everything a preload brought into memory, by address. A list per address because one
-        /// address can have several representations — a sprite-imported PNG answers to both
-        /// <c>Sprite</c> and <c>Texture2D</c>, and the inventory asks for each in turn.
+        /// Everything loaded so far, by address. A list per address because one address can have
+        /// several representations — a sprite-imported PNG answers to both <c>Sprite</c> and
+        /// <c>Texture2D</c>, and the inventory asks for each in turn.
         /// </summary>
         readonly Dictionary<string, List<UnityEngine.Object>> cache =
             new Dictionary<string, List<UnityEngine.Object>>();
+
+        /// <summary>Every address in a preloaded set: what <see cref="TryGet{T}"/> may load.</summary>
+        readonly HashSet<string> available = new HashSet<string>(StringComparer.Ordinal);
+
+        /// <summary>Address and type pairs already tried and not found, so they are not tried again.</summary>
+        readonly HashSet<string> unavailable = new HashSet<string>(StringComparer.Ordinal);
 
         /// <summary>
         /// Content sets already resident, in load order. A list rather than a set because the order
@@ -145,7 +151,7 @@ namespace Dojo.Content
             }
 
             Log("preload complete — resident: " + string.Join(", ", resident.ToArray())
-                + "  (" + cache.Count + " addresses)");
+                + "  (" + available.Count + " addresses)");
         }
 
         public async Awaitable PreloadAsync(string key, CancellationToken cancellationToken = default)
@@ -183,13 +189,11 @@ namespace Dojo.Content
                 Log("'" + label + "' already cached, nothing to download");
                 Dispatch(label, 1f, 0, 0, force: true);
 
-                // Still cache. "Nothing to download" means the bundles are on disk, not that the
-                // assets are in memory — and TryGet answers from memory. Returning here instead
-                // left every second run with an empty cache and a catalogue that resolved nothing,
-                // which looked like a roster bug rather than a preload one.
-                await CacheLabelAsync(label, cancellationToken);
+                // Still index. TryGet only loads what a preloaded set holds, so returning here
+                // instead would leave a catalogue that resolved nothing.
+                await IndexLabelAsync(label, cancellationToken);
                 loadedKeys.Add(key);
-                Log("'" + key + "' resident — " + cache.Count + " addresses total");
+                Log("'" + key + "' resident — " + available.Count + " addresses total");
                 return;
             }
 
@@ -235,9 +239,9 @@ namespace Dojo.Content
             Log("'" + label + "' downloaded " + Megabytes(size) + " in " + Seconds(started)
                 + " from " + Describe());
 
-            await CacheLabelAsync(label, cancellationToken);
+            await IndexLabelAsync(label, cancellationToken);
             loadedKeys.Add(key);
-            Log("'" + key + "' resident — " + cache.Count + " addresses total");
+            Log("'" + key + "' resident — " + available.Count + " addresses total");
         }
 
         /// <summary>
@@ -265,44 +269,18 @@ namespace Dojo.Content
         }
 
         /// <summary>
-        /// Loads every asset under a label into <see cref="cache"/>, whatever type it is, so
-        /// <see cref="TryGet{T}"/> can answer without awaiting.
+        /// Records every address under a label as one <see cref="TryGet{T}"/> may load, without
+        /// loading any of them.
         /// </summary>
         /// <remarks>
-        /// The types come off the catalogue rather than being written down here. An earlier version
-        /// named four — <c>GameObject</c>, <c>Sprite</c>, <c>Texture2D</c>, <c>TextAsset</c> — which
-        /// made this class the one place that had to be edited before a pack could contain a sound,
-        /// a material or an animation. Worse, it failed silently: the asset downloaded, the cache
-        /// never held it, and <c>TryGet</c> returned false with nothing logged. A pack may hold any
-        /// asset, so the only list that cannot go stale is the one the catalogue itself provides.
-        /// <para>
-        /// Typed passes are kept, rather than one pass over <c>Object</c>, because the type asked
-        /// for decides what Addressables hands back: a sprite-imported PNG yields a
-        /// <c>Texture2D</c> when loaded as <c>Object</c> and a <c>Sprite</c> only when asked for
-        /// one. The inventory wants the sprite and falls back to the texture, so both are cached
-        /// and neither path warns.
-        /// </para>
+        /// This used to load every asset under the label into memory, one at a time and a frame
+        /// apart, before startup could finish - every texture, material and mesh of the pack, when
+        /// a world only builds from a handful of its prefabs. Now an asset is loaded the first time
+        /// it is asked for. The index keeps the old rule that only a preloaded set resolves, so a
+        /// pack the player does not have still answers nothing.
         /// </remarks>
-        async Awaitable CacheLabelAsync(string label, CancellationToken cancellationToken)
+        async Awaitable IndexLabelAsync(string label, CancellationToken cancellationToken)
         {
-            var types = await TypesUnderAsync(label, cancellationToken);
-
-            foreach (var type in types)
-            {
-                await CacheTypedAsync(label, type, cancellationToken);
-            }
-        }
-
-        /// <summary>
-        /// Every distinct asset type the catalogue holds under this label.
-        /// </summary>
-        /// <remarks>
-        /// An untyped location query is the only way to ask "what is in here" without naming what
-        /// you expect to find, which is exactly the question a pack of unknown contents poses.
-        /// </remarks>
-        async Awaitable<List<Type>> TypesUnderAsync(string label, CancellationToken cancellationToken)
-        {
-            var found = new List<Type>();
             var locations = Addressables.LoadResourceLocationsAsync(label);
 
             while (!locations.IsDone)
@@ -310,114 +288,107 @@ namespace Dojo.Content
                 await Awaitable.NextFrameAsync(cancellationToken);
             }
 
-            if (locations.Status != AsyncOperationStatus.Succeeded || locations.Result == null)
+            if (locations.Status == AsyncOperationStatus.Succeeded && locations.Result != null)
             {
-                Addressables.Release(locations);
-                return found;
-            }
-
-            foreach (var location in locations.Result)
-            {
-                var type = location.ResourceType;
-
-                if (type != null && !found.Contains(type))
+                foreach (var location in locations.Result)
                 {
-                    found.Add(type);
+                    available.Add(location.PrimaryKey);
                 }
             }
 
             Addressables.Release(locations);
-
-            // A sprite-imported texture is catalogued as a Texture2D, and the Sprite representation
-            // only appears when it is asked for by name. Nothing in an untyped query reveals it, so
-            // it is the one type that still has to be inferred rather than discovered.
-            if (found.Contains(typeof(Texture2D)) && !found.Contains(typeof(Sprite)))
-            {
-                found.Add(typeof(Sprite));
-            }
-
-            return found;
         }
 
-        async Awaitable CacheTypedAsync(string label, Type type, CancellationToken cancellationToken)
+        /// <summary>
+        /// Loads one indexed address as <typeparamref name="T"/>, there and then, and keeps it.
+        /// </summary>
+        /// <remarks>
+        /// Synchronous, because <see cref="TryGet{T}"/> is: building a world asks for its pieces
+        /// one after another and cannot wait a frame between them. The bundles are local, or were
+        /// downloaded by the preload, so completing the load is a disk read rather than a fetch.
+        /// <para>
+        /// Located by type first, because the type asked for decides what comes back: a
+        /// sprite-imported PNG answers to both <c>Sprite</c> and <c>Texture2D</c>, and a prefab to
+        /// neither. A type an address cannot give is remembered, so asking again costs nothing.
+        /// </para>
+        /// </remarks>
+        bool LoadNow<T>(string key, out T asset) where T : UnityEngine.Object
         {
-            var locations = Addressables.LoadResourceLocationsAsync(label, type);
-            while (!locations.IsDone)
+            asset = null;
+
+            var attempt = key + "|" + typeof(T).FullName;
+
+            if (!available.Contains(key) || unavailable.Contains(attempt))
             {
-                await Awaitable.NextFrameAsync(cancellationToken);
+                return false;
             }
 
-            if (locations.Status != AsyncOperationStatus.Succeeded || locations.Result == null)
+            var locations = Addressables.LoadResourceLocationsAsync(key, typeof(T));
+            locations.WaitForCompletion();
+
+            var found = locations.Status == AsyncOperationStatus.Succeeded
+                && locations.Result != null
+                && locations.Result.Count > 0;
+
+            if (found)
             {
-                Addressables.Release(locations);
-                return;
-            }
+                var load = Addressables.LoadAssetAsync<T>(locations.Result[0]);
+                load.WaitForCompletion();
 
-            foreach (var location in locations.Result)
-            {
-                var key = location.PrimaryKey;
-
-                List<UnityEngine.Object> existing;
-                if (cache.TryGetValue(key, out existing))
+                if (load.Status == AsyncOperationStatus.Succeeded && load.Result != null)
                 {
-                    var already = false;
-                    foreach (var o in existing)
-                    {
-                        if (o != null && type.IsInstanceOfType(o)) { already = true; break; }
-                    }
-
-                    if (already)
-                    {
-                        continue;
-                    }
+                    asset = load.Result;
                 }
-
-                var load = Addressables.LoadAssetAsync<UnityEngine.Object>(location);
-                while (!load.IsDone)
+                else
                 {
-                    await Awaitable.NextFrameAsync(cancellationToken);
+                    Addressables.Release(load);
                 }
-
-                if (load.Status != AsyncOperationStatus.Succeeded || load.Result == null)
-                {
-                    // Not every location answers to every type, and that is normal rather than an
-                    // error — a prefab has no Sprite representation. Skip it quietly.
-                    continue;
-                }
-
-                if (!cache.TryGetValue(key, out existing))
-                {
-                    existing = new List<UnityEngine.Object>();
-                    cache[key] = existing;
-                }
-
-                existing.Add(load.Result);
             }
 
             Addressables.Release(locations);
+
+            if (asset == null)
+            {
+                unavailable.Add(attempt);
+                return false;
+            }
+
+            List<UnityEngine.Object> existing;
+            if (!cache.TryGetValue(key, out existing))
+            {
+                existing = new List<UnityEngine.Object>();
+                cache[key] = existing;
+            }
+
+            existing.Add(asset);
+            return true;
         }
 
         public bool TryGet<T>(string key, out T asset) where T : UnityEngine.Object
         {
             asset = null;
 
-            List<UnityEngine.Object> candidates;
-            if (string.IsNullOrEmpty(key) || !cache.TryGetValue(key, out candidates))
+            if (string.IsNullOrEmpty(key))
             {
                 return false;
             }
 
-            foreach (var candidate in candidates)
+            List<UnityEngine.Object> candidates;
+            if (cache.TryGetValue(key, out candidates))
             {
-                var typed = candidate as T;
-                if (typed != null)
+                foreach (var candidate in candidates)
                 {
-                    asset = typed;
-                    return true;
+                    var typed = candidate as T;
+                    if (typed != null)
+                    {
+                        asset = typed;
+                        return true;
+                    }
                 }
             }
 
-            return false;
+            // Not asked for as this type before: load it now, from a set that has been preloaded.
+            return LoadNow(key, out asset);
         }
 
         public async Awaitable<T> LoadAsync<T>(string key, CancellationToken cancellationToken = default)
