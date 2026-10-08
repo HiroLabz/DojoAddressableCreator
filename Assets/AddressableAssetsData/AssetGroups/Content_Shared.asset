@@ -279,6 +279,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8cba95ae5fcd20f43b3eaae3f956ac4c
+    m_Address: shared/DojoFadeLit
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 91ce59241a89e714abb6a7b785df07a0
     m_Address: default/Textures/default_chair_blue_normal
     m_ReadOnly: 0
