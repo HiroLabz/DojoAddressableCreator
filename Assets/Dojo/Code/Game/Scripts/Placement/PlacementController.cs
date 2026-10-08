@@ -277,6 +277,11 @@ namespace Dojo.Game.Placement
         /// </remarks>
         void RebuildNavigation()
         {
+            if (!BakesNavigation)
+            {
+                return;
+            }
+
             var surfaces = Surfaces;
 
             if (surfaces == null || surfaces.Length == 0)
@@ -1274,6 +1279,13 @@ namespace Dojo.Game.Placement
         /// without it a press that lifts a piece would also dispatch him to it.
         /// </para>
         /// </remarks>
+        /// <summary>
+        /// Whether laying or lifting a floor rebuilds navigation. Off while characters are, since
+        /// nothing walks and the first rebuild of a never-baked world is a full synchronous bake.
+        /// Set by the scope, which holds the world settings.
+        /// </summary>
+        public bool BakesNavigation { get; set; } = true;
+
         public ManagerController Owner
         {
             get { return manager; }

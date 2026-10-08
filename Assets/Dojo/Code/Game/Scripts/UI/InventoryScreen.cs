@@ -85,6 +85,18 @@ namespace Dojo.Game.UI
             this.phase = phase;
         }
 
+        /// <summary>Takes the Agents and You tabs off the rail, for a world with no characters.</summary>
+        public void HideCharacterTabs()
+        {
+            if (rail == null)
+            {
+                return;
+            }
+
+            rail.Hide(agentsCategory);
+            rail.Hide(youCategory);
+        }
+
         /// <summary>Whether the screen is on show.</summary>
         public bool IsOpen
         {

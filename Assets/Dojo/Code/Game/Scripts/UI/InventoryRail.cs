@@ -101,6 +101,19 @@ namespace Dojo.Game.UI
             }
         }
 
+        /// <summary>Takes a category's entry off the rail, so it cannot be picked.</summary>
+        public void Hide(string category)
+        {
+            foreach (var entry in entries)
+            {
+                if (entry != null && entry.button != null
+                    && string.Equals(entry.category, category, StringComparison.OrdinalIgnoreCase))
+                {
+                    entry.button.gameObject.SetActive(false);
+                }
+            }
+        }
+
         /// <summary>Clears the selection without raising anything. What the screen closes to.</summary>
         public void Clear()
         {

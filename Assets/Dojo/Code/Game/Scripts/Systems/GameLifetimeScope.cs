@@ -98,6 +98,7 @@ namespace Dojo.Game.Systems
             if (placement != null)
             {
                 placement.Owner = owner;
+                placement.BakesNavigation = worldSettings == null || worldSettings.Characters;
             }
 
             DeclareAreaPainter(builder, placement);
@@ -294,6 +295,16 @@ namespace Dojo.Game.Systems
                     if (hasWorld)
                     {
                         manager.World = container.Resolve<WorldService>();
+                    }
+                }
+
+                // The Agents and You tabs, put away while characters are off: there is nobody for
+                // either to place.
+                if (hasWorld && !container.Resolve<WorldSettings>().Characters)
+                {
+                    foreach (var screen in FindObjectsByType<InventoryScreen>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                    {
+                        screen.HideCharacterTabs();
                     }
                 }
 

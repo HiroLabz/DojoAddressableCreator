@@ -9,20 +9,18 @@ using VContainer.Unity;
 namespace Dojo.Game.Systems
 {
     /// <summary>
-    /// The offline startup of the Runtime scene: load the packs, read the catalogue, then build the
-    /// game scene's scope.
+    /// The offline startup of the Runtime scene: name the packs, read the catalogue, then build the
+    /// game scene's scope, which opens the world.
     /// </summary>
     /// <remarks>
-    /// What <c>AppStartup</c> does in the game between sign-in and the Lobby, with neither: the
-    /// simulated session names the packs (<see cref="ContentSettings.ContentKeys"/>, "default"
-    /// unless changed), the entitlements adopt them, Addressables makes them resident, and the
-    /// catalogue is read from the manifests that arrived. Only then is the game scope built and
-    /// the scene switched on, so the inventory, the placement and the default world all find
-    /// their content already there.
+    /// No session and no server: the packs are <see cref="ContentSettings.ContentKeys"/>
+    /// ("default" unless changed), adopted as they are. Preloading them only indexes their
+    /// addresses - each asset loads the first time something asks for it - so the scene comes up
+    /// within a few frames and the world builds from just the prefabs it uses.
     /// </remarks>
     public sealed class RuntimeStartup : IStartable, IDisposable
     {
-        readonly ISessionService session;
+        readonly ContentSettings contentSettings;
         readonly EntitlementService entitlements;
         readonly IContentService content;
         readonly IItemCatalog itemCatalog;
@@ -30,15 +28,17 @@ namespace Dojo.Game.Systems
         readonly RuntimeLifetimeScope root;
         readonly CancellationTokenSource cancellation = new CancellationTokenSource();
 
+        const string OfflinePlayerId = "plr_offline";
+
         public RuntimeStartup(
-            ISessionService session,
+            ContentSettings contentSettings,
             EntitlementService entitlements,
             IContentService content,
             IItemCatalog itemCatalog,
             GameLifetimeScope gameScope,
             RuntimeLifetimeScope root)
         {
-            this.session = session;
+            this.contentSettings = contentSettings;
             this.entitlements = entitlements;
             this.content = content;
             this.itemCatalog = itemCatalog;
@@ -55,19 +55,10 @@ namespace Dojo.Game.Systems
         {
             try
             {
-                var result = await session.ConnectAsync(cancellation.Token);
-
-                if (!result.Connected)
-                {
-                    Debug.LogError("[Runtime] The offline session could not start: " + result.Error);
-                    return;
-                }
-
-                entitlements.AdoptSession(result);
+                entitlements.AdoptSession(SessionResult.Success(OfflinePlayerId, contentSettings.ContentKeys));
 
                 await content.InitializeAsync(cancellation.Token);
                 await content.PreloadAsync(entitlements.Keys, cancellation.Token);
-                Debug.Log("[Runtime] Content resident; reading the catalogue.");
 
                 itemCatalog.Refresh();
 
