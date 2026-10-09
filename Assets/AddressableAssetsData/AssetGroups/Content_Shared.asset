@@ -27,6 +27,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 054b6b9d2f00424e95a4479590892fed
+    m_Address: default/Rooms/room_product_and_development
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 056479cbc7c05e749afe33ce4ee18106
     m_Address: default/Rooms/Thumbnails/room_accounting
     m_ReadOnly: 0
@@ -45,12 +51,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 08f6cc1a337923e4d82e462cd4ad2fb9
-    m_Address: strawberry/Textures/default_chair_normal
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0b1cb99cf1c51a645a8d138cd881c12d
     m_Address: default/Textures/default_chair_albedo
     m_ReadOnly: 0
@@ -63,12 +63,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 0f6e2eb541a9c564a973ddf9a71908ff
-    m_Address: strawberry/Materials/Material_0.003
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1328ef1c5edeead488092fab01c1a1bc
     m_Address: default/Rooms/Thumbnails/room_customer_support
     m_ReadOnly: 0
@@ -80,12 +74,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 1613bd808e7c699458abf374ab12be0f
-    m_Address: strawberry/Textures/default_floor_1_albedo
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 16b3469a351864949a3b182bdff0c672
     m_Address: default/Textures/default_floor_1_albedo
@@ -105,11 +93,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 219d89878b97ac54d9251eee38bdbdeb
-    m_Address: strawberry/Textures/default_wall_1_albedo
+  - m_GUID: 212a1da488a34a0fbd3fa0156233943c
+    m_Address: default/Rooms/room_customer_success
     m_ReadOnly: 0
     m_SerializedLabels:
-    - strawberry
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 23308ea834f38c74cb34afb7c7c7de1c
     m_Address: default/Textures/default_monitor_1_normal
@@ -119,6 +107,18 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 24dc6a39dc90d1a4b871dd8110f0a84e
     m_Address: default/Rooms/Thumbnails/room_customer_success
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 250bdfdda4de417c921bc99dabc26af1
+    m_Address: default/Rooms/room_research
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2d4652b9d19ec89459fc0fcf59915da7
+    m_Address: default/Textures/default_superComputer_2_faces
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -135,14 +135,14 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2e5c10b66896da9489c499b20611bbc0
-    m_Address: strawberry/Materials/Material_0.009
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2e87a3dde688ed047a2981f0e44085e4
     m_Address: default/World/default_world_picture
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2f6b9bb7996344788c8c0ec5e8d73582
+    m_Address: default/Rooms/Prefabs/room_recruitment
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -153,17 +153,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 33977f1a7af4cad4ba890f744555dced
-    m_Address: strawberry/Textures/default_wall_3_albedo
+  - m_GUID: 347a9fc70ed84ceeaf19755845ae37d4
+    m_Address: default/Rooms/Prefabs/room_it_and_security
     m_ReadOnly: 0
     m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 33a4e0a893484364fbc719680813e967
-    m_Address: strawberry/Textures/default_monitor_1_normal
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 39d2d03f9ec1c4041b287ec6899ae36d
     m_Address: default/Materials/Pin_Orb_Highlight
@@ -171,11 +165,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3a89851e486e93a45901fa6f954c57db
-    m_Address: strawberry/Textures/default_chair_albedo
+  - m_GUID: 3a9278c24cfa4f8581dc9dbeb9332341
+    m_Address: default/Rooms/Prefabs/room_customer_success
     m_ReadOnly: 0
     m_SerializedLabels:
-    - strawberry
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3c8bd692a64fbc84d9ef910f42234c78
     m_Address: default/Materials/elevator_shaft
@@ -183,14 +177,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3fed8449116270d46818d5ff525a926b
-    m_Address: strawberry/Textures/default_table_orange_normal
+  - m_GUID: 4040ed770a804841918391c062eddac5
+    m_Address: default/Rooms/rooms
     m_ReadOnly: 0
     m_SerializedLabels:
-    - strawberry
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4348827cc0d4d2943bfa5667bcc08815
     m_Address: default/Textures/default_wall_2_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 43ee2fe829a7418f9862401162b3b7bc
+    m_Address: default/Rooms/Prefabs/room_customer_support
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -201,23 +201,17 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 479a4da0807e62743b4694038b814c76
-    m_Address: strawberry/Textures/default_wall_2_normal
+  - m_GUID: 49030c0b04024cdcbf34dff462a5c4c5
+    m_Address: default/Rooms/Prefabs/room_operations
     m_ReadOnly: 0
     m_SerializedLabels:
-    - strawberry
+    - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 48088452c43f053499a2613577efde9b
-    m_Address: strawberry/Textures/default_table_white_albedo
+  - m_GUID: 4915ac027c5d4254a10f5912a5820990
+    m_Address: default/Rooms/room_sales
     m_ReadOnly: 0
     m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4866c9e723016094f8811be55ce7c150
-    m_Address: strawberry/Materials/Material_0.004
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4990bce5d10520a41b4b52f4aeaf8b72
     m_Address: default/Textures/default_monitor_1_albedo
@@ -225,14 +219,56 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 5c1486f31a69ce243856160780851f96
-    m_Address: strawberry/Textures/default_chair_red_normal
+  - m_GUID: 5449898d0d464d5ebbae5e63a51da570
+    m_Address: default/Rooms/room_accounting
     m_ReadOnly: 0
     m_SerializedLabels:
-    - strawberry
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 549822d6dc58fa543bb03771bb9d8b77
+    m_Address: default/Textures/default_superComputer_2_metallicSmoothness
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 54d9c16be22dc614d9c6b05cc74c9bd4
+    m_Address: default/Materials/default_superComputer_2_body
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5873fe2284913a240a4ad63c3ac7e015
+    m_Address: default/Materials/default_superComputer_3_body
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5cb5e383532646e89198d49dd808c870
+    m_Address: default/Rooms/Prefabs/room_marketing
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f777a22bb4149749e24f1cb641f0da5
+    m_Address: default/Rooms/Prefabs/room_hr
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 61b9240e47179ea4fb3902c70ff8fea1
     m_Address: default/Rooms/Thumbnails/room_reception
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 63079080014045b298b11f03a6843eb5
+    m_Address: default/Rooms/Prefabs/room_research
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6619c5fce8425a846a4825737adcea45
+    m_Address: default/Textures/default_superComputer_2_normal
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -243,11 +279,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6d26f8673d910094987755bc1a9ffaa3
-    m_Address: strawberry/Materials/Material_0
+  - m_GUID: 6a08690895c34a1a8c5bcbbd75f9fa01
+    m_Address: default/Rooms/Prefabs/room_product_and_development
     m_ReadOnly: 0
     m_SerializedLabels:
-    - strawberry
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6d51e20f42cd451469ffa0cb097d1ef5
     m_Address: default/Materials/Material_0.001
@@ -261,47 +297,17 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 77d6d2aa5f5bb4a43981c4679a5a36a8
-    m_Address: strawberry/Materials/Material_0.007
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 788c2a90b86a62e4c978e7ef01fa1c23
-    m_Address: strawberry/Materials/Material_0.008
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7a2fddbbfe6c06141b6686f1fc1d4d97
     m_Address: default/Textures/default_table_white_albedo
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7a35742576358714ea60b57f223b3971
-    m_Address: strawberry/Textures/default_chair_red_albedo
+  - m_GUID: 82fd5da75a679be449de7e51c489ccd7
+    m_Address: default/Textures/default_superComputer_faces
     m_ReadOnly: 0
     m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7bfa946d163efbb499df97aa66fb1ace
-    m_Address: strawberry/Textures/default_floor_1_normal
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 82015a21666e4f24f87cba521c88f059
-    m_Address: strawberry/Textures/default_wall_1_normal
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 825a5c5d4aa31344d837067bcc7fbc2f
-    m_Address: strawberry/Textures/default_wall_2_albedo
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8557bb8f07eb07c4f898ecb48522a521
     m_Address: default/Rooms/Thumbnails/room_operations
@@ -309,11 +315,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 8a736a2a423ac044a96d62e0e354a60a
-    m_Address: strawberry/Materials/Material_0.005
+  - m_GUID: 8873ace1b642b9d43885703904545a05
+    m_Address: default/Materials/default_superComputer_2_face
     m_ReadOnly: 0
     m_SerializedLabels:
-    - strawberry
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8b449ef8bc06c6a43ba3f07152a6afd9
     m_Address: default/Textures/default_wall_1_albedo
@@ -323,6 +329,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8b70469addbee44468f000b949df6fa6
     m_Address: default/Textures/default_chair_blue_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9126b2947cab3c143a5b7270c3e25b5a
+    m_Address: default/Textures/default_superComputer_metallicSmoothness
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -339,11 +351,17 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9756ce580ed92c64e8ca921275b7348e
-    m_Address: strawberry/Textures/default_table_orange_albedo
+  - m_GUID: 94ce381f1e7f6f642b8c040747afa54d
+    m_Address: default/Materials/default_superComputer_body
     m_ReadOnly: 0
     m_SerializedLabels:
-    - strawberry
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 98314a8bf02fe0a4b93b1ec690a78fa3
+    m_Address: default/Textures/default_superComputer_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9aa92551a3cbe184182a46e6677a0b5f
     m_Address: default/Textures/default_wall_2_albedo
@@ -351,20 +369,56 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9b9c422225d912b429bf8da8598bd71e
-    m_Address: strawberry/Materials/Material_0.006
+  - m_GUID: 9bda3defe3a57ed4aa308b5857583171
+    m_Address: default/Textures/default_superComputer_3_faces
     m_ReadOnly: 0
     m_SerializedLabels:
-    - strawberry
+    - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a4dbdb0e48ffcb744b5f4fd23c535bf8
-    m_Address: strawberry/Textures/default_monitor_1_albedo
+  - m_GUID: 9bdf9645462e4b9fa58dd4289059a860
+    m_Address: default/Rooms/room_marketing
     m_ReadOnly: 0
     m_SerializedLabels:
-    - strawberry
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9d8d7088e1ed4f28a10e7981c529298d
+    m_Address: default/Rooms/Prefabs/room_legal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a651f24ce22e458b9964f30b6e432b7f
+    m_Address: default/Rooms/room_reception
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a7fec8ae69e441ec8e52d888037e2e3d
+    m_Address: default/Rooms/room_finance
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aa620dc828c94681b050f76be8f84082
+    m_Address: default/Rooms/room_legal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ae01241501acf7f458df1c072656c7d4
     m_Address: default/Textures/default_wall_1_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b0f3e670a6ea4a8c8cfc9f78a51d3259
+    m_Address: default/Rooms/room_hr
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b195aeef59d542d8aecc03c678f7d604
+    m_Address: default/Rooms/room_operations
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -399,23 +453,17 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bf4ec7ec23cd56642969f3607c2530eb
-    m_Address: strawberry/Materials/Material_0.002
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c347934e5d4b51a47b9947fe7095d5d4
     m_Address: default/Materials/stairs_steps
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c40f792713a14de4685b55a01af841ae
-    m_Address: strawberry/Textures/default_chair_blue_albedo
+  - m_GUID: c48abce570cb4270a4f3fd4c19188516
+    m_Address: default/Rooms/Prefabs/room_reception
     m_ReadOnly: 0
     m_SerializedLabels:
-    - strawberry
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c57e17173c5178e4287819298cacf522
     m_Address: default/Rooms/Thumbnails/room_marketing
@@ -441,11 +489,17 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: cf2bcf8c8ecf6ab4494b1563c9e79d3f
-    m_Address: strawberry/Materials/Material_0.001
+  - m_GUID: ce10a47895ff4c95be98629cd6a27bb3
+    m_Address: default/Rooms/room_recruitment
     m_ReadOnly: 0
     m_SerializedLabels:
-    - strawberry
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d0bcd1e8beb3fbe449740007c2304516
+    m_Address: default/Materials/default_superComputer_face
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d0eb7d76eb23194478ebc1102216fcce
     m_Address: default/Materials/LocationPin_Red
@@ -471,8 +525,38 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d7199dbe88184544b10181168febf1d4
+    m_Address: default/Rooms/room_it_and_security
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: daef967c39ea06448b474920cc8cd65f
+    m_Address: default/Textures/default_superComputer_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dc47cbad884069c438bb97d2a9b8ea09
+    m_Address: default/Textures/default_superComputer_3_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dea190b183b4b1d499ad9e9d3865fcd2
     m_Address: default/Materials/Material_0.003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: deaa29beb42f4f0d94c70065451e9b10
+    m_Address: default/Rooms/Prefabs/room_accounting
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: df1b60f04fe47a84a960f951b7dbd21a
+    m_Address: default/Materials/default_superComputer_3_face
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -483,11 +567,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e51ba2740d1fd154080d77ba997f57fa
-    m_Address: strawberry/Textures/default_table_white_normal
+  - m_GUID: e5b7b295ee57aaa44ad08c7c82345bb7
+    m_Address: default/Textures/default_superComputer_3_normal
     m_ReadOnly: 0
     m_SerializedLabels:
-    - strawberry
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e6cb550edcacaf84588135fc2dec944f
     m_Address: default/Rooms/Thumbnails/room_it_and_security
@@ -497,6 +581,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e8ce287c96bb41b4bad3e11cf1194566
     m_Address: default/Materials/Pin_OrbRing_Pale
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e9035ade8006480fb66290215571aab3
+    m_Address: default/Rooms/Prefabs/room_sales
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -513,6 +603,18 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ebf6cfcd2b2748840b23167a9e337424
+    m_Address: default/Textures/default_superComputer_2_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ee48788e03d74758be929a21a73583c1
+    m_Address: default/Rooms/Prefabs/room_finance
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f0e836c37b2cc564fa2a73862085911b
     m_Address: default/Materials/Material_0.005
     m_ReadOnly: 0
@@ -524,12 +626,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f68d5665fdc246040a45af94388b9bfd
-    m_Address: strawberry/Textures/default_chair_blue_normal
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - strawberry
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f700205c1ec05ca44a6b0ec80fc57597
     m_Address: default/Textures/default_chair_red_albedo
@@ -549,11 +645,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ff98ab345b184cd468a4033eb6340ee9
-    m_Address: strawberry/Textures/default_wall_3_normal
+  - m_GUID: fd87ea31000c46c1bfcaf408caff7c57
+    m_Address: default/Rooms/room_customer_support
     m_ReadOnly: 0
     m_SerializedLabels:
-    - strawberry
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 878d66ff5773b60499b24cccd4ffc09c, type: 2}

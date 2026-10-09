@@ -3,7 +3,17 @@ guid: 9326df3ea26474a4fa35d83e1b380f6f
 ModelImporter:
   serializedVersion: 24300
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: default_superComputer_3_body
+    second: {fileID: 2100000, guid: 5873fe2284913a240a4ad63c3ac7e015, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: default_superComputer_3_face
+    second: {fileID: 2100000, guid: df1b60f04fe47a84a960f951b7dbd21a, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -31,7 +41,7 @@ ModelImporter:
     extraExposedTransformPaths: []
     extraUserProperties: []
     clipAnimations: []
-    isReadable: 0
+    isReadable: 1
   meshes:
     lODScreenPercentages: []
     globalScale: 1
