@@ -1318,6 +1318,29 @@
                             },
                             "rotationSteps": 1,
                             "isFloor": false
+                        },
+                        {
+                            "prefabId": "default.defaultsupercomputer2",
+                            "resource": "default/default_superComputer_2",
+                            "name": "default_superComputer_2",
+                            "position": {
+                                "x": 4.0,
+                                "y": 0.03963502496480942,
+                                "z": 14.375
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 1.0,
+                                "z": 0.0,
+                                "w": -4.371138828673793e-08
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 2,
+                            "isFloor": false
                         }
                     ],
                     "agents": [
