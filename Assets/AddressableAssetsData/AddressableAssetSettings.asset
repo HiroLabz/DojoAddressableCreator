@@ -85,7 +85,7 @@ MonoBehaviour:
       - m_Id: 8c2b38fcf9d448449a1be708c18a3e2c
         m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
       - m_Id: 9dd7de5537a1c3e428f09f83de84aba3
-        m_Value: E:/xamp/htdocs/addressableTest/DojoAddressables/development
+        m_Value: E:\hirolabz\DojoAddressables\development
       - m_Id: faf3d6217f89f2c4aafb4a59f7e1968e
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
     m_ProfileEntryNames:

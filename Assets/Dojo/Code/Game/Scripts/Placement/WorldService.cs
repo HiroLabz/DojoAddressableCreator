@@ -134,8 +134,11 @@ namespace Dojo.Game.Placement
         /// <summary>Where the library is read from and written to.</summary>
         public string FullPath => library.FullPath;
 
-        /// <summary>Whether agents and the manager are brought into the world. See <see cref="WorldSettings.Characters"/>.</summary>
-        public bool Characters => settings.Characters;
+        /// <summary>Whether agents are brought into the world. See <see cref="WorldSettings.Agents"/>.</summary>
+        public bool Agents => settings.Agents;
+
+        /// <summary>Whether the manager is brought into the world. See <see cref="WorldSettings.Manager"/>.</summary>
+        public bool Manager => settings.Manager;
 
         /// <summary>
         /// The name of the world standing in the scene, or null when it has none yet - a new world,
@@ -314,7 +317,7 @@ namespace Dojo.Game.Placement
             // Baked before the settings are read, so what is written describes the mesh that now
             // exists rather than the one that did a moment ago. Only for characters: nothing else
             // walks, and this runs on every auto save.
-            if (settings.Characters)
+            if (settings.AnyCharacters)
             {
                 navigation.Bake();
             }
@@ -410,9 +413,9 @@ namespace Dojo.Game.Placement
                 }
             }
 
-            if (!settings.Characters)
+            if (!settings.Agents || !settings.Manager)
             {
-                KeepCharacters(held.Find(name), save);
+                KeepCharacters(held.Find(name), save, !settings.Agents, !settings.Manager);
             }
 
             SaveBlockAreas(save);
@@ -579,15 +582,15 @@ namespace Dojo.Game.Placement
         }
 
         /// <summary>
-        /// Copies the agents and managers of the world as it was last saved into the one being
-        /// written.
+        /// Copies the agents, the managers, or both, of the world as it was last saved into the one
+        /// being written - whichever are switched off.
         /// </summary>
         /// <remarks>
-        /// With characters off none are standing in the world, so a save written from what is
-        /// standing would drop every one of them. Keeping the previous save's means switching
-        /// characters back on finds them where they were.
+        /// Switched off, none of that kind are standing in the world, so a save written from what
+        /// is standing would drop every one of them. Keeping the previous save's means switching
+        /// them back on finds them where they were.
         /// </remarks>
-        static void KeepCharacters(WorldSave previous, WorldSave save)
+        static void KeepCharacters(WorldSave previous, WorldSave save, bool keepAgents, bool keepManagers)
         {
             if (previous == null)
             {
@@ -598,8 +601,8 @@ namespace Dojo.Game.Placement
 
             foreach (var floor in previous.floors)
             {
-                var agents = floor.agents ?? new List<WorldSave.SavedAgent>();
-                var managers = floor.managers ?? new List<WorldSave.SavedAgent>();
+                var agents = keepAgents && floor.agents != null ? floor.agents : new List<WorldSave.SavedAgent>();
+                var managers = keepManagers && floor.managers != null ? floor.managers : new List<WorldSave.SavedAgent>();
 
                 // Only a floor that has someone on it is touched. Asking for every floor the old
                 // save had would bring back floors the world no longer has, empty, on every save.
@@ -744,8 +747,8 @@ namespace Dojo.Game.Placement
             }
 
             // Without characters nobody is fitted into the template's places, so none are read.
-            var owner = settings.Characters && managerRoster != null ? managerRoster.ReadOne() : null;
-            var people = settings.Characters && registry != null ? registry.Agents : null;
+            var owner = settings.Manager && managerRoster != null ? managerRoster.ReadOne() : null;
+            var people = settings.Agents && registry != null ? registry.Agents : null;
             int unplaced;
             var fitted = DefaultWorld.FitTo(template, people, owner, out unplaced);
 
@@ -753,7 +756,7 @@ namespace Dojo.Game.Placement
                 + fitted.AgentCount() + " of the player's agent(s) placed"
                 + (unplaced > 0 ? ", " + unplaced + " with no place left (place them from the Agents panel)" : "")
                 + (owner == null ? ", and no manager" : "")
-                + (settings.Characters ? "" : " (characters are off)") + ".", world);
+                + (settings.Agents ? "" : " (agents are off)") + ".", world);
 
             Build(fitted);
             OpenWorldName = null;
@@ -1116,15 +1119,15 @@ namespace Dojo.Game.Placement
 
             // Navigation is for the characters alone, so without them there is nothing to bake -
             // and baking every surface was most of the time a load took.
-            var baked = settings.Characters ? navigation.Bake(save.navigation) : 0;
+            var baked = settings.AnyCharacters ? navigation.Bake(save.navigation) : 0;
 
             // Areas before agents, and both after the bake. An agent is confined to its area the
             // moment it is brought to life, so its area has to be on its credentials by then — and
             // being brought to life means being put on a NavMesh, which does not exist until the
             // floors that were just built have been baked into one.
             var restored = LoadBlockAreas(save);
-            var assembled = settings.Characters ? AssembleAgents(save) : 0;
-            var bosses = settings.Characters ? AssembleManagers(save) : 0;
+            var assembled = settings.Agents ? AssembleAgents(save) : 0;
+            var bosses = settings.Manager ? AssembleManagers(save) : 0;
 
             // The elevators back to reacting, with their links laid over the mesh just baked.
             shafts.EndBuild();

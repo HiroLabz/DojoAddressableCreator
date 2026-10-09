@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Content_Thumbnails
   m_GUID: 8f2f8f1b33e081644a2ccdf60b8782d0
   m_SerializeEntries:
+  - m_GUID: 00a640abe4bbd9342bc9e483c762fff0
+    m_Address: strawberry/Thumbnails/default_table_orange
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 083b15607a623a342aa883ccb8743c85
     m_Address: default/Thumbnails/default_table_white
     m_ReadOnly: 0
@@ -26,6 +32,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 136d1c0a934a5b7428907c60a9bc0808
+    m_Address: strawberry/Thumbnails/default_wall_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 142e97608488ca34782ac06b620de741
     m_Address: default/Thumbnails/default_superComputer_2
@@ -45,6 +57,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2e0b9dd670a8fde4d837160bdfbce338
+    m_Address: strawberry/Thumbnails/default_chair
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4cd0e71315a704e47b6cbe31154c6bb7
     m_Address: default/Thumbnails/default_elevator
     m_ReadOnly: 0
@@ -62,6 +80,24 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6721c692ed6089f4899ef05685a52ca9
+    m_Address: strawberry/Thumbnails/default_monitor_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7c370c34c02a4d849b9fdb9ab14e600e
+    m_Address: strawberry/Thumbnails/default_chair_blue
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 822594e7c4a5f234ab86911a8416bea1
+    m_Address: strawberry/Thumbnails/default_wall_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8cc75f3ff35657142b3e968e33191f68
     m_Address: default/Thumbnails/default_chair_blue
@@ -81,17 +117,41 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a2ab92374394704468dbfbcd7a30fcae
+    m_Address: strawberry/Thumbnails/default_table_white
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: afddf46138b313e4cbf10035c170ba91
+    m_Address: strawberry/Thumbnails/default_wall_3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b3bba22e91f6590418a3630e01508cac
     m_Address: default/Thumbnails/default_wall_1
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b7dd7b90909f51e4493594c35036c584
+    m_Address: strawberry/Thumbnails/default_floor_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c944a203cbfed9e47b8c199b7629969c
     m_Address: default/Thumbnails/default_wall_2
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ca8eb4d8ea894164da867542aa1c43bc
+    m_Address: strawberry/Thumbnails/default_chair_red
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cb4ed46625b3f5f4cbb05f2717061753
     m_Address: default/Thumbnails/default_table_orange
@@ -122,6 +182,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f9c6f88c44320a04ca7901fbaa35cc96
+    m_Address: Packs/strawberry/items
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - strawberry
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fec1a434efc04d1448b9db53daa72a0d
     m_Address: default/Thumbnails/default_chair

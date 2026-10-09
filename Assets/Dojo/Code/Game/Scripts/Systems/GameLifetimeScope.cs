@@ -98,7 +98,7 @@ namespace Dojo.Game.Systems
             if (placement != null)
             {
                 placement.Owner = owner;
-                placement.BakesNavigation = worldSettings == null || worldSettings.Characters;
+                placement.BakesNavigation = worldSettings == null || worldSettings.AnyCharacters;
             }
 
             DeclareAreaPainter(builder, placement);
@@ -302,13 +302,20 @@ namespace Dojo.Game.Systems
                     }
                 }
 
-                // The Agents and You tabs, put away while characters are off: there is nobody for
-                // either to place.
-                if (hasWorld && !container.Resolve<WorldSettings>().Characters)
+                // The Agents tab while agents are off, the You tab while the manager is - there is
+                // nobody for it to place - and both while the inventory is kept to building.
+                if (hasWorld)
                 {
-                    foreach (var screen in FindObjectsByType<InventoryScreen>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                    var settings = container.Resolve<WorldSettings>();
+                    var hideAgents = !settings.Agents || !settings.CharacterTabs;
+                    var hideYou = !settings.Manager || !settings.CharacterTabs;
+
+                    if (hideAgents || hideYou)
                     {
-                        screen.HideCharacterTabs();
+                        foreach (var screen in FindObjectsByType<InventoryScreen>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                        {
+                            screen.HideCharacterTabs(hideAgents, hideYou);
+                        }
                     }
                 }
 

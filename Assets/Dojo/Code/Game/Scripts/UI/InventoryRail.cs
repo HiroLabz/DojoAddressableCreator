@@ -102,16 +102,48 @@ namespace Dojo.Game.UI
         }
 
         /// <summary>Takes a category's entry off the rail, so it cannot be picked.</summary>
+        /// <remarks>
+        /// The entries below move up into its place, so a hidden tab leaves no hole in the rail.
+        /// </remarks>
         public void Hide(string category)
         {
-            foreach (var entry in entries)
+            for (int i = 0; i < entries.Length; i++)
             {
-                if (entry != null && entry.button != null
-                    && string.Equals(entry.category, category, StringComparison.OrdinalIgnoreCase))
+                var entry = entries[i];
+
+                if (entry == null || entry.button == null || !entry.button.gameObject.activeSelf
+                    || !string.Equals(entry.category, category, StringComparison.OrdinalIgnoreCase))
                 {
-                    entry.button.gameObject.SetActive(false);
+                    continue;
+                }
+
+                var rect = (RectTransform)entry.button.transform;
+                var step = StepAt(i);
+
+                entry.button.gameObject.SetActive(false);
+
+                for (int j = i + 1; j < entries.Length; j++)
+                {
+                    if (entries[j] != null && entries[j].button != null)
+                    {
+                        var below = (RectTransform)entries[j].button.transform;
+                        below.anchoredPosition += new Vector2(0f, step);
+                    }
                 }
             }
+        }
+
+        /// <summary>How far apart the entries stand, measured at <paramref name="index"/>.</summary>
+        float StepAt(int index)
+        {
+            var here = entries[index].button.transform as RectTransform;
+            var next = index + 1 < entries.Length && entries[index + 1] != null && entries[index + 1].button != null
+                ? entries[index + 1].button.transform as RectTransform
+                : index > 0 && entries[index - 1] != null && entries[index - 1].button != null
+                    ? entries[index - 1].button.transform as RectTransform
+                    : null;
+
+            return here != null && next != null ? Mathf.Abs(here.anchoredPosition.y - next.anchoredPosition.y) : 0f;
         }
 
         /// <summary>Clears the selection without raising anything. What the screen closes to.</summary>

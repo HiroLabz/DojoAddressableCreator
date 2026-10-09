@@ -40,11 +40,19 @@ namespace Dojo.Game.Placement
         [SerializeField] GameObject managerPrefab;
 
         [Header("Characters")]
-        [Tooltip("Bring agents and the manager into the world. Off while the project concentrates " +
-                 "on building: a load places no one and bakes no navigation, the Agents and You " +
-                 "tabs are hidden, and a save keeps whatever agents and manager the world already " +
-                 "had rather than dropping them.")]
-        [SerializeField] bool characters = false;
+        [Tooltip("Bring agents into the world. Off, a load places none, the Agents tab is hidden, " +
+                 "and a save keeps whatever agents the world already had rather than dropping them.")]
+        [SerializeField] bool agents = true;
+
+        [Tooltip("Bring the manager - the player's own character - into the world. Off, a load " +
+                 "places none, the You tab is hidden, and a save keeps the manager the world " +
+                 "already had. With neither on, nothing walks, so no navigation is baked.")]
+        [SerializeField] bool manager = true;
+
+        [Tooltip("Show the Agents and You tabs in the inventory, where agents and the manager are " +
+                 "placed and given areas. Off, they stay in the world as it was saved, and the " +
+                 "inventory is for building alone.")]
+        [SerializeField] bool characterTabs = false;
 
         [Header("Reset")]
         [Tooltip("Content address of the floor tile RESET WORLD lays, alone, in the middle of floor 1.")]
@@ -71,7 +79,15 @@ namespace Dojo.Game.Placement
         public int MaxFloors => Mathf.Max(0, maxFloors);
 
         /// <summary>Whether a change to the world writes itself to disk shortly afterwards.</summary>
-        public bool Characters => characters;
+        public bool Agents => agents;
+
+        public bool Manager => manager;
+
+        /// <summary>Whether the inventory offers the Agents and You tabs.</summary>
+        public bool CharacterTabs => characterTabs;
+
+        /// <summary>True when anything walks, which is what navigation is baked for.</summary>
+        public bool AnyCharacters => agents || manager;
 
         public string ResetFloor => string.IsNullOrWhiteSpace(resetFloor) ? "default/default_floor_1" : resetFloor.Trim();
 

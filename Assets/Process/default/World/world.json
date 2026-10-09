@@ -1320,9 +1320,45 @@
                             "isFloor": false
                         }
                     ],
-                    "agents": [],
+                    "agents": [
+                        {
+                            "credentialId": 1,
+                            "name": "",
+                            "workId": "",
+                            "position": {
+                                "x": 5.089784145355225,
+                                "y": 0.039635248482227328,
+                                "z": -1.0249340534210206
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "rotationSteps": 0
+                        }
+                    ],
                     "agentAreas": [],
-                    "managers": [],
+                    "managers": [
+                        {
+                            "credentialId": 100,
+                            "name": "",
+                            "workId": "",
+                            "position": {
+                                "x": 17.625,
+                                "y": 0.03963569179177284,
+                                "z": 18.25
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "rotationSteps": 0
+                        }
+                    ],
                     "managerAreas": [],
                     "blockAreas": [
                         {
@@ -37642,7 +37678,18 @@
                     }
                 }
             ],
-            "assignments": [],
+            "assignments": [
+                {
+                    "role": 1,
+                    "credentialId": 100,
+                    "areaId": 878870451
+                },
+                {
+                    "role": 0,
+                    "credentialId": 1,
+                    "areaId": 58068100
+                }
+            ],
             "pieces": [],
             "agents": [],
             "agentAreas": [],
