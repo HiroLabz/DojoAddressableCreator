@@ -1,0 +1,74 @@
+{
+    "rooms": [
+        {
+            "name": "Reception",
+            "address": "default/Rooms/room_reception",
+            "icon": "default/Rooms/Thumbnails/room_reception"
+        },
+        {
+            "name": "Sales",
+            "address": "default/Rooms/room_sales",
+            "icon": "default/Rooms/Thumbnails/room_sales"
+        },
+        {
+            "name": "Marketing",
+            "address": "default/Rooms/room_marketing",
+            "icon": "default/Rooms/Thumbnails/room_marketing"
+        },
+        {
+            "name": "Customer Support",
+            "address": "default/Rooms/room_customer_support",
+            "icon": "default/Rooms/Thumbnails/room_customer_support"
+        },
+        {
+            "name": "Customer Success",
+            "address": "default/Rooms/room_customer_success",
+            "icon": "default/Rooms/Thumbnails/room_customer_success"
+        },
+        {
+            "name": "Finance",
+            "address": "default/Rooms/room_finance",
+            "icon": "default/Rooms/Thumbnails/room_finance"
+        },
+        {
+            "name": "Accounting",
+            "address": "default/Rooms/room_accounting",
+            "icon": "default/Rooms/Thumbnails/room_accounting"
+        },
+        {
+            "name": "HR",
+            "address": "default/Rooms/room_hr",
+            "icon": "default/Rooms/Thumbnails/room_hr"
+        },
+        {
+            "name": "Recruitment",
+            "address": "default/Rooms/room_recruitment",
+            "icon": "default/Rooms/Thumbnails/room_recruitment"
+        },
+        {
+            "name": "Legal",
+            "address": "default/Rooms/room_legal",
+            "icon": "default/Rooms/Thumbnails/room_legal"
+        },
+        {
+            "name": "Research",
+            "address": "default/Rooms/room_research",
+            "icon": "default/Rooms/Thumbnails/room_research"
+        },
+        {
+            "name": "Operations",
+            "address": "default/Rooms/room_operations",
+            "icon": "default/Rooms/Thumbnails/room_operations"
+        },
+        {
+            "name": "IT and Security",
+            "address": "default/Rooms/room_it_and_security",
+            "icon": "default/Rooms/Thumbnails/room_it_and_security"
+        },
+        {
+            "name": "Product and Development",
+            "address": "default/Rooms/room_product_and_development",
+            "icon": "default/Rooms/Thumbnails/room_product_and_development"
+        }
+    ]
+}

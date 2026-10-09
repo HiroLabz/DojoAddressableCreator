@@ -49,6 +49,12 @@ namespace Dojo.Game.UI
         [Tooltip("The category that opens the areas panel instead of the item grid.")]
         [SerializeField] string areasCategory = "areas";
 
+        [Tooltip("The rooms the loaded packs offer, each built into the world with one button.")]
+        [SerializeField] RoomsDisplayUI roomsHud;
+
+        [Tooltip("The category that opens the rooms panel instead of the item grid.")]
+        [SerializeField] string roomsCategory = "rooms";
+
         [Header("Chrome")]
         [Tooltip("The X in the header. Closes the whole screen.")]
         [SerializeField] Button closeButton;
@@ -265,6 +271,26 @@ namespace Dojo.Game.UI
             bool areas = !string.IsNullOrEmpty(areasCategory)
                 && string.Equals(category, areasCategory, StringComparison.OrdinalIgnoreCase);
 
+            bool rooms = !string.IsNullOrEmpty(roomsCategory)
+                && string.Equals(category, roomsCategory, StringComparison.OrdinalIgnoreCase);
+
+            if (roomsHud != null)
+            {
+                if (rooms)
+                {
+                    roomsHud.Show();
+                }
+                else
+                {
+                    roomsHud.Dismiss();
+                }
+            }
+            else if (rooms)
+            {
+                Debug.LogWarning("[InventoryScreen] The Rooms tab has no panel behind it. "
+                    + "Run Tools > Dojo > Add Rooms Tab.", this);
+            }
+
             if (areasHud != null)
             {
                 if (areas)
@@ -324,7 +350,7 @@ namespace Dojo.Game.UI
             }
 
             // The grid answers for every category that is not one of the special tabs.
-            bool grid = !agents && !you && !areas;
+            bool grid = !agents && !you && !areas && !rooms;
 
             if (hud != null)
             {

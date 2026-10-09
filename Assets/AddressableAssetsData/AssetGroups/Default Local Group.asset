@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: 1ceddc268d06acb49a06e8de8bfd9f7d
   m_SerializeEntries:
+  - m_GUID: 4040ed770a804841918391c062eddac5
+    m_Address: default/Rooms/rooms
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a651f24ce22e458b9964f30b6e432b7f
     m_Address: default/Rooms/room_reception
     m_ReadOnly: 0

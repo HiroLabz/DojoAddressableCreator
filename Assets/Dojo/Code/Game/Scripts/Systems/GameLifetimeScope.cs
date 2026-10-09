@@ -221,6 +221,10 @@ namespace Dojo.Game.Systems
             builder.Register<NavigationBaker>(Lifetime.Singleton);
             builder.Register<WorldService>(Lifetime.Singleton);
 
+            // The Rooms tab's two halves: which rooms the packs offer, and putting one down.
+            builder.Register<RoomCatalog>(Lifetime.Singleton);
+            builder.Register<RoomPlacer>(Lifetime.Singleton);
+
             // Writes the selected world back whenever anything in it changes. Registered here
             // rather than on the root, because it is only meaningful where there is a world root
             // to save — the same condition this whole method already sits behind.
@@ -362,6 +366,13 @@ namespace Dojo.Game.Systems
                     foreach (var lift in FindObjectsByType<ElevatorPanel>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                     {
                         container.Inject(lift);
+                    }
+
+                    // The Rooms tab, which builds rooms into the world and so needs one. Inactive
+                    // included: it is down whenever its tab is not up.
+                    foreach (var rooms in FindObjectsByType<RoomsDisplayUI>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                    {
+                        container.Inject(rooms);
                     }
 
                     // The areas' locators, which mark the world's areas on its floors.

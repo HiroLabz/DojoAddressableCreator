@@ -27,6 +27,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 056479cbc7c05e749afe33ce4ee18106
+    m_Address: default/Rooms/Thumbnails/room_accounting
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 066756eab016f3345836d6acb9a18d57
     m_Address: default/Materials/Material_0.007
     m_ReadOnly: 0
@@ -63,6 +69,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1328ef1c5edeead488092fab01c1a1bc
+    m_Address: default/Rooms/Thumbnails/room_customer_support
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 156e9fbb308636b4e81e8a0897baf9eb
     m_Address: default/Materials/Pin_Orb_Blue
     m_ReadOnly: 0
@@ -87,6 +99,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 206ecea1cdeb5dc4591b7c2a6037e7c9
+    m_Address: default/Rooms/Thumbnails/room_legal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 219d89878b97ac54d9251eee38bdbdeb
     m_Address: strawberry/Textures/default_wall_1_albedo
     m_ReadOnly: 0
@@ -95,6 +113,18 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 23308ea834f38c74cb34afb7c7c7de1c
     m_Address: default/Textures/default_monitor_1_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 24dc6a39dc90d1a4b871dd8110f0a84e
+    m_Address: default/Rooms/Thumbnails/room_customer_success
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2e2802817041bad4b858712c2efb9dd1
+    m_Address: default/Rooms/Thumbnails/room_product_and_development
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -201,6 +231,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 61b9240e47179ea4fb3902c70ff8fea1
+    m_Address: default/Rooms/Thumbnails/room_reception
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 68ca4ac834511d24c830e4625910ae39
     m_Address: default/Materials/elevator_lamp
     m_ReadOnly: 0
@@ -215,6 +251,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6d51e20f42cd451469ffa0cb097d1ef5
     m_Address: default/Materials/Material_0.001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6ec1ab3ff5b18574b8d454c46bd4fbfc
+    m_Address: default/Rooms/Thumbnails/room_finance
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -260,6 +302,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8557bb8f07eb07c4f898ecb48522a521
+    m_Address: default/Rooms/Thumbnails/room_operations
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8a736a2a423ac044a96d62e0e354a60a
     m_Address: strawberry/Materials/Material_0.005
@@ -369,8 +417,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c57e17173c5178e4287819298cacf522
+    m_Address: default/Rooms/Thumbnails/room_marketing
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c5f09809cf74410689ee7827f381182d
     m_Address: default/Materials/grayFloor
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c794fb627c42c93498bd3f808faab8fa
+    m_Address: default/Rooms/Thumbnails/room_recruitment
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -393,8 +453,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d0f533922aef0d14089ba121024d5ed6
+    m_Address: default/Rooms/Thumbnails/room_hr
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d4a11eac345b49cd88498e76ff2f750f
     m_Address: default/Textures/grayFloor_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d5ad5deb9eeb1e94ca2120c1958c2622
+    m_Address: default/Rooms/Thumbnails/room_research
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -417,6 +489,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e6cb550edcacaf84588135fc2dec944f
+    m_Address: default/Rooms/Thumbnails/room_it_and_security
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e8ce287c96bb41b4bad3e11cf1194566
     m_Address: default/Materials/Pin_OrbRing_Pale
     m_ReadOnly: 0
@@ -425,6 +503,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ea8ddeb47c3c8b544bfed1eb29af3eb4
     m_Address: default/Materials/Pin_Body_Red
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ebb624e7b96030b408b6a6e005276c6d
+    m_Address: default/Rooms/Thumbnails/room_sales
     m_ReadOnly: 0
     m_SerializedLabels:
     - default

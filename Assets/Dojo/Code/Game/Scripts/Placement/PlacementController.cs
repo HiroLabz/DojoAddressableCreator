@@ -26,7 +26,7 @@ namespace Dojo.Game.Placement
     /// Ordering it first lets this claim the press in the same frame it happens.
     /// </remarks>
     [DefaultExecutionOrder(-100)]
-    public sealed class PlacementController : MonoBehaviour
+    public sealed partial class PlacementController : MonoBehaviour
     {
         /// <summary>Where the gesture currently is. Mirrors the state machine in the GDD.</summary>
         enum State
@@ -42,6 +42,12 @@ namespace Dojo.Game.Placement
             /// released; the middle button turns it, and only a click puts it down.
             /// </summary>
             Pending,
+
+            /// <summary>
+            /// A whole room out of the Rooms tab, carried as a ghost. Turned and put down like a
+            /// piece; see <c>PlacementController.Rooms.cs</c>.
+            /// </summary>
+            Room,
         }
 
         [Header("Wiring")]
@@ -336,6 +342,10 @@ namespace Dojo.Game.Placement
 
                 case State.Pending:
                     TickPending(mouse);
+                    break;
+
+                case State.Room:
+                    TickRoom(mouse);
                     break;
             }
         }

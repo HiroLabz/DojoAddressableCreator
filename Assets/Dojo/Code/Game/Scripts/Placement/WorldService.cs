@@ -987,40 +987,14 @@ namespace Dojo.Game.Placement
 
                 foreach (var saved in floor.pieces)
                 {
-                    var prefab = LoadPrefab(saved);
-
-                    if (prefab == null)
+                    if (BuildPiece(saved, floor.index, into, layer) != null)
                     {
-                        Debug.LogWarning("[World] Nothing to build '" + saved.name + "' from — neither '"
-                            + saved.resource + "' nor the manifest resolved it. Skipped.", world);
-                        missing++;
-                        continue;
+                        built++;
                     }
-
-                    // Through the spawner, so the wrapper, the collider, the obstacle and the
-                    // navigation flags are made exactly as they were the first time. The saved
-                    // position is the wrapper's own, relative to its floor, so it is put back on it.
-                    var piece = FurnitureSpawner.Spawn(
-                        prefab, grid, storeys.FromFloor(floor.index, saved.position), layer,
-                        placement.MaxFootprintCells, into, resolver);
-
-                    if (piece == null)
+                    else
                     {
                         missing++;
-                        continue;
                     }
-
-                    var placed = piece.GetComponent<PlacedPiece>();
-                    if (placed != null)
-                    {
-                        placed.Set(saved.prefabId, saved.resource);
-                    }
-
-                    piece.SetRotationSteps(saved.rotationSteps);
-                    piece.transform.localScale = saved.scale;
-                    piece.Settle();
-
-                    built++;
                 }
             }
 
@@ -1226,6 +1200,159 @@ namespace Dojo.Game.Placement
             {
                 UnityEngine.Object.DestroyImmediate(root.GetChild(i).gameObject);
             }
+        }
+
+        /// <summary>
+        /// Builds one saved piece onto a floor. Null, with the reason logged, when its prefab cannot
+        /// be found or measured.
+        /// </summary>
+        FurniturePiece BuildPiece(WorldSave.SavedPiece saved, int floorIndex, Transform into, int layer)
+        {
+            var prefab = LoadPrefab(saved);
+
+            if (prefab == null)
+            {
+                Debug.LogWarning("[World] Nothing to build '" + saved.name + "' from — neither '"
+                    + saved.resource + "' nor the manifest resolved it. Skipped.", world);
+                return null;
+            }
+
+            // Through the spawner, so the wrapper, the collider, the obstacle and the navigation
+            // flags are made exactly as they were the first time. The saved position is the
+            // wrapper's own, relative to its floor, so it is put back on it.
+            var piece = FurnitureSpawner.Spawn(
+                prefab, grid, storeys.FromFloor(floorIndex, saved.position), layer,
+                placement.MaxFootprintCells, into, resolver);
+
+            if (piece == null)
+            {
+                return null;
+            }
+
+            var placed = piece.GetComponent<PlacedPiece>();
+            if (placed != null)
+            {
+                placed.Set(saved.prefabId, saved.resource);
+            }
+
+            piece.SetRotationSteps(saved.rotationSteps);
+            piece.transform.localScale = saved.scale;
+            piece.Settle();
+
+            return piece;
+        }
+
+        /// <summary>
+        /// Builds a room into the open world: its pieces and its named areas, onto one floor, turned
+        /// <paramref name="steps"/> quarter turns about its own origin and then moved by
+        /// <paramref name="offset"/>. Returns how many pieces were built.
+        /// </summary>
+        /// <remarks>
+        /// A room is a world file of one floor, the same shape the game saves, so its pieces go
+        /// through <see cref="BuildPiece"/> exactly as a loaded world's do and are ordinary pieces
+        /// afterwards - moved, rotated and deleted one by one, and saved by their own addresses.
+        /// Where it goes is the caller's choice; nothing here checks for room.
+        /// </remarks>
+        public int AddRoom(WorldSave room, int floorIndex, Vector3 offset, int steps, string fallbackName)
+        {
+            if (room == null)
+            {
+                return 0;
+            }
+
+            room.Normalised();
+
+            var into = storeys.Floor(floorIndex);
+            var layer = ResolveLayer();
+            var turn = Quaternion.Euler(0f, PlacementGrid.Normalise(steps) * 90f, 0f);
+            var added = new List<FurniturePiece>();
+            var missing = 0;
+            var areas = 0;
+
+            foreach (var floor in room.floors)
+            {
+                // One floor: a room's own floor 0 goes on whichever floor it is put on.
+                if (floor.index != 0)
+                {
+                    continue;
+                }
+
+                foreach (var saved in floor.pieces)
+                {
+                    // Moved as the room is, and turned with it: about the room's origin, and on
+                    // its own pivot by the same quarter turns.
+                    var moved = new WorldSave.SavedPiece
+                    {
+                        prefabId = saved.prefabId,
+                        resource = saved.resource,
+                        name = saved.name,
+                        position = turn * saved.position + offset,
+                        rotation = turn * saved.rotation,
+                        scale = saved.scale,
+                        rotationSteps = PlacementGrid.Normalise(saved.rotationSteps + steps),
+                        isFloor = saved.isFloor,
+                    };
+
+                    var piece = BuildPiece(moved, floorIndex, into, layer);
+
+                    if (piece != null)
+                    {
+                        added.Add(piece);
+                    }
+                    else
+                    {
+                        missing++;
+                    }
+                }
+            }
+
+            // As a load does: everything standing before the floor list, the cells held and what
+            // rests on what are worked out.
+            Physics.SyncTransforms();
+            placement.RefreshFloors();
+
+            foreach (var piece in added)
+            {
+                piece.SizeTo(grid.CellSize);
+                placement.Register(piece);
+            }
+
+            placement.ResolveSupports();
+
+            foreach (var floor in room.floors)
+            {
+                if (floor.index != 0)
+                {
+                    continue;
+                }
+
+                foreach (var saved in floor.blockAreas)
+                {
+                    if (saved == null || saved.area == null || saved.area.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    var cells = new List<Vector3>(saved.area.Count);
+
+                    foreach (var point in saved.area)
+                    {
+                        cells.Add(storeys.FromFloor(floorIndex, turn * point + offset));
+                    }
+
+                    var name = string.IsNullOrWhiteSpace(saved.name) ? fallbackName : saved.name;
+                    blockAreas.Add(name, floorIndex, cells, saved.areaCellSize > 0f ? saved.areaCellSize : grid.CellSize);
+                    areas++;
+                }
+            }
+
+            storeys.Refresh();
+
+            Debug.Log("[World] added room '" + fallbackName + "' on " + Storeys.LabelFor(floorIndex) + " at ("
+                + offset.x + ", " + offset.z + "), turned " + PlacementGrid.Normalise(steps) * 90 + " degrees - " + added.Count + " piece(s), " + areas + " area(s)"
+                + (missing > 0 ? ", " + missing + " could not be found" : "") + ".", world);
+
+            return added.Count;
         }
 
         /// <summary>The prefab a saved entry refers to: by content address, or by GUID via the manifest.</summary>

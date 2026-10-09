@@ -101,6 +101,7 @@ namespace Dojo.Game.Editor
             { "YOU",        "you",        "you" },
             { "AGENTS",     "agents",     "agents" },
             { "AREAS",      "areas",      "areas" },
+            { "ROOMS",      "rooms",      "walls" },
             { "FLOOR",      "floors",     "floor" },
             { "WALLS",      "walls",      "walls" },
             { "TABLES",     "tables",     "tables" },
@@ -176,6 +177,7 @@ namespace Dojo.Game.Editor
             var cardPrefab = BuildCardPrefab();
             var agentRowPrefab = BuildAgentRowPrefab();
             var areaRowPrefab = BuildAreaRowPrefab();
+            var roomCardPrefab = BuildRoomCardPrefab();
 
             // The Areas tab's icon is not in the kit yet: a stand-in, under the kit's own name.
             KitStandIns.Get("icon", "areas_flat");
@@ -185,6 +187,7 @@ namespace Dojo.Game.Editor
             var agentsGo = BuildAgents(inventory.transform, agentRowPrefab);
             var youGo = BuildYou(inventory.transform);
             var areasGo = BuildAreas(inventory.transform, areaRowPrefab);
+            var roomsGo = BuildRooms(inventory.transform, roomCardPrefab);
 
             var screen = inventory.AddComponent<InventoryScreen>();
             Wire(screen, "rail", railGo.GetComponent<InventoryRail>());
@@ -192,6 +195,7 @@ namespace Dojo.Game.Editor
             Wire(screen, "agentsHud", agentsGo.GetComponent<InventoryAgentsHud>());
             Wire(screen, "youHud", youGo.GetComponent<ManagerDisplayUI>());
             Wire(screen, "areasHud", areasGo.GetComponent<AreasDisplayUI>());
+            Wire(screen, "roomsHud", roomsGo.GetComponent<RoomsDisplayUI>());
 
             // The agents panel carries its own close button, and InventoryScreen holds one field
             // for the grid's. Added as a persistent listener rather than a second field, so the two
@@ -199,10 +203,12 @@ namespace Dojo.Game.Editor
             UnityEditor.Events.UnityEventTools.AddPersistentListener(agentsClose.onClick, screen.Close);
             UnityEditor.Events.UnityEventTools.AddPersistentListener(youClose.onClick, screen.Close);
             UnityEditor.Events.UnityEventTools.AddPersistentListener(areasClose.onClick, screen.Close);
+            UnityEditor.Events.UnityEventTools.AddPersistentListener(roomsClose.onClick, screen.Close);
 
             agentsGo.SetActive(false);
             youGo.SetActive(false);
             areasGo.SetActive(false);
+            roomsGo.SetActive(false);
             Wire(screen, "closeButton", closeButton);
             Wire(screen, "root", inventory);
 
@@ -222,6 +228,165 @@ namespace Dojo.Game.Editor
         static Button agentsClose;
         static Button youClose;
         static Button areasClose;
+        static Button roomsClose;
+
+        /// <summary>
+        /// Adds the Rooms tab to an inventory screen already in the scene, without rebuilding it.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="Build"/> clears the whole screen first, which takes any arrangement made by
+        /// hand since with it. This touches only what the Rooms tab needs: a rail entry, cloned from
+        /// the Areas one and put after it, and the Rooms panel, rebuilt if an earlier run left one.
+        /// Safe to run again.
+        /// </remarks>
+        [MenuItem("Tools/Dojo/Add Rooms Tab")]
+        public static void AddRoomsTab()
+        {
+            var inventory = GameObject.Find(InventoryPath);
+            var screen = inventory != null ? inventory.GetComponent<InventoryScreen>() : null;
+            var rail = inventory != null ? inventory.GetComponentInChildren<InventoryRail>(true) : null;
+
+            if (screen == null || rail == null)
+            {
+                Debug.LogError("[InventoryScreenBuilder] Could not find the inventory screen and its rail under "
+                    + InventoryPath + ". Open the Runtime scene, or run Tools > Dojo > Build Inventory Screen.");
+                return;
+            }
+
+            font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath);
+            Directory.CreateDirectory(PrefabFolder);
+
+            AddRailEntry(rail, "ROOMS", "rooms", "walls", "areas");
+
+            var old = inventory.transform.Find("Rooms");
+            if (old != null)
+            {
+                Object.DestroyImmediate(old.gameObject);
+            }
+
+            // The list of rows an earlier version of this tab used, gone now the rooms are cards.
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(PrefabFolder + "/RoomRow.prefab") != null)
+            {
+                AssetDatabase.DeleteAsset(PrefabFolder + "/RoomRow.prefab");
+            }
+
+            var roomsGo = BuildRooms(inventory.transform, BuildRoomCardPrefab());
+
+            // Beside the Areas panel, so the hierarchy reads in rail order.
+            var areas = inventory.transform.Find("Areas");
+            if (areas != null)
+            {
+                roomsGo.transform.SetSiblingIndex(areas.GetSiblingIndex() + 1);
+            }
+
+            Wire(screen, "roomsHud", roomsGo.GetComponent<RoomsDisplayUI>());
+            UnityEditor.Events.UnityEventTools.AddPersistentListener(roomsClose.onClick, screen.Close);
+            roomsGo.SetActive(false);
+
+            EditorUtility.SetDirty(inventory);
+            UnityEditor.SceneManagement.EditorSceneManager.MarkAllScenesDirty();
+            AssetDatabase.SaveAssets();
+
+            Debug.Log("[InventoryScreenBuilder] Added the Rooms tab to " + InventoryPath + ". Save the scene to keep it.", inventory);
+        }
+
+        /// <summary>
+        /// Puts a rail entry after the one for <paramref name="after"/>, cloned from it, and moves
+        /// the entries below down one place. Nothing is done when the category is already there.
+        /// </summary>
+        static void AddRailEntry(InventoryRail rail, string caption, string category, string icon, string after)
+        {
+            var so = new SerializedObject(rail);
+            var array = so.FindProperty("entries");
+            var at = -1;
+
+            for (int i = 0; i < array.arraySize; i++)
+            {
+                var existing = array.GetArrayElementAtIndex(i).FindPropertyRelative("category").stringValue;
+
+                if (string.Equals(existing, category, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    Debug.Log("[InventoryScreenBuilder] The rail already has a " + caption + " entry.", rail);
+                    return;
+                }
+
+                if (string.Equals(existing, after, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    at = i;
+                }
+            }
+
+            var source = at >= 0
+                ? array.GetArrayElementAtIndex(at).FindPropertyRelative("button").objectReferenceValue as Button
+                : null;
+
+            if (source == null)
+            {
+                Debug.LogError("[InventoryScreenBuilder] The rail has no '" + after + "' entry to put "
+                    + caption + " after.", rail);
+                return;
+            }
+
+            // The spacing as it stands in the scene, not as Build lays it out, so a rail arranged
+            // by hand keeps its rhythm.
+            var step = RailButton + RailGap;
+            if (array.arraySize > 1)
+            {
+                var first = array.GetArrayElementAtIndex(0).FindPropertyRelative("button").objectReferenceValue as Button;
+                var second = array.GetArrayElementAtIndex(1).FindPropertyRelative("button").objectReferenceValue as Button;
+
+                if (first != null && second != null)
+                {
+                    step = Mathf.Abs(((RectTransform)first.transform).anchoredPosition.y
+                        - ((RectTransform)second.transform).anchoredPosition.y);
+                }
+            }
+
+            var top = ((RectTransform)source.transform).anchoredPosition.y;
+
+            var clone = Object.Instantiate(source.gameObject, source.transform.parent);
+            clone.name = "Entry_" + caption;
+            clone.transform.SetSiblingIndex(source.transform.GetSiblingIndex() + 1);
+
+            var label = clone.transform.Find("Label");
+            if (label != null && label.GetComponent<TMP_Text>() != null)
+            {
+                label.GetComponent<TMP_Text>().text = caption;
+            }
+
+            var iconImage = clone.transform.Find("Icon");
+            if (iconImage != null && iconImage.GetComponent<Image>() != null)
+            {
+                iconImage.GetComponent<Image>().sprite = Load(Art.Icon(icon));
+            }
+
+            var selected = clone.transform.Find("Selected");
+            if (selected != null)
+            {
+                selected.gameObject.SetActive(false);
+            }
+
+            array.InsertArrayElementAtIndex(at + 1);
+            var element = array.GetArrayElementAtIndex(at + 1);
+            element.FindPropertyRelative("button").objectReferenceValue = clone.GetComponent<Button>();
+            element.FindPropertyRelative("category").stringValue = category;
+            element.FindPropertyRelative("selected").objectReferenceValue = selected != null ? selected.gameObject : null;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            // Everything from the new entry down moves one place, and the rail grows to hold it.
+            for (int i = at + 1; i < array.arraySize; i++)
+            {
+                var button = array.GetArrayElementAtIndex(i).FindPropertyRelative("button").objectReferenceValue as Button;
+                if (button != null)
+                {
+                    var rect = (RectTransform)button.transform;
+                    rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, top - (i - at) * step);
+                }
+            }
+
+            var railRect = (RectTransform)rail.transform;
+            railRect.sizeDelta = new Vector2(railRect.sizeDelta.x, railRect.sizeDelta.y + step);
+        }
 
         static void Clear(GameObject root)
         {
@@ -1225,6 +1390,115 @@ namespace Dojo.Game.Editor
             return root;
         }
 
+        // --------------------------------------------------------------- rooms
+
+        /// <summary>
+        /// The Rooms tab: every room the loaded packs offer, as a grid of cards like the floors and
+        /// walls.
+        /// </summary>
+        /// <remarks>
+        /// The Areas panel's frame around the item grid's cards: the same cell size and two
+        /// columns, so a room reads as one more thing to put down. A line under the header says how
+        /// to place one, and a status line says why a card could not be picked up.
+        /// </remarks>
+        static GameObject BuildRooms(Transform parent, RoomCard cardPrefab)
+        {
+            var root = Node("Rooms", parent);
+            var rect = root.GetComponent<RectTransform>();
+            Anchor(rect, 0f, 1f);
+            rect.pivot = new Vector2(0f, 1f);
+            rect.anchoredPosition = new Vector2(PanelX, PanelTop);
+            rect.sizeDelta = new Vector2(PanelWidth, PanelHeight);
+            Sliced(root, Art.Panel);
+
+            var title = Text(root.transform, "Title", "ROOMS", 24f, TextAlignmentOptions.Left);
+            Place(title.rectTransform, 0f, 1f, new Vector2(Pad, -Pad), new Vector2(220f, TitleHeight));
+
+            var subtitle = Text(root.transform, "Subtitle", "1F · 0 ROOMS", 12f, TextAlignmentOptions.Left);
+            Place(subtitle.rectTransform, 0f, 1f, new Vector2(Pad, -46f), new Vector2(260f, 18f));
+            subtitle.color = new Color(1f, 1f, 1f, 0.5f);
+
+            var close = Node("Close", root.transform);
+            Place(close.GetComponent<RectTransform>(), 1f, 1f, new Vector2(-Pad, -Pad), new Vector2(30f, 30f));
+            Sliced(close, Art.Ghost);
+            roomsClose = close.AddComponent<Button>();
+            roomsClose.targetGraphic = close.GetComponent<Image>();
+            var cross = Text(close.transform, "Glyph", "×", 20f, TextAlignmentOptions.Center);
+            Stretch(cross.rectTransform);
+
+            const float hintTop = 78f;
+            const float hintHeight = 34f;
+
+            var hint = Text(root.transform, "Hint",
+                "Click a room, then click on the floor to put it down. Scroll or middle-click turns it; "
+                + "right-click or Esc puts it back.",
+                11f, TextAlignmentOptions.TopLeft);
+            Place(hint.rectTransform, 0f, 1f, new Vector2(Pad, -hintTop), new Vector2(PanelWidth - Pad * 2f, hintHeight));
+            hint.textWrappingMode = TextWrappingModes.Normal;
+            hint.color = new Color(1f, 1f, 1f, 0.45f);
+
+            const float statusTop = hintTop + hintHeight + 4f;
+            const float statusHeight = 34f;
+
+            var status = Text(root.transform, "Status", string.Empty, 11f, TextAlignmentOptions.TopLeft);
+            Place(status.rectTransform, 0f, 1f, new Vector2(Pad, -statusTop), new Vector2(PanelWidth - Pad * 2f, statusHeight));
+            status.textWrappingMode = TextWrappingModes.Normal;
+            status.gameObject.SetActive(false);
+
+            const float listTop = statusTop + statusHeight + 8f;
+
+            var scroll = Node("List", root.transform);
+            var scrollRect = scroll.GetComponent<RectTransform>();
+            Anchor(scrollRect, 0f, 1f);
+            scrollRect.pivot = new Vector2(0f, 1f);
+            scrollRect.anchoredPosition = new Vector2(Pad, -listTop);
+            scrollRect.sizeDelta = new Vector2(PanelWidth - Pad * 2f, PanelHeight - listTop - Pad);
+
+            var viewport = Node("Viewport", scroll.transform);
+            Stretch(viewport.GetComponent<RectTransform>());
+            viewport.AddComponent<RectMask2D>();
+
+            var content = Node("Content", viewport.transform);
+            var contentRect = content.GetComponent<RectTransform>();
+            Anchor(contentRect, 0f, 1f);
+            contentRect.pivot = new Vector2(0f, 1f);
+            contentRect.anchoredPosition = Vector2.zero;
+            contentRect.sizeDelta = new Vector2(PanelWidth - Pad * 2f, 0f);
+
+            // The item grid's cells, so a room card is the same size as a floor or wall card.
+            var cells = content.AddComponent<GridLayoutGroup>();
+            cells.cellSize = new Vector2(188f, 172f);
+            cells.spacing = new Vector2(12f, 12f);
+            cells.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            cells.constraintCount = 2;
+            content.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            var scroller = scroll.AddComponent<ScrollRect>();
+            scroller.viewport = viewport.GetComponent<RectTransform>();
+            scroller.content = contentRect;
+            scroller.horizontal = false;
+            scroller.movementType = ScrollRect.MovementType.Clamped;
+            VerticalScrollbar(scroller);
+
+            var empty = Node("Empty", scroll.transform);
+            Stretch(empty.GetComponent<RectTransform>());
+            var emptyLabel = Text(empty.transform, "Label",
+                "No rooms in the loaded packs.\nAdd a Rooms/rooms index to a pack.", 13f, TextAlignmentOptions.Center);
+            Stretch(emptyLabel.rectTransform);
+            emptyLabel.textWrappingMode = TextWrappingModes.Normal;
+            emptyLabel.color = new Color(1f, 1f, 1f, 0.35f);
+            empty.SetActive(false);
+
+            var display = root.AddComponent<RoomsDisplayUI>();
+            Wire(display, "subtitleLabel", subtitle);
+            Wire(display, "statusLabel", status);
+            Wire(display, "listContent", content.transform);
+            Wire(display, "cardPrefab", cardPrefab);
+            Wire(display, "emptyState", empty);
+
+            return root;
+        }
+
         // ------------------------------------------------------------- prefabs
 
         static InventoryItemCard BuildCardPrefab()
@@ -1420,6 +1694,55 @@ namespace Dojo.Game.Editor
             Wire(row, "deleteButton", delete);
 
             return SavePrefab(root, "AreaRow").GetComponent<AreaRow>();
+        }
+
+        /// <summary>
+        /// One room in the Rooms tab, laid out as the item card is: the thumbnail filling the top,
+        /// the name bottom left and the size bottom right, with the item card's selected state.
+        /// </summary>
+        static RoomCard BuildRoomCardPrefab()
+        {
+            var root = Node("RoomCard", null);
+            var rect = root.GetComponent<RectTransform>();
+            rect.sizeDelta = new Vector2(188f, 172f);
+            var face = Sliced(root, Art.TileIdle);
+
+            var icon = Node("Icon", root.transform);
+            Place(icon.GetComponent<RectTransform>(), 0.5f, 1f, new Vector2(0f, -12f), new Vector2(160f, 116f));
+            icon.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 1f);
+            var iconImage = icon.AddComponent<Image>();
+            iconImage.preserveAspect = true;
+            iconImage.raycastTarget = false;
+
+            var name = Text(root.transform, "Name", "Room", 13f, TextAlignmentOptions.Left);
+            Place(name.rectTransform, 0f, 0f, new Vector2(12f, 12f), new Vector2(120f, 20f));
+            name.rectTransform.pivot = new Vector2(0f, 0f);
+            name.overflowMode = TextOverflowModes.Ellipsis;
+
+            var size = Text(root.transform, "Size", "13×12m", 12f, TextAlignmentOptions.Right);
+            Place(size.rectTransform, 1f, 0f, new Vector2(-12f, 12f), new Vector2(52f, 20f));
+            size.rectTransform.pivot = new Vector2(1f, 0f);
+            size.color = new Color(1f, 1f, 1f, 0.55f);
+
+            var selected = Node("Selected", root.transform);
+            Stretch(selected.GetComponent<RectTransform>());
+            Sliced(selected, Art.TileSelected).raycastTarget = false;
+            var edge = Node("Edge", selected.transform);
+            Stretch(edge.GetComponent<RectTransform>());
+            Sliced(edge, Art.TileEdge).raycastTarget = false;
+            selected.SetActive(false);
+
+            var button = root.AddComponent<Button>();
+            button.targetGraphic = face;
+
+            var card = root.AddComponent<RoomCard>();
+            Wire(card, "button", button);
+            Wire(card, "icon", iconImage);
+            Wire(card, "nameLabel", name);
+            Wire(card, "sizeLabel", size);
+            Wire(card, "selectedState", selected);
+
+            return SavePrefab(root, "RoomCard").GetComponent<RoomCard>();
         }
 
         /// <summary>A small button on the right of a row, <paramref name="x"/> in from its right edge.</summary>
