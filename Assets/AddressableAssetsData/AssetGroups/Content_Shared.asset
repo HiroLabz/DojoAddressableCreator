@@ -141,6 +141,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 28a28ac87b6e0cc45a552d8cc1aa775b
+    m_Address: shared/UIBackgroundBlur
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2d4652b9d19ec89459fc0fcf59915da7
     m_Address: default/Textures/default_superComputer_2_faces
     m_ReadOnly: 0
@@ -459,6 +464,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8cba95ae5fcd20f43b3eaae3f956ac4c
+    m_Address: shared/DojoFadeLit
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9126b2947cab3c143a5b7270c3e25b5a
     m_Address: default/Textures/default_superComputer_metallicSmoothness
     m_ReadOnly: 0
@@ -530,6 +540,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a61838fd8f6138246981388e33634b0c
+    m_Address: shared/GaussianBlurPass
+    m_ReadOnly: 0
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a651f24ce22e458b9964f30b6e432b7f
     m_Address: default/Rooms/room_reception

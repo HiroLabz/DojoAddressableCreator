@@ -181,12 +181,15 @@ namespace Dojo.Game.Editor
             }
         }
 
-        /// <summary>A URP Lit material for one of the model's materials, written to the pack.</summary>
+        /// <summary>A Dojo/Fade Lit material for one of the model's materials, written to the pack.</summary>
         static Material MakeMaterial(string materialName, Texture2D albedo, Texture2D normal, Texture2D metallic, Texture2D faces)
         {
             var path = PackFolder + "/Materials/" + materialName + ".mat";
             var material = AssetDatabase.LoadAssetAtPath<Material>(path);
-            var shader = Shader.Find("Universal Render Pipeline/Lit");
+
+            // The pack's own shader: URP Lit with the floor fade added, so the piece fades with its
+            // floor on an elevator ride like the rest of the pack. Plain URP Lit if it is missing.
+            var shader = Shader.Find("Dojo/Fade Lit") ?? Shader.Find("Universal Render Pipeline/Lit");
 
             if (material == null)
             {
