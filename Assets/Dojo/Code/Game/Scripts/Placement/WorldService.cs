@@ -198,6 +198,29 @@ namespace Dojo.Game.Placement
         public bool HasSave => library.Exists;
 
         /// <summary>
+        /// How many pieces and agents each world in the save file holds, by name. A world the file
+        /// does not have is simply not in the answer.
+        /// </summary>
+        /// <remarks>
+        /// From the file alone, in one read. For the save and load lists when there is no backend
+        /// to describe the worlds - offline, which is every run of the Runtime scene.
+        /// </remarks>
+        public Dictionary<string, Vector2Int> SavedCounts()
+        {
+            var counts = new Dictionary<string, Vector2Int>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var saved in library.Read().worlds)
+            {
+                if (saved != null && !string.IsNullOrEmpty(saved.name))
+                {
+                    counts[saved.name] = new Vector2Int(saved.PieceCount(), saved.AgentCount());
+                }
+            }
+
+            return counts;
+        }
+
+        /// <summary>
         /// Every saved world, from the database when it can be read and the file otherwise.
         /// </summary>
         /// <remarks>
@@ -407,9 +430,12 @@ namespace Dojo.Game.Placement
 
             library.Write(held);
 
-            // The routine save is not logged: the backend publisher below lists every piece, agent
-            // and area it sends, so a second summary of the same save was only noise. What is kept
-            // is the case that summary was actually useful for — pieces that could not be written.
+            // One line per save. The backend publisher lists everything it sends, but offline
+            // there is no publisher, and a save that left no trace was impossible to tell from one
+            // that never happened.
+            Debug.Log("[World] saved '" + name + "' - " + save.PieceCount() + " piece(s) on "
+                + save.floors.Count + " floor(s), to " + FullPath, world);
+
             if (skipped > 0)
             {
                 Debug.LogWarning("[World] '" + name + "' skipped " + skipped
@@ -572,10 +598,19 @@ namespace Dojo.Game.Placement
 
             foreach (var floor in previous.floors)
             {
-                var into = save.FloorAt(floor.index);
+                var agents = floor.agents ?? new List<WorldSave.SavedAgent>();
+                var managers = floor.managers ?? new List<WorldSave.SavedAgent>();
 
-                into.agents.AddRange(floor.agents ?? new List<WorldSave.SavedAgent>());
-                into.managers.AddRange(floor.managers ?? new List<WorldSave.SavedAgent>());
+                // Only a floor that has someone on it is touched. Asking for every floor the old
+                // save had would bring back floors the world no longer has, empty, on every save.
+                if (agents.Count == 0 && managers.Count == 0)
+                {
+                    continue;
+                }
+
+                var into = save.FloorAt(floor.index);
+                into.agents.AddRange(agents);
+                into.managers.AddRange(managers);
             }
         }
 
@@ -745,6 +780,63 @@ namespace Dojo.Game.Placement
         /// no areas, so the agent and manager cards offer Define Area rather than Edit Area over
         /// an area painted somewhere else.
         /// </remarks>
+        /// <summary>
+        /// Starts over on one floor tile: every piece, floor above the first, elevator and named
+        /// area goes, and a single <see cref="WorldSettings.ResetFloor"/> is laid at the middle of
+        /// floor 1. The saved worlds are not touched.
+        /// </summary>
+        /// <remarks>
+        /// Built through <see cref="Build"/> like any load, from a world of one piece, so nothing
+        /// of the old world can survive by being a kind of thing a reset forgot to clear.
+        /// <para>
+        /// The reset world is a new, unnamed one, as NEW WORLD's is, rather than the open world
+        /// emptied: it was first written over the open world's save, which made a world saved a
+        /// moment before come back empty and read as saving having failed. Its first save, by
+        /// SAVE WORLD or an auto save after the first change, is under a name of its own.
+        /// </para>
+        /// </remarks>
+        public void ResetWorld()
+        {
+            var address = settings.ResetFloor;
+
+            var empty = new WorldSave { name = "the reset world" };
+            empty.FloorAt(0).pieces.Add(new WorldSave.SavedPiece
+            {
+                prefabId = string.Empty,
+                resource = address,
+                name = address,
+                position = Vector3.zero,
+                rotation = Quaternion.identity,
+                scale = Vector3.one,
+                rotationSteps = 0,
+                isFloor = true,
+            });
+
+            Build(empty);
+
+            var was = OpenWorldName;
+
+            // Let go of the world that was open, so nothing - an auto save included - writes the
+            // reset over it. Nothing is selected until this world is saved under its own name.
+            OpenWorldName = null;
+
+            var held = library.Read();
+
+            if (held.Select(null))
+            {
+                library.Write(held);
+            }
+
+            if (selection != null)
+            {
+                selection.ClearCurrent();
+            }
+
+            Debug.Log("[World] Reset to one " + address + ". "
+                + (string.IsNullOrEmpty(was) ? "" : "'" + was + "' is still saved as it was; ")
+                + "this world is saved under a new name when it is first saved.", world);
+        }
+
         public void StartBlank()
         {
             LoadBlockAreas(new WorldSave { name = "the new world" });

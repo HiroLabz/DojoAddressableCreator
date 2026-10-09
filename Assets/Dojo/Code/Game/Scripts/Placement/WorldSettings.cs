@@ -46,6 +46,10 @@ namespace Dojo.Game.Placement
                  "had rather than dropping them.")]
         [SerializeField] bool characters = false;
 
+        [Header("Reset")]
+        [Tooltip("Content address of the floor tile RESET WORLD lays, alone, in the middle of floor 1.")]
+        [SerializeField] string resetFloor = "default/default_floor_1";
+
         [Header("Auto save")]
         [Tooltip("Write the current world back to disk whenever anything in it is added, moved, " +
                  "rotated, deleted or painted. Only ever writes over the world already selected; " +
@@ -68,6 +72,8 @@ namespace Dojo.Game.Placement
 
         /// <summary>Whether a change to the world writes itself to disk shortly afterwards.</summary>
         public bool Characters => characters;
+
+        public string ResetFloor => string.IsNullOrWhiteSpace(resetFloor) ? "default/default_floor_1" : resetFloor.Trim();
 
         public bool AutoSave => autoSave;
 

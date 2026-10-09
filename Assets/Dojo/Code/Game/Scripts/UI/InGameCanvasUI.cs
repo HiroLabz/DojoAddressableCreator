@@ -64,6 +64,12 @@ namespace Dojo.Game.UI
         const int LoadWorldEntry = 4;
 
         /// <summary>
+        /// Added after the others, so their indices stand; on screen it sits just under SAVE WORLD.
+        /// Put there by <c>Tools ▸ Dojo ▸ Add Reset World Entry</c>.
+        /// </summary>
+        const int ResetWorldEntry = 5;
+
+        /// <summary>
         /// The one content key with a pack behind it, as used by the BuyStrawberry harness.
         /// </summary>
         /// <remarks>
@@ -107,6 +113,9 @@ namespace Dojo.Game.UI
 
         /// <summary>Raised when the player asks to load a world.</summary>
         public event Action LoadWorldRequested;
+
+        /// <summary>Raised when the player asks to reset the world, before they are asked to confirm.</summary>
+        public event Action ResetWorldRequested;
 
         /// <summary>Raised whenever the menu changes state.</summary>
         /// <remarks>
@@ -396,6 +405,11 @@ namespace Dojo.Game.UI
                     OpenLoadWorld();
                     break;
 
+                case ResetWorldEntry:
+                    Raise(ResetWorldRequested);
+                    AskToResetWorld();
+                    break;
+
                 default:
                     // An entry was added to the prefab and nobody taught this what it means. Worth
                     // saying out loud, because the button will otherwise look merely unresponsive.
@@ -622,6 +636,26 @@ namespace Dojo.Game.UI
             worlds.Load(worldName);
         }
 
+        /// <summary>
+        /// Asks before clearing the world, because anything built since the last save is lost.
+        /// </summary>
+        void AskToResetWorld()
+        {
+            if (!DialogsReady())
+            {
+                return;
+            }
+
+            var kept = string.IsNullOrEmpty(worlds.OpenWorldName)
+                ? "Your saved worlds are kept."
+                : "'" + worlds.OpenWorldName + "' stays saved as it was.";
+
+            dialogs.Confirm(
+                "Reset the world? Everything is cleared and a single floor is laid. " + kept
+                    + " The reset world is saved under a new name.",
+                worlds.ResetWorld);
+        }
+
         bool DialogsReady()
         {
             if (dialogs != null && worlds != null)
@@ -644,6 +678,10 @@ namespace Dojo.Game.UI
         /// Each world is loaded to be counted, which is the only way to know its pieces and agents —
         /// the source reports names, not sizes. The same trade the lobby's list makes. Built on
         /// demand rather than held, so a save made a moment ago is in the next list.
+        /// <para>
+        /// With no backend to ask - offline - the counts come from the save file, which is where
+        /// the worlds themselves are then. Asking only the backend listed every world as empty.
+        /// </para>
         /// </remarks>
         List<WorldChoice> BuildWorldList()
         {
@@ -655,9 +693,20 @@ namespace Dojo.Game.UI
                 return list;
             }
 
+            var online = source != null && source.IsReady;
+            var onDisk = online ? null : worlds.SavedCounts();
+
             for (int i = 0; i < names.Count; i++)
             {
-                WorldSnapshot snapshot = source != null && source.IsReady ? source.Load(names[i]) : null;
+                Vector2Int counted;
+
+                if (onDisk != null && onDisk.TryGetValue(names[i], out counted))
+                {
+                    list.Add(new WorldChoice(names[i], counted.x, counted.y));
+                    continue;
+                }
+
+                WorldSnapshot snapshot = online ? source.Load(names[i]) : null;
 
                 if (snapshot == null)
                 {
