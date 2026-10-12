@@ -157,14 +157,24 @@ namespace Dojo.Game.UI
         /// </remarks>
         [Inject]
         public void Construct(IDialogManager dialogManager, WorldService worldService, IWorldSource worldSource,
-            ILoadingService loadingService, WorldPictures worldPictures)
+            ILoadingService loadingService, WorldPictures worldPictures, RoomEditor roomEditor)
         {
             dialogs = dialogManager;
             worlds = worldService;
             source = worldSource;
             loading = loadingService;
             pictures = worldPictures;
+            editor = roomEditor;
         }
+
+        RoomEditor editor;
+
+        /// <summary>
+        /// True for the entries that act on the world - leaving it, saving, loading, resetting -
+        /// which have nothing to act on while a room is being made in its place.
+        /// </summary>
+        static bool ActsOnWorld(int index)
+            => index == BackEntry || index == SaveWorldEntry || index == LoadWorldEntry || index == ResetWorldEntry;
 
         /// <summary>
         /// Esc, while the entries are up, is BACK - the key the mock prints beside it.
@@ -379,6 +389,19 @@ namespace Dojo.Game.UI
 
         void OnEntrySelected(int index)
         {
+            if (editor != null && editor.IsEditing && ActsOnWorld(index))
+            {
+                SetState(InGameMenuState.Closed);
+
+                if (dialogs != null)
+                {
+                    dialogs.Confirm("You are making a room. Save it or cancel it from the room bar first - "
+                        + "the world is waiting, as you left it.", () => { });
+                }
+
+                return;
+            }
+
             switch (index)
             {
                 case BackEntry:
@@ -653,7 +676,23 @@ namespace Dojo.Game.UI
             dialogs.Confirm(
                 "Reset the world? Everything is cleared and a single floor is laid. " + kept
                     + " The reset world is saved under a new name.",
-                worlds.ResetWorld);
+                ResetWorld);
+        }
+
+        /// <summary>Clears the world, then puts the camera back where it started over it.</summary>
+        /// <remarks>
+        /// The camera last, so it lands on the reset world rather than being moved under the old
+        /// one. Found rather than injected: the rig is on the camera, outside anything this canvas
+        /// is handed.
+        /// </remarks>
+        void ResetWorld()
+        {
+            worlds.ResetWorld();
+
+            foreach (var rig in FindObjectsByType<Dojo.Game.InGame.Controllers.CameraRig>(FindObjectsSortMode.None))
+            {
+                rig.ResetView();
+            }
         }
 
         bool DialogsReady()

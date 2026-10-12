@@ -143,7 +143,12 @@ namespace Dojo.Game.Placement
 
             if (root != null)
             {
-                foreach (Transform child in root)
+                // Piece by piece, rooms' pieces included: a room's container measured whole would
+                // stretch across the gap to any piece moved out of it since.
+                var pieces = new List<Transform>();
+                Storeys.AddPiecesUnder(root, pieces);
+
+                foreach (var child in pieces)
                 {
                     Bounds bounds;
 
@@ -290,7 +295,7 @@ namespace Dojo.Game.Placement
         /// <summary>Builds the room for real and says the world changed.</summary>
         public void Build(Plan plan, int floor, Vector2 offset, int steps)
         {
-            world.AddRoom(plan.Save, floor, new Vector3(offset.x, 0f, offset.y), steps, plan.Entry.name);
+            world.AddRoom(plan.Save, floor, new Vector3(offset.x, 0f, offset.y), steps, plan.Entry.name, plan.Entry.address);
 
             if (hub != null)
             {

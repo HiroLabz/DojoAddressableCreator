@@ -118,7 +118,9 @@ namespace Dojo.Game.Placement
         /// </remarks>
         void OnPhaseChanged(GamePhase current)
         {
-            if (current == GamePhase.Edit || !dirty)
+            // Not while a room is being made: what is standing is the room, and the world it
+            // replaced is saved as it was once it comes back.
+            if (current == GamePhase.Edit || !dirty || world.SavingSuspended)
             {
                 return;
             }

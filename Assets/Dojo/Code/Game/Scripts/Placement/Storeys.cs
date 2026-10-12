@@ -245,13 +245,37 @@ namespace Dojo.Game.Placement
 
             foreach (var floor in floors)
             {
-                foreach (Transform child in floor.transform)
-                {
-                    placed.Add(child);
-                }
+                AddPiecesUnder(floor.transform, placed);
             }
 
             return placed;
+        }
+
+        /// <summary>
+        /// Everything placed on one floor's container: what stands on it directly, and the pieces of
+        /// every room on it - not the rooms' containers themselves, which are only groupings.
+        /// </summary>
+        public static void AddPiecesUnder(Transform floor, List<Transform> into)
+        {
+            if (floor == null)
+            {
+                return;
+            }
+
+            foreach (Transform child in floor)
+            {
+                if (child.GetComponent<RoomContainer>() != null)
+                {
+                    foreach (Transform piece in child)
+                    {
+                        into.Add(piece);
+                    }
+                }
+                else
+                {
+                    into.Add(child);
+                }
+            }
         }
 
         /// <summary>

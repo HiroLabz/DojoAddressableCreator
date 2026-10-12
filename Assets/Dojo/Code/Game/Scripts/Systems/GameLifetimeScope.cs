@@ -225,6 +225,11 @@ namespace Dojo.Game.Systems
             builder.Register<RoomCatalog>(Lifetime.Singleton);
             builder.Register<RoomPlacer>(Lifetime.Singleton);
 
+            // Making rooms: the ones the player has made, kept on disk, and the session that
+            // swaps the world for a blank floor and back.
+            builder.Register<CustomRooms>(Lifetime.Singleton);
+            builder.Register<RoomEditor>(Lifetime.Singleton);
+
             // Writes the selected world back whenever anything in it changes. Registered here
             // rather than on the root, because it is only meaningful where there is a world root
             // to save — the same condition this whole method already sits behind.
@@ -380,6 +385,13 @@ namespace Dojo.Game.Systems
                     foreach (var rooms in FindObjectsByType<RoomsDisplayUI>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                     {
                         container.Inject(rooms);
+                    }
+
+                    // The bar shown while a room is being made. Inactive included: it is down
+                    // whenever no room is.
+                    foreach (var bar in FindObjectsByType<RoomEditorBar>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                    {
+                        container.Inject(bar);
                     }
 
                     // The areas' locators, which mark the world's areas on its floors.

@@ -32,6 +32,10 @@ namespace Dojo.Game.UI
         [Tooltip("Shown when no loaded pack offers any rooms.")]
         [SerializeField] GameObject emptyState;
 
+        [Header("Making rooms")]
+        [Tooltip("Above the cards: leaves the world for a blank floor to build a room of your own on.")]
+        [SerializeField] Button createRoomButton;
+
         RoomCatalog catalog;
         RoomPlacer placer;
         Storeys storeys;
@@ -47,21 +51,86 @@ namespace Dojo.Game.UI
 
         [Inject]
         public void Construct(RoomCatalog roomCatalog, RoomPlacer roomPlacer, Storeys floors,
-            PlacementController placementController)
+            PlacementController placementController, RoomEditor roomEditor)
         {
             catalog = roomCatalog;
             placer = roomPlacer;
             storeys = floors;
             placement = placementController;
+            editor = roomEditor;
+
+            editor.Changed += OnEditorChanged;
+            editor.Saved += OnRoomSaved;
         }
 
-        void OnDestroy() => Unlisten();
+        RoomEditor editor;
+
+        void Awake()
+        {
+            if (createRoomButton != null)
+            {
+                createRoomButton.onClick.AddListener(OnCreateRoom);
+            }
+        }
+
+        void OnDestroy()
+        {
+            Unlisten();
+
+            if (editor != null)
+            {
+                editor.Changed -= OnEditorChanged;
+                editor.Saved -= OnRoomSaved;
+            }
+        }
+
+        void OnCreateRoom()
+        {
+            if (editor == null || editor.IsEditing)
+            {
+                return;
+            }
+
+            if (placement != null && placement.IsBusy)
+            {
+                Say("Put down what is in hand first.");
+                return;
+            }
+
+            if (!editor.Begin())
+            {
+                Say("The room editor is not set up in this scene. Run Tools > Dojo > Add Rooms Tab and save the scene.");
+            }
+        }
+
+        /// <summary>No CREATE ROOM while one is being made: there is nowhere to go from there.</summary>
+        void OnEditorChanged()
+        {
+            if (createRoomButton != null)
+            {
+                createRoomButton.gameObject.SetActive(editor == null || !editor.IsEditing);
+            }
+        }
+
+        /// <summary>The room just made, at the bottom of the list with its thumbnail.</summary>
+        void OnRoomSaved(RoomEntry room)
+        {
+            // A room saved over one of the same name is a different room now.
+            plans.Remove(room.address);
+
+            if (gameObject.activeInHierarchy)
+            {
+                Rebuild();
+                Say("'" + room.name + "' saved. It is at the bottom of the list.");
+            }
+        }
 
         public void Show()
         {
             gameObject.SetActive(true);
             Listen();
             Say(string.Empty);
+            OnEditorChanged();
             Rebuild();
         }
 

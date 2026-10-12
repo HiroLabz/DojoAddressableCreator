@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -102,6 +103,19 @@ namespace Dojo.Game.InGame.Controllers
             {
                 drivenCamera = value;
                 drivenComposer = value == null ? null : value.GetComponent<CinemachinePositionComposer>();
+
+                // Where each virtual camera stood when first handed over is its home: what
+                // ResetView puts it back to. Each its own - the free camera and the one following
+                // the manager take turns, and stand in different places.
+                if (value != null && !drivenHomes.ContainsKey(value))
+                {
+                    drivenHomes[value] = new Home
+                    {
+                        position = value.transform.position,
+                        rotation = value.transform.rotation,
+                        offset = drivenComposer != null ? drivenComposer.TargetOffset : Vector3.zero,
+                    };
+                }
 
                 // Adopt whatever zoom the side being handed control is already at. Without this the
                 // first scroll after a handover snaps to the other one's level, which reads as the
@@ -212,7 +226,158 @@ namespace Dojo.Game.InGame.Controllers
             targetZoom = cam.orthographicSize;
         }
 
-        void Start() => StartZoom = targetZoom;
+        void Start()
+        {
+            StartZoom = targetZoom;
+            homePosition = transform.position;
+            homeRotation = transform.rotation;
+        }
+
+        // Where the view started, for ResetView: the camera's own pose, and the virtual camera's
+        // when there is one.
+        Vector3 homePosition;
+        Quaternion homeRotation;
+
+        internal struct Home
+        {
+            public Vector3 position;
+            public Quaternion rotation;
+            public Vector3 offset;
+        }
+
+        readonly System.Collections.Generic.Dictionary<CinemachineCamera, Home> drivenHomes =
+            new System.Collections.Generic.Dictionary<CinemachineCamera, Home>();
+
+        /// <summary>Where the view is now, to be put back exactly by <see cref="LoadView"/>.</summary>
+        public sealed class ViewState
+        {
+            internal Vector3 position;
+            internal Quaternion rotation;
+            internal float zoom;
+            internal readonly Dictionary<CinemachineCamera, Home> cameras = new Dictionary<CinemachineCamera, Home>();
+        }
+
+        /// <summary>The view as it stands: the camera, every virtual camera it has driven, and the zoom.</summary>
+        public ViewState SaveView()
+        {
+            var state = new ViewState
+            {
+                position = transform.position,
+                rotation = transform.rotation,
+                zoom = targetZoom,
+            };
+
+            foreach (var camera in drivenHomes.Keys)
+            {
+                if (camera == null)
+                {
+                    continue;
+                }
+
+                var composer = camera.GetComponent<CinemachinePositionComposer>();
+                state.cameras[camera] = new Home
+                {
+                    position = camera.transform.position,
+                    rotation = camera.transform.rotation,
+                    offset = composer != null ? composer.TargetOffset : Vector3.zero,
+                };
+            }
+
+            return state;
+        }
+
+        /// <summary>Puts the view back to one saved by <see cref="SaveView"/>, at once.</summary>
+        public void LoadView(ViewState state)
+        {
+            if (state == null)
+            {
+                return;
+            }
+
+            StopMoving();
+            transform.SetPositionAndRotation(state.position, state.rotation);
+
+            foreach (var pair in state.cameras)
+            {
+                Place(pair.Key, pair.Value);
+            }
+
+            SnapZoom(state.zoom);
+        }
+
+        /// <summary>
+        /// Puts the view back where it started: position, angle and zoom, at once.
+        /// </summary>
+        /// <remarks>
+        /// For a fresh start - RESET WORLD - rather than for play, so nothing eases: a camera
+        /// gliding back from wherever it was would be the old world's last word. A floor shift in
+        /// progress is dropped, since the floors it was moving between are gone.
+        /// </remarks>
+        public void ResetView()
+        {
+            StopMoving();
+            transform.SetPositionAndRotation(homePosition, homeRotation);
+
+            foreach (var pair in drivenHomes)
+            {
+                Place(pair.Key, pair.Value);
+            }
+
+            SnapZoom(StartZoom);
+        }
+
+        /// <summary>Drops a floor shift in progress and any drag, so nothing moves the view after it is set.</summary>
+        void StopMoving()
+        {
+            if (shiftTween >= 0)
+            {
+                LeanTween.cancel(shiftTween);
+                shiftTween = -1;
+            }
+
+            shiftRemaining = Vector3.zero;
+            dragging = false;
+            rotating = false;
+            touchGesture = false;
+        }
+
+        static void Place(CinemachineCamera camera, Home pose)
+        {
+            if (camera == null)
+            {
+                return;
+            }
+
+            camera.transform.SetPositionAndRotation(pose.position, pose.rotation);
+
+            var composer = camera.GetComponent<CinemachinePositionComposer>();
+            if (composer != null)
+            {
+                composer.TargetOffset = pose.offset;
+            }
+
+            // Moved, not travelled there: without this it would blend from where it was.
+            camera.PreviousStateIsValid = false;
+        }
+
+        void SnapZoom(float zoom)
+        {
+            targetZoom = Mathf.Clamp(zoom, minZoom, maxZoom);
+
+            if (!cam.orthographic)
+            {
+                return;
+            }
+
+            cam.orthographicSize = targetZoom;
+
+            if (DrivenCamera != null)
+            {
+                var lens = DrivenCamera.Lens;
+                lens.OrthographicSize = targetZoom;
+                DrivenCamera.Lens = lens;
+            }
+        }
 
         void OnEnable()
         {

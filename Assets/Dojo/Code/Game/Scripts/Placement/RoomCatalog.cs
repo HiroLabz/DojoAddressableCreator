@@ -42,11 +42,16 @@ namespace Dojo.Game.Placement
         }
 
         readonly IContentService content;
+        readonly CustomRooms custom;
 
-        public RoomCatalog(IContentService content)
+        public RoomCatalog(IContentService content, CustomRooms custom)
         {
             this.content = content;
+            this.custom = custom;
         }
+
+        /// <summary>The rooms the player has made, kept on disk.</summary>
+        public CustomRooms Custom => custom;
 
         /// <summary>Content address of a pack's room index.</summary>
         public static string IndexAddressFor(string pack) => pack + "/Rooms/rooms";
@@ -97,12 +102,24 @@ namespace Dojo.Game.Placement
                 }
             }
 
+            // The rooms the player has made come after the pack's, oldest first, so the one just
+            // made is at the bottom of the list.
+            if (custom != null)
+            {
+                found.AddRange(custom.All());
+            }
+
             return found;
         }
 
         /// <summary>The room's thumbnail, or null when it has none yet.</summary>
         public Sprite IconOf(RoomEntry room)
         {
+            if (room != null && CustomRooms.IsCustom(room.icon))
+            {
+                return custom != null ? custom.Icon(room.icon) : null;
+            }
+
             Sprite sprite;
 
             if (room == null || content == null || string.IsNullOrEmpty(room.icon)
@@ -124,6 +141,11 @@ namespace Dojo.Game.Placement
         /// <summary>The room's world, or null when its file is missing or cannot be read.</summary>
         public WorldSave Read(RoomEntry room)
         {
+            if (room != null && CustomRooms.IsCustom(room.address))
+            {
+                return custom != null ? custom.Read(room.address) : null;
+            }
+
             TextAsset asset;
 
             if (room == null || content == null || !content.TryGet(room.address, out asset) || asset == null)

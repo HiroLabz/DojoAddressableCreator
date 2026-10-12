@@ -209,6 +209,8 @@ namespace Dojo.Game.Editor
             youGo.SetActive(false);
             areasGo.SetActive(false);
             roomsGo.SetActive(false);
+
+            RebuildRoomEditorBar(inventory.transform.parent);
             Wire(screen, "closeButton", closeButton);
             Wire(screen, "root", inventory);
 
@@ -282,6 +284,8 @@ namespace Dojo.Game.Editor
             Wire(screen, "roomsHud", roomsGo.GetComponent<RoomsDisplayUI>());
             UnityEditor.Events.UnityEventTools.AddPersistentListener(roomsClose.onClick, screen.Close);
             roomsGo.SetActive(false);
+
+            RebuildRoomEditorBar(inventory.transform.parent);
 
             EditorUtility.SetDirty(inventory);
             UnityEditor.SceneManagement.EditorSceneManager.MarkAllScenesDirty();
@@ -1426,7 +1430,20 @@ namespace Dojo.Game.Editor
             var cross = Text(close.transform, "Glyph", "×", 20f, TextAlignmentOptions.Center);
             Stretch(cross.rectTransform);
 
-            const float hintTop = 78f;
+            // + CREATE ROOM above the cards, in the Areas panel's + NEW AREA place and colour.
+            const float createTop = 78f;
+            const float createHeight = 44f;
+
+            var create = Node("CreateRoom", root.transform);
+            Place(create.GetComponent<RectTransform>(), 0f, 1f, new Vector2(Pad, -createTop),
+                new Vector2(PanelWidth - Pad * 2f, createHeight));
+            var createFace = Sliced(create, Art.ButtonPrimary);
+            var createButton = create.AddComponent<Button>();
+            createButton.targetGraphic = createFace;
+            var createLabel = Text(create.transform, "Label", "+ CREATE ROOM", 13f, TextAlignmentOptions.Center);
+            Stretch(createLabel.rectTransform);
+
+            const float hintTop = createTop + createHeight + 8f;
             const float hintHeight = 34f;
 
             var hint = Text(root.transform, "Hint",
@@ -1495,8 +1512,81 @@ namespace Dojo.Game.Editor
             Wire(display, "listContent", content.transform);
             Wire(display, "cardPrefab", cardPrefab);
             Wire(display, "emptyState", empty);
+            Wire(display, "createRoomButton", createButton);
 
             return root;
+        }
+
+        // --------------------------------------------------------- room editor
+
+        /// <summary>
+        /// The bar shown while a room is being made, across the top of the screen beside the
+        /// inventory: what is going on, and SAVE ROOM, LOAD ROOM and CANCEL. Replaces one left by
+        /// an earlier run. Built switched off; it shows itself while a room is being made.
+        /// </summary>
+        static void RebuildRoomEditorBar(Transform parent)
+        {
+            if (parent == null)
+            {
+                return;
+            }
+
+            var old = parent.Find("RoomEditor");
+            if (old != null)
+            {
+                Object.DestroyImmediate(old.gameObject);
+            }
+
+            const float width = 760f;
+            const float height = 76f;
+
+            var root = Node("RoomEditor", parent);
+            var rect = root.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.5f, 1f);
+            rect.anchorMax = new Vector2(0.5f, 1f);
+            rect.pivot = new Vector2(0.5f, 1f);
+            rect.anchoredPosition = new Vector2(PanelWidth * 0.5f, -24f);
+            rect.sizeDelta = new Vector2(width, height);
+            Sliced(root, Art.Panel);
+
+            var title = Text(root.transform, "Title", "ROOM EDITOR", 16f, TextAlignmentOptions.Left);
+            Place(title.rectTransform, 0f, 1f, new Vector2(Pad, -12f), new Vector2(300f, 24f));
+
+            var status = Text(root.transform, "Status", "Build a room with the inventory, then save it.", 11f,
+                TextAlignmentOptions.TopLeft);
+            Place(status.rectTransform, 0f, 1f, new Vector2(Pad, -40f), new Vector2(380f, 30f));
+            status.textWrappingMode = TextWrappingModes.Normal;
+            status.color = new Color(1f, 1f, 1f, 0.6f);
+
+            var cancel = BarButton(root.transform, "Cancel", "CANCEL", Art.ButtonDanger, -Pad);
+            var load = BarButton(root.transform, "Load", "LOAD ROOM", Art.Ghost, -Pad - 118f);
+            var save = BarButton(root.transform, "Save", "SAVE ROOM", Art.ButtonPrimary, -Pad - 236f);
+
+            var bar = root.AddComponent<RoomEditorBar>();
+            Wire(bar, "root", root);
+            Wire(bar, "statusLabel", status);
+            Wire(bar, "saveButton", save);
+            Wire(bar, "loadButton", load);
+            Wire(bar, "cancelButton", cancel);
+
+            root.SetActive(false);
+        }
+
+        /// <summary>One of the room bar's buttons, <paramref name="x"/> in from its right edge.</summary>
+        static Button BarButton(Transform parent, string name, string caption, string sprite, float x)
+        {
+            var go = Node(name, parent);
+            Place(go.GetComponent<RectTransform>(), 1f, 0.5f, new Vector2(x, 0f), new Vector2(110f, 40f));
+            go.GetComponent<RectTransform>().pivot = new Vector2(1f, 0.5f);
+            var image = Sliced(go, sprite);
+
+            var button = go.AddComponent<Button>();
+            button.targetGraphic = image;
+
+            var label = Text(go.transform, "Label", caption, 12f, TextAlignmentOptions.Center);
+            Stretch(label.rectTransform);
+
+            return button;
         }
 
         // ------------------------------------------------------------- prefabs

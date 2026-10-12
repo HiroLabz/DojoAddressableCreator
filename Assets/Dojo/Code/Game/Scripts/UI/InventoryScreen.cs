@@ -92,6 +92,41 @@ namespace Dojo.Game.UI
         }
 
         /// <summary>Takes the Agents tab, the You tab, or both off the rail, for characters that are switched off.</summary>
+        bool holdOpen;
+
+        /// <summary>
+        /// For making a room: only the tabs a room is built from - floors, walls and the rest of the
+        /// pieces - and the screen held open; or, with <paramref name="editing"/> false, back to how
+        /// it was.
+        /// </summary>
+        public void SetRoomEditing(bool editing)
+        {
+            if (rail != null)
+            {
+                rail.SetAside(editing
+                    ? new[] { areasCategory, roomsCategory, agentsCategory, youCategory }
+                    : null);
+            }
+
+            holdOpen = editing;
+
+            if (!editing)
+            {
+                return;
+            }
+
+            if (!IsOpen)
+            {
+                Open();
+            }
+
+            // Off whichever tab was up if it has just been set aside, onto the floors.
+            if (rail != null && (string.IsNullOrEmpty(rail.Selected) || !rail.IsShown(rail.Selected)))
+            {
+                rail.Select(defaultCategory);
+            }
+        }
+
         public void HideCharacterTabs(bool agents, bool you)
         {
             if (rail == null)
@@ -217,6 +252,13 @@ namespace Dojo.Game.UI
         /// </summary>
         public void Close()
         {
+            // While a room is being made the inventory is how it is made, and the menu that would
+            // open it again is put away, so it stays open until the room is saved or cancelled.
+            if (holdOpen)
+            {
+                return;
+            }
+
             Root.SetActive(false);
 
             if (phase != null)

@@ -262,6 +262,12 @@ namespace Dojo.Game.Placement
         /// </remarks>
         public List<SavedAssignment> assignments = new List<SavedAssignment>();
 
+        /// <summary>
+        /// The rooms placed in this world, which its pieces name in <see cref="SavedPiece.room"/>.
+        /// Absent from a world saved before rooms were grouped; its pieces then simply stand loose.
+        /// </summary>
+        public List<SavedRoom> rooms = new List<SavedRoom>();
+
         // ── The shape before floors ─────────────────────────────────────────────────────────
         // Read, never written. The default world in the content pack and any world saved before
         // floors existed hold everything at the top level; Normalised moves it onto floor 0, where
@@ -296,6 +302,11 @@ namespace Dojo.Game.Placement
             if (connectors == null)
             {
                 connectors = new List<SavedConnector>();
+            }
+
+            if (rooms == null)
+            {
+                rooms = new List<SavedRoom>();
             }
 
             if (navigation == null)
@@ -639,6 +650,31 @@ namespace Dojo.Game.Placement
 
             /// <summary>Whether this piece is ground. Restored rather than re-derived.</summary>
             public bool isFloor;
+
+            /// <summary>
+            /// The <see cref="SavedRoom.id"/> of the room this piece stands under, or empty for a
+            /// piece placed on its own.
+            /// </summary>
+            public string room;
+        }
+
+        /// <summary>One placed room: the container its pieces are grouped under.</summary>
+        [Serializable]
+        public sealed class SavedRoom
+        {
+            /// <summary>Unique within the world.</summary>
+            public string id;
+
+            /// <summary>The room's name, as the Rooms tab lists it.</summary>
+            public string name;
+
+            /// <summary>Content address of the room file it was placed from.</summary>
+            public string address;
+
+            public int floor;
+
+            /// <summary>Where its container stands, relative to its floor.</summary>
+            public Vector3 position;
         }
 
         /// <summary>One agent standing in the world, and where.</summary>

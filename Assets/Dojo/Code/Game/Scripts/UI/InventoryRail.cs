@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -101,49 +102,87 @@ namespace Dojo.Game.UI
             }
         }
 
-        /// <summary>Takes a category's entry off the rail, so it cannot be picked.</summary>
-        /// <remarks>
-        /// The entries below move up into its place, so a hidden tab leaves no hole in the rail.
-        /// </remarks>
+        // Every entry's place as authored, read the first time anything is hidden. The visible
+        // entries are laid into these places from the top, so whatever is hidden leaves no hole.
+        Vector2[] slots;
+
+        // Hidden for good - a tab the game has no use for, like the people's while they are off.
+        readonly HashSet<string> hidden = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        // Hidden for a while - while a room is being made - and brought back afterwards.
+        readonly HashSet<string> setAside = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>Takes a category's entry off the rail for good, so it cannot be picked.</summary>
         public void Hide(string category)
         {
+            if (!string.IsNullOrEmpty(category) && hidden.Add(category))
+            {
+                Relayout();
+            }
+        }
+
+        /// <summary>
+        /// Takes these categories off the rail until the next call, putting back any set aside
+        /// before. An empty list brings every one back that <see cref="Hide"/> did not take.
+        /// </summary>
+        public void SetAside(IEnumerable<string> categories)
+        {
+            setAside.Clear();
+
+            if (categories != null)
+            {
+                foreach (var category in categories)
+                {
+                    if (!string.IsNullOrEmpty(category))
+                    {
+                        setAside.Add(category);
+                    }
+                }
+            }
+
+            Relayout();
+        }
+
+        /// <summary>Whether a category's entry is on the rail.</summary>
+        public bool IsShown(string category)
+            => !string.IsNullOrEmpty(category) && !hidden.Contains(category) && !setAside.Contains(category);
+
+        /// <summary>Shows the entries that are not hidden, top to bottom in the authored places.</summary>
+        void Relayout()
+        {
+            if (slots == null)
+            {
+                slots = new Vector2[entries.Length];
+
+                for (int i = 0; i < entries.Length; i++)
+                {
+                    if (entries[i] != null && entries[i].button != null)
+                    {
+                        slots[i] = ((RectTransform)entries[i].button.transform).anchoredPosition;
+                    }
+                }
+            }
+
+            var next = 0;
+
             for (int i = 0; i < entries.Length; i++)
             {
                 var entry = entries[i];
 
-                if (entry == null || entry.button == null || !entry.button.gameObject.activeSelf
-                    || !string.Equals(entry.category, category, StringComparison.OrdinalIgnoreCase))
+                if (entry == null || entry.button == null)
                 {
                     continue;
                 }
 
-                var rect = (RectTransform)entry.button.transform;
-                var step = StepAt(i);
+                var shown = IsShown(entry.category);
+                entry.button.gameObject.SetActive(shown);
 
-                entry.button.gameObject.SetActive(false);
-
-                for (int j = i + 1; j < entries.Length; j++)
+                if (shown)
                 {
-                    if (entries[j] != null && entries[j].button != null)
-                    {
-                        var below = (RectTransform)entries[j].button.transform;
-                        below.anchoredPosition += new Vector2(0f, step);
-                    }
+                    ((RectTransform)entry.button.transform).anchoredPosition = slots[next];
+                    next++;
                 }
             }
-        }
-
-        /// <summary>How far apart the entries stand, measured at <paramref name="index"/>.</summary>
-        float StepAt(int index)
-        {
-            var here = entries[index].button.transform as RectTransform;
-            var next = index + 1 < entries.Length && entries[index + 1] != null && entries[index + 1].button != null
-                ? entries[index + 1].button.transform as RectTransform
-                : index > 0 && entries[index - 1] != null && entries[index - 1].button != null
-                    ? entries[index - 1].button.transform as RectTransform
-                    : null;
-
-            return here != null && next != null ? Mathf.Abs(here.anchoredPosition.y - next.anchoredPosition.y) : 0f;
         }
 
         /// <summary>Clears the selection without raising anything. What the screen closes to.</summary>
