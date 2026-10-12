@@ -11,7 +11,10 @@ namespace Dojo.Game.Placement
     {
         public string name;
 
-        /// <summary>Content address of the room's world file: <c>&lt;pack&gt;/Rooms/room_&lt;name&gt;</c>.</summary>
+        /// <summary>
+        /// Address of the room's world file: <c>&lt;pack&gt;/Rooms/default_room_&lt;name&gt;</c> for
+        /// the pack's rooms, <c>custom/room_&lt;name&gt;</c> for the ones the player has made.
+        /// </summary>
         public string address;
 
         /// <summary>

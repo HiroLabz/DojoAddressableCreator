@@ -183,6 +183,12 @@ namespace Dojo.Game.Placement
                 return false;
             }
 
+            // Its thumbnail goes beside the pack rooms' own, so a name of theirs would replace one.
+            if (!catalog.Custom.IsNameFree(name, out problem))
+            {
+                return false;
+            }
+
             if (IsEmpty)
             {
                 problem = "Nothing has been built yet, so there is no room to save.";
