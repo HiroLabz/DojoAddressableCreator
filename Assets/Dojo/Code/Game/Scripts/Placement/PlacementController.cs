@@ -26,7 +26,7 @@ namespace Dojo.Game.Placement
     /// Ordering it first lets this claim the press in the same frame it happens.
     /// </remarks>
     [DefaultExecutionOrder(-100)]
-    public sealed class PlacementController : MonoBehaviour
+    public sealed partial class PlacementController : MonoBehaviour
     {
         /// <summary>Where the gesture currently is. Mirrors the state machine in the GDD.</summary>
         enum State
@@ -42,6 +42,12 @@ namespace Dojo.Game.Placement
             /// released; the middle button turns it, and only a click puts it down.
             /// </summary>
             Pending,
+
+            /// <summary>
+            /// A whole room out of the Rooms tab, carried as a ghost. Turned and put down like a
+            /// piece; see <c>PlacementController.Rooms.cs</c>.
+            /// </summary>
+            Room,
         }
 
         [Header("Wiring")]
@@ -337,6 +343,10 @@ namespace Dojo.Game.Placement
                 case State.Pending:
                     TickPending(mouse);
                     break;
+
+                case State.Room:
+                    TickRoom(mouse);
+                    break;
             }
         }
 
@@ -619,6 +629,11 @@ namespace Dojo.Game.Placement
             // rider's own rotation so its footprint agrees with the way it now looks.
             var turned = held != null ? held.RotationSteps - ridersLiftedAtSteps : 0;
 
+            // Back under whatever the piece that carried them stands under - its floor, or its
+            // room. Not the scene root: nothing there is on a floor, so a mug carried on a desk
+            // would have dropped out of every save from then on.
+            var home = held != null ? held.transform.parent : null;
+
             foreach (var prop in riders)
             {
                 if (prop == null)
@@ -626,7 +641,7 @@ namespace Dojo.Game.Placement
                     continue;
                 }
 
-                prop.transform.SetParent(null, true);
+                prop.transform.SetParent(home, true);
                 prop.SetRotationSteps(prop.RotationSteps + turned);
                 prop.Settle();
 

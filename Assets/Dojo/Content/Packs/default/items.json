@@ -196,6 +196,45 @@
                 "y": 0
             },
             "data": ""
+        },
+        {
+            "id": "default.defaultsupercomputer",
+            "category": "appliances",
+            "name": "default_superComputer",
+            "address": "default/default_superComputer",
+            "icon": "default/Thumbnails/default_superComputer",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultsupercomputer2",
+            "category": "appliances",
+            "name": "default_superComputer_2",
+            "address": "default/default_superComputer_2",
+            "icon": "default/Thumbnails/default_superComputer_2",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultsupercomputer3",
+            "category": "appliances",
+            "name": "default_superComputer_3",
+            "address": "default/default_superComputer_3",
+            "icon": "default/Thumbnails/default_superComputer_3",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
         }
     ]
 }

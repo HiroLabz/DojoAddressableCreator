@@ -49,6 +49,12 @@ namespace Dojo.Game.UI
         [Tooltip("The category that opens the areas panel instead of the item grid.")]
         [SerializeField] string areasCategory = "areas";
 
+        [Tooltip("The rooms the loaded packs offer, each built into the world with one button.")]
+        [SerializeField] RoomsDisplayUI roomsHud;
+
+        [Tooltip("The category that opens the rooms panel instead of the item grid.")]
+        [SerializeField] string roomsCategory = "rooms";
+
         [Header("Chrome")]
         [Tooltip("The X in the header. Closes the whole screen.")]
         [SerializeField] Button closeButton;
@@ -85,16 +91,58 @@ namespace Dojo.Game.UI
             this.phase = phase;
         }
 
-        /// <summary>Takes the Agents and You tabs off the rail, for a world with no characters.</summary>
-        public void HideCharacterTabs()
+        /// <summary>Takes the Agents tab, the You tab, or both off the rail, for characters that are switched off.</summary>
+        bool holdOpen;
+
+        /// <summary>
+        /// For making a room: only the tabs a room is built from - floors, walls and the rest of the
+        /// pieces - and the screen held open; or, with <paramref name="editing"/> false, back to how
+        /// it was.
+        /// </summary>
+        public void SetRoomEditing(bool editing)
+        {
+            if (rail != null)
+            {
+                rail.SetAside(editing
+                    ? new[] { areasCategory, roomsCategory, agentsCategory, youCategory }
+                    : null);
+            }
+
+            holdOpen = editing;
+
+            if (!editing)
+            {
+                return;
+            }
+
+            if (!IsOpen)
+            {
+                Open();
+            }
+
+            // Off whichever tab was up if it has just been set aside, onto the floors.
+            if (rail != null && (string.IsNullOrEmpty(rail.Selected) || !rail.IsShown(rail.Selected)))
+            {
+                rail.Select(defaultCategory);
+            }
+        }
+
+        public void HideCharacterTabs(bool agents, bool you)
         {
             if (rail == null)
             {
                 return;
             }
 
-            rail.Hide(agentsCategory);
-            rail.Hide(youCategory);
+            if (agents)
+            {
+                rail.Hide(agentsCategory);
+            }
+
+            if (you)
+            {
+                rail.Hide(youCategory);
+            }
         }
 
         /// <summary>Whether the screen is on show.</summary>
@@ -204,6 +252,13 @@ namespace Dojo.Game.UI
         /// </summary>
         public void Close()
         {
+            // While a room is being made the inventory is how it is made, and the menu that would
+            // open it again is put away, so it stays open until the room is saved or cancelled.
+            if (holdOpen)
+            {
+                return;
+            }
+
             Root.SetActive(false);
 
             if (phase != null)
@@ -265,6 +320,26 @@ namespace Dojo.Game.UI
             bool areas = !string.IsNullOrEmpty(areasCategory)
                 && string.Equals(category, areasCategory, StringComparison.OrdinalIgnoreCase);
 
+            bool rooms = !string.IsNullOrEmpty(roomsCategory)
+                && string.Equals(category, roomsCategory, StringComparison.OrdinalIgnoreCase);
+
+            if (roomsHud != null)
+            {
+                if (rooms)
+                {
+                    roomsHud.Show();
+                }
+                else
+                {
+                    roomsHud.Dismiss();
+                }
+            }
+            else if (rooms)
+            {
+                Debug.LogWarning("[InventoryScreen] The Rooms tab has no panel behind it. "
+                    + "Run Tools > Dojo > Add Rooms Tab.", this);
+            }
+
             if (areasHud != null)
             {
                 if (areas)
@@ -324,7 +399,7 @@ namespace Dojo.Game.UI
             }
 
             // The grid answers for every category that is not one of the special tabs.
-            bool grid = !agents && !you && !areas;
+            bool grid = !agents && !you && !areas && !rooms;
 
             if (hud != null)
             {

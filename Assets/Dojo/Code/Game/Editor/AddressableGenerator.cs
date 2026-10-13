@@ -69,6 +69,12 @@ namespace Dojo.Game.Editor
         const string SharedGroup = "Content_Shared";
 
         /// <summary>
+        /// Assets every pack shares, outside all of them: the shader the pack materials are drawn
+        /// with. The same file lives at the same path in the game.
+        /// </summary>
+        const string SharedAssetsFolder = "Assets/Dojo/Shaders";
+
+        /// <summary>
         /// Background used when a transparent icon is wanted, then keyed out to alpha. Magenta
         /// because nothing in an office set is this colour, so nothing real gets punched out.
         /// </summary>
@@ -678,6 +684,9 @@ namespace Dojo.Game.Editor
             // Assets the game asks for by a fixed address — the rosters — which no amount of
             // thumbnail rendering would ever have registered.
             packReport += RegisterDataAssets();
+
+            // What every pack's materials share — the fading shader — in a bundle of its own.
+            packReport += RegisterSharedAssets();
 
             lastResult = entries.Count + " thumbnail(s) written to\n" + outputFolder
                 + "\n\nPack: " + Pack + "   Addresses: " + Prefix + "/…"
@@ -1508,6 +1517,86 @@ namespace Dojo.Game.Editor
             AssetDatabase.SaveAssets();
 
             var report = "\n\nData assets: " + done.Count + " registered into " + dataGroupName;
+            foreach (var address in done)
+            {
+                report += "\n  " + address;
+            }
+
+            foreach (var problem in problems)
+            {
+                report += "\n  " + problem;
+            }
+
+            return report;
+        }
+
+        /// <summary>
+        /// Registers what every pack's materials share - the <c>Dojo/Fade Lit</c> shader - into
+        /// <see cref="SharedGroup"/> with no pack label, addressed <c>shared/&lt;name&gt;</c>.
+        /// </summary>
+        /// <remarks>
+        /// Done on every run, whichever pack, because Clear Addressables removes every entry.
+        /// <para>
+        /// With no label, the group's pack-together-by-label rule gives these a small bundle of their
+        /// own, which each pack's bundles depend on: downloading a pack brings it along, and no pack
+        /// has to download another's textures to get it. Left as an implicit dependency instead, the
+        /// shader would be copied into every pack's bundle.
+        /// </para>
+        /// </remarks>
+        string RegisterSharedAssets()
+        {
+            if (!applyToAddressables || !AssetDatabase.IsValidFolder(SharedAssetsFolder))
+            {
+                return "";
+            }
+
+            var settings = AddressableAssetSettingsDefaultObject.Settings;
+            if (settings == null)
+            {
+                return "";
+            }
+
+            var group = settings.FindGroup(SharedGroup);
+            if (group == null)
+            {
+                return "\n\nShared assets: skipped — there is no " + SharedGroup + " group.";
+            }
+
+            var problems = new List<string>();
+            var done = new List<string>();
+
+            foreach (var assetPath in FindExtraAssets(SharedAssetsFolder))
+            {
+                var guid = AssetDatabase.AssetPathToGUID(assetPath);
+                var address = "shared/" + Path.GetFileNameWithoutExtension(assetPath);
+
+                ReleaseAddress(settings, address, guid, problems);
+
+                var entry = settings.CreateOrMoveEntry(guid, group, false, false);
+                if (entry == null)
+                {
+                    problems.Add("could not add " + assetPath + " to " + SharedGroup);
+                    continue;
+                }
+
+                if (entry.address != address)
+                {
+                    entry.SetAddress(address, false);
+                }
+
+                // Copied first: SetLabel mutates the very set being walked.
+                foreach (var label in new List<string>(entry.labels))
+                {
+                    entry.SetLabel(label, false, false, false);
+                }
+
+                done.Add(address);
+            }
+
+            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryModified, null, true, true);
+            AssetDatabase.SaveAssets();
+
+            var report = "\n\nShared assets: " + done.Count + " registered into " + SharedGroup + ", no label";
             foreach (var address in done)
             {
                 report += "\n  " + address;

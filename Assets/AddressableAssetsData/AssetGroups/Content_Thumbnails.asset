@@ -39,6 +39,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 142e97608488ca34782ac06b620de741
+    m_Address: default/Thumbnails/default_superComputer_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1a7e95b1566b60a4ba5b27c3994533c7
     m_Address: default/Thumbnails/default_grayFloor
     m_ReadOnly: 0
@@ -69,6 +75,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5c429e2af864d04418e72547a50956d2
+    m_Address: default/Thumbnails/default_superComputer
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6721c692ed6089f4899ef05685a52ca9
     m_Address: strawberry/Thumbnails/default_monitor_1
     m_ReadOnly: 0
@@ -89,6 +101,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8cc75f3ff35657142b3e968e33191f68
     m_Address: default/Thumbnails/default_chair_blue
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8d5c0568371a84a42b2ef4a460e640e5
+    m_Address: default/Thumbnails/default_superComputer_3
     m_ReadOnly: 0
     m_SerializedLabels:
     - default

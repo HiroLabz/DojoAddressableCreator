@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -101,15 +102,85 @@ namespace Dojo.Game.UI
             }
         }
 
-        /// <summary>Takes a category's entry off the rail, so it cannot be picked.</summary>
+        // Every entry's place as authored, read the first time anything is hidden. The visible
+        // entries are laid into these places from the top, so whatever is hidden leaves no hole.
+        Vector2[] slots;
+
+        // Hidden for good - a tab the game has no use for, like the people's while they are off.
+        readonly HashSet<string> hidden = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        // Hidden for a while - while a room is being made - and brought back afterwards.
+        readonly HashSet<string> setAside = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>Takes a category's entry off the rail for good, so it cannot be picked.</summary>
         public void Hide(string category)
         {
-            foreach (var entry in entries)
+            if (!string.IsNullOrEmpty(category) && hidden.Add(category))
             {
-                if (entry != null && entry.button != null
-                    && string.Equals(entry.category, category, StringComparison.OrdinalIgnoreCase))
+                Relayout();
+            }
+        }
+
+        /// <summary>
+        /// Takes these categories off the rail until the next call, putting back any set aside
+        /// before. An empty list brings every one back that <see cref="Hide"/> did not take.
+        /// </summary>
+        public void SetAside(IEnumerable<string> categories)
+        {
+            setAside.Clear();
+
+            if (categories != null)
+            {
+                foreach (var category in categories)
                 {
-                    entry.button.gameObject.SetActive(false);
+                    if (!string.IsNullOrEmpty(category))
+                    {
+                        setAside.Add(category);
+                    }
+                }
+            }
+
+            Relayout();
+        }
+
+        /// <summary>Whether a category's entry is on the rail.</summary>
+        public bool IsShown(string category)
+            => !string.IsNullOrEmpty(category) && !hidden.Contains(category) && !setAside.Contains(category);
+
+        /// <summary>Shows the entries that are not hidden, top to bottom in the authored places.</summary>
+        void Relayout()
+        {
+            if (slots == null)
+            {
+                slots = new Vector2[entries.Length];
+
+                for (int i = 0; i < entries.Length; i++)
+                {
+                    if (entries[i] != null && entries[i].button != null)
+                    {
+                        slots[i] = ((RectTransform)entries[i].button.transform).anchoredPosition;
+                    }
+                }
+            }
+
+            var next = 0;
+
+            for (int i = 0; i < entries.Length; i++)
+            {
+                var entry = entries[i];
+
+                if (entry == null || entry.button == null)
+                {
+                    continue;
+                }
+
+                var shown = IsShown(entry.category);
+                entry.button.gameObject.SetActive(shown);
+
+                if (shown)
+                {
+                    ((RectTransform)entry.button.transform).anchoredPosition = slots[next];
+                    next++;
                 }
             }
         }

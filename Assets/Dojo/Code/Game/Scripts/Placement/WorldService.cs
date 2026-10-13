@@ -134,8 +134,11 @@ namespace Dojo.Game.Placement
         /// <summary>Where the library is read from and written to.</summary>
         public string FullPath => library.FullPath;
 
-        /// <summary>Whether agents and the manager are brought into the world. See <see cref="WorldSettings.Characters"/>.</summary>
-        public bool Characters => settings.Characters;
+        /// <summary>Whether agents are brought into the world. See <see cref="WorldSettings.Agents"/>.</summary>
+        public bool Agents => settings.Agents;
+
+        /// <summary>Whether the manager is brought into the world. See <see cref="WorldSettings.Manager"/>.</summary>
+        public bool Manager => settings.Manager;
 
         /// <summary>
         /// The name of the world standing in the scene, or null when it has none yet - a new world,
@@ -180,6 +183,11 @@ namespace Dojo.Game.Placement
         /// </remarks>
         public string SaveOpenWorld()
         {
+            if (SavingSuspended)
+            {
+                return OpenWorldName;
+            }
+
             RefreshKnown();
 
             var unnamed = string.IsNullOrEmpty(OpenWorldName);
@@ -196,6 +204,29 @@ namespace Dojo.Game.Placement
 
         /// <summary>True when there is something to load.</summary>
         public bool HasSave => library.Exists;
+
+        /// <summary>
+        /// How many pieces and agents each world in the save file holds, by name. A world the file
+        /// does not have is simply not in the answer.
+        /// </summary>
+        /// <remarks>
+        /// From the file alone, in one read. For the save and load lists when there is no backend
+        /// to describe the worlds - offline, which is every run of the Runtime scene.
+        /// </remarks>
+        public Dictionary<string, Vector2Int> SavedCounts()
+        {
+            var counts = new Dictionary<string, Vector2Int>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var saved in library.Read().worlds)
+            {
+                if (saved != null && !string.IsNullOrEmpty(saved.name))
+                {
+                    counts[saved.name] = new Vector2Int(saved.PieceCount(), saved.AgentCount());
+                }
+            }
+
+            return counts;
+        }
 
         /// <summary>
         /// Every saved world, from the database when it can be read and the file otherwise.
@@ -285,24 +316,89 @@ namespace Dojo.Game.Placement
             SaveAs(library.Read(), name);
         }
 
+        /// <summary>
+        /// While true, nothing is written to the save file: not an auto save, not SAVE WORLD. On
+        /// while a room is being made, when what is standing is the room and not the world.
+        /// </summary>
+        public bool SavingSuspended { get; set; }
+
         /// <summary>Bakes navigation and writes the world into the library under this name.</summary>
         void SaveAs(WorldLibrary held, string name)
         {
+            if (SavingSuspended)
+            {
+                Debug.Log("[World] Not saving '" + name + "': saving is suspended while a room is being made.", world);
+                return;
+            }
+
             // Baked before the settings are read, so what is written describes the mesh that now
             // exists rather than the one that did a moment ago. Only for characters: nothing else
             // walks, and this runs on every auto save.
-            if (settings.Characters)
+            if (settings.AnyCharacters)
             {
                 navigation.Bake();
             }
 
+            int skipped;
+            var save = Capture(name, out skipped);
+
+            if (!settings.Agents || !settings.Manager)
+            {
+                KeepCharacters(held.Find(name), save, !settings.Agents, !settings.Manager);
+            }
+
+            held.Put(save);
+
+            // Saving is also choosing. Without this, "Save as World9" then a restart would open
+            // whatever was selected before, which reads as the save having been lost.
+            held.Select(name);
+            OpenWorldName = save.name;
+            known.Add(save.name);
+
+            library.Write(held);
+
+            // One line per save. The backend publisher lists everything it sends, but offline
+            // there is no publisher, and a save that left no trace was impossible to tell from one
+            // that never happened.
+            Debug.Log("[World] saved '" + name + "' - " + save.PieceCount() + " piece(s) on "
+                + save.floors.Count + " floor(s), to " + FullPath, world);
+
+            if (skipped > 0)
+            {
+                Debug.LogWarning("[World] '" + name + "' skipped " + skipped
+                    + " child object(s) with nothing to identify them; they are not in the save.", world);
+            }
+
+            // After the file, never instead of it, and not awaited. The world is already safe on
+            // disk by this line; the backend copy is an extra, and a database that is down must
+            // not be able to make saving fail.
+            _ = PublishAsync(save);
+        }
+
+        /// <summary>
+        /// What is standing, as a save, without writing it anywhere: for keeping the world in hand
+        /// while a room is made, and for the room itself when it is saved.
+        /// </summary>
+        public WorldSave Capture()
+        {
+            int skipped;
+            return Capture(string.IsNullOrEmpty(OpenWorldName) ? "the open world" : OpenWorldName, out skipped);
+        }
+
+        /// <summary>
+        /// Every floor, piece, room, agent, area, elevator and navigation setting standing now, as a
+        /// save called <paramref name="name"/>. <paramref name="skipped"/> counts the children that
+        /// could not be identified.
+        /// </summary>
+        WorldSave Capture(string name, out int skipped)
+        {
             var save = new WorldSave
             {
                 name = name,
                 savedUtc = DateTime.UtcNow.ToString("o"),
             };
 
-            var skipped = 0;
+            skipped = 0;
 
             // Every floor, the empty ones too: a floor the player has added but not yet furnished
             // is still part of the world, and has to be there on the next load.
@@ -310,9 +406,44 @@ namespace Dojo.Game.Placement
             {
                 var floor = save.FloorAt(storey.Index);
 
+                // The rooms on this floor, written before their pieces name them. One with nothing
+                // left in it is not a room any more and is not written.
+                var emptied = new List<GameObject>();
+
                 foreach (Transform child in storey.transform)
                 {
+                    var room = child.GetComponent<RoomContainer>();
+
+                    if (room != null && child.childCount == 0)
+                    {
+                        // Every piece of it deleted: tidied away, after the walk.
+                        emptied.Add(child.gameObject);
+                    }
+                    else if (room != null)
+                    {
+                        save.rooms.Add(new WorldSave.SavedRoom
+                        {
+                            id = room.Id,
+                            name = room.RoomName,
+                            address = room.Address,
+                            floor = storey.Index,
+                            position = storeys.ToFloor(storey.Index, child.position),
+                        });
+                    }
+                }
+
+                foreach (var empty in emptied)
+                {
+                    UnityEngine.Object.Destroy(empty);
+                }
+
+                var onFloor = new List<Transform>();
+                Storeys.AddPiecesUnder(storey.transform, onFloor);
+
+                foreach (var child in onFloor)
+                {
                     var piece = child.GetComponent<FurniturePiece>();
+                    var inRoom = child.parent != null ? child.parent.GetComponent<RoomContainer>() : null;
 
                     // Relative to the floor, which is the whole point: removing a floor below only
                     // renumbers this one, and nothing on it has to move.
@@ -383,13 +514,9 @@ namespace Dojo.Game.Placement
                         scale = child.localScale,
                         rotationSteps = piece.RotationSteps,
                         isFloor = piece.IsFloor,
+                        room = inRoom != null ? inRoom.Id : string.Empty,
                     });
                 }
-            }
-
-            if (!settings.Characters)
-            {
-                KeepCharacters(held.Find(name), save);
             }
 
             SaveBlockAreas(save);
@@ -397,29 +524,18 @@ namespace Dojo.Game.Placement
             save.connectors = shafts.Describe();
             save.navigation = navigation.Describe();
 
-            held.Put(save);
+            return save;
+        }
 
-            // Saving is also choosing. Without this, "Save as World9" then a restart would open
-            // whatever was selected before, which reads as the save having been lost.
-            held.Select(name);
-            OpenWorldName = save.name;
-            known.Add(save.name);
-
-            library.Write(held);
-
-            // The routine save is not logged: the backend publisher below lists every piece, agent
-            // and area it sends, so a second summary of the same save was only noise. What is kept
-            // is the case that summary was actually useful for — pieces that could not be written.
-            if (skipped > 0)
-            {
-                Debug.LogWarning("[World] '" + name + "' skipped " + skipped
-                    + " child object(s) with nothing to identify them; they are not in the save.", world);
-            }
-
-            // After the file, never instead of it, and not awaited. The world is already safe on
-            // disk by this line; the backend copy is an extra, and a database that is down must
-            // not be able to make saving fail.
-            _ = PublishAsync(save);
+        /// <summary>
+        /// Builds <paramref name="save"/> in place of what is standing, as the world called
+        /// <paramref name="openName"/> - or as no saved world, when it is null. Nothing is written
+        /// and nothing selected: for swapping between the world and a room being made.
+        /// </summary>
+        public void Show(WorldSave save, string openName)
+        {
+            Build(save);
+            OpenWorldName = openName;
         }
 
         /// <summary>
@@ -553,15 +669,15 @@ namespace Dojo.Game.Placement
         }
 
         /// <summary>
-        /// Copies the agents and managers of the world as it was last saved into the one being
-        /// written.
+        /// Copies the agents, the managers, or both, of the world as it was last saved into the one
+        /// being written - whichever are switched off.
         /// </summary>
         /// <remarks>
-        /// With characters off none are standing in the world, so a save written from what is
-        /// standing would drop every one of them. Keeping the previous save's means switching
-        /// characters back on finds them where they were.
+        /// Switched off, none of that kind are standing in the world, so a save written from what
+        /// is standing would drop every one of them. Keeping the previous save's means switching
+        /// them back on finds them where they were.
         /// </remarks>
-        static void KeepCharacters(WorldSave previous, WorldSave save)
+        static void KeepCharacters(WorldSave previous, WorldSave save, bool keepAgents, bool keepManagers)
         {
             if (previous == null)
             {
@@ -572,10 +688,19 @@ namespace Dojo.Game.Placement
 
             foreach (var floor in previous.floors)
             {
-                var into = save.FloorAt(floor.index);
+                var agents = keepAgents && floor.agents != null ? floor.agents : new List<WorldSave.SavedAgent>();
+                var managers = keepManagers && floor.managers != null ? floor.managers : new List<WorldSave.SavedAgent>();
 
-                into.agents.AddRange(floor.agents ?? new List<WorldSave.SavedAgent>());
-                into.managers.AddRange(floor.managers ?? new List<WorldSave.SavedAgent>());
+                // Only a floor that has someone on it is touched. Asking for every floor the old
+                // save had would bring back floors the world no longer has, empty, on every save.
+                if (agents.Count == 0 && managers.Count == 0)
+                {
+                    continue;
+                }
+
+                var into = save.FloorAt(floor.index);
+                into.agents.AddRange(agents);
+                into.managers.AddRange(managers);
             }
         }
 
@@ -709,8 +834,8 @@ namespace Dojo.Game.Placement
             }
 
             // Without characters nobody is fitted into the template's places, so none are read.
-            var owner = settings.Characters && managerRoster != null ? managerRoster.ReadOne() : null;
-            var people = settings.Characters && registry != null ? registry.Agents : null;
+            var owner = settings.Manager && managerRoster != null ? managerRoster.ReadOne() : null;
+            var people = settings.Agents && registry != null ? registry.Agents : null;
             int unplaced;
             var fitted = DefaultWorld.FitTo(template, people, owner, out unplaced);
 
@@ -718,7 +843,7 @@ namespace Dojo.Game.Placement
                 + fitted.AgentCount() + " of the player's agent(s) placed"
                 + (unplaced > 0 ? ", " + unplaced + " with no place left (place them from the Agents panel)" : "")
                 + (owner == null ? ", and no manager" : "")
-                + (settings.Characters ? "" : " (characters are off)") + ".", world);
+                + (settings.Agents ? "" : " (agents are off)") + ".", world);
 
             Build(fitted);
             OpenWorldName = null;
@@ -745,6 +870,63 @@ namespace Dojo.Game.Placement
         /// no areas, so the agent and manager cards offer Define Area rather than Edit Area over
         /// an area painted somewhere else.
         /// </remarks>
+        /// <summary>
+        /// Starts over on one floor tile: every piece, floor above the first, elevator and named
+        /// area goes, and a single <see cref="WorldSettings.ResetFloor"/> is laid at the middle of
+        /// floor 1. The saved worlds are not touched.
+        /// </summary>
+        /// <remarks>
+        /// Built through <see cref="Build"/> like any load, from a world of one piece, so nothing
+        /// of the old world can survive by being a kind of thing a reset forgot to clear.
+        /// <para>
+        /// The reset world is a new, unnamed one, as NEW WORLD's is, rather than the open world
+        /// emptied: it was first written over the open world's save, which made a world saved a
+        /// moment before come back empty and read as saving having failed. Its first save, by
+        /// SAVE WORLD or an auto save after the first change, is under a name of its own.
+        /// </para>
+        /// </remarks>
+        public void ResetWorld()
+        {
+            var address = settings.ResetFloor;
+
+            var empty = new WorldSave { name = "the reset world" };
+            empty.FloorAt(0).pieces.Add(new WorldSave.SavedPiece
+            {
+                prefabId = string.Empty,
+                resource = address,
+                name = address,
+                position = Vector3.zero,
+                rotation = Quaternion.identity,
+                scale = Vector3.one,
+                rotationSteps = 0,
+                isFloor = true,
+            });
+
+            Build(empty);
+
+            var was = OpenWorldName;
+
+            // Let go of the world that was open, so nothing - an auto save included - writes the
+            // reset over it. Nothing is selected until this world is saved under its own name.
+            OpenWorldName = null;
+
+            var held = library.Read();
+
+            if (held.Select(null))
+            {
+                library.Write(held);
+            }
+
+            if (selection != null)
+            {
+                selection.ClearCurrent();
+            }
+
+            Debug.Log("[World] Reset to one " + address + ". "
+                + (string.IsNullOrEmpty(was) ? "" : "'" + was + "' is still saved as it was; ")
+                + "this world is saved under a new name when it is first saved.", world);
+        }
+
         public void StartBlank()
         {
             LoadBlockAreas(new WorldSave { name = "the new world" });
@@ -981,46 +1163,43 @@ namespace Dojo.Game.Placement
             var built = 0;
             var missing = 0;
 
+            // The rooms' containers first, so each piece can be built straight into its own.
+            var rooms = new Dictionary<string, RoomContainer>();
+
+            foreach (var saved in save.rooms)
+            {
+                if (saved == null || string.IsNullOrEmpty(saved.id) || rooms.ContainsKey(saved.id)
+                    || saved.floor < 0 || saved.floor >= storeys.Count)
+                {
+                    continue;
+                }
+
+                rooms[saved.id] = RoomContainer.Create(storeys.Floor(saved.floor), saved.id, saved.name,
+                    saved.address, storeys.FromFloor(saved.floor, saved.position));
+            }
+
             foreach (var floor in save.floors)
             {
-                var into = storeys.Floor(floor.index);
+                var floorRoot = storeys.Floor(floor.index);
 
                 foreach (var saved in floor.pieces)
                 {
-                    var prefab = LoadPrefab(saved);
+                    // Into its room when it has one on this floor; otherwise loose on the floor, as
+                    // every piece of a world saved before rooms were grouped is.
+                    RoomContainer room;
+                    var into = !string.IsNullOrEmpty(saved.room) && rooms.TryGetValue(saved.room, out room)
+                        && Storeys.StoreyOf(room.transform) == floor.index
+                            ? room.transform
+                            : floorRoot;
 
-                    if (prefab == null)
+                    if (BuildPiece(saved, floor.index, into, layer) != null)
                     {
-                        Debug.LogWarning("[World] Nothing to build '" + saved.name + "' from — neither '"
-                            + saved.resource + "' nor the manifest resolved it. Skipped.", world);
-                        missing++;
-                        continue;
+                        built++;
                     }
-
-                    // Through the spawner, so the wrapper, the collider, the obstacle and the
-                    // navigation flags are made exactly as they were the first time. The saved
-                    // position is the wrapper's own, relative to its floor, so it is put back on it.
-                    var piece = FurnitureSpawner.Spawn(
-                        prefab, grid, storeys.FromFloor(floor.index, saved.position), layer,
-                        placement.MaxFootprintCells, into, resolver);
-
-                    if (piece == null)
+                    else
                     {
                         missing++;
-                        continue;
                     }
-
-                    var placed = piece.GetComponent<PlacedPiece>();
-                    if (placed != null)
-                    {
-                        placed.Set(saved.prefabId, saved.resource);
-                    }
-
-                    piece.SetRotationSteps(saved.rotationSteps);
-                    piece.transform.localScale = saved.scale;
-                    piece.Settle();
-
-                    built++;
                 }
             }
 
@@ -1050,15 +1229,15 @@ namespace Dojo.Game.Placement
 
             // Navigation is for the characters alone, so without them there is nothing to bake -
             // and baking every surface was most of the time a load took.
-            var baked = settings.Characters ? navigation.Bake(save.navigation) : 0;
+            var baked = settings.AnyCharacters ? navigation.Bake(save.navigation) : 0;
 
             // Areas before agents, and both after the bake. An agent is confined to its area the
             // moment it is brought to life, so its area has to be on its credentials by then — and
             // being brought to life means being put on a NavMesh, which does not exist until the
             // floors that were just built have been baked into one.
             var restored = LoadBlockAreas(save);
-            var assembled = settings.Characters ? AssembleAgents(save) : 0;
-            var bosses = settings.Characters ? AssembleManagers(save) : 0;
+            var assembled = settings.Agents ? AssembleAgents(save) : 0;
+            var bosses = settings.Manager ? AssembleManagers(save) : 0;
 
             // The elevators back to reacting, with their links laid over the mesh just baked.
             shafts.EndBuild();
@@ -1226,6 +1405,165 @@ namespace Dojo.Game.Placement
             {
                 UnityEngine.Object.DestroyImmediate(root.GetChild(i).gameObject);
             }
+        }
+
+        /// <summary>
+        /// Builds one saved piece onto a floor. Null, with the reason logged, when its prefab cannot
+        /// be found or measured.
+        /// </summary>
+        /// <summary>An id for a new room: unique within any world it will be saved in.</summary>
+        static string NewRoomId() => "room-" + Guid.NewGuid().ToString("N").Substring(0, 12);
+
+        FurniturePiece BuildPiece(WorldSave.SavedPiece saved, int floorIndex, Transform into, int layer)
+        {
+            var prefab = LoadPrefab(saved);
+
+            if (prefab == null)
+            {
+                Debug.LogWarning("[World] Nothing to build '" + saved.name + "' from — neither '"
+                    + saved.resource + "' nor the manifest resolved it. Skipped.", world);
+                return null;
+            }
+
+            // Through the spawner, so the wrapper, the collider, the obstacle and the navigation
+            // flags are made exactly as they were the first time. The saved position is the
+            // wrapper's own, relative to its floor, so it is put back on it.
+            var piece = FurnitureSpawner.Spawn(
+                prefab, grid, storeys.FromFloor(floorIndex, saved.position), layer,
+                placement.MaxFootprintCells, into, resolver);
+
+            if (piece == null)
+            {
+                return null;
+            }
+
+            var placed = piece.GetComponent<PlacedPiece>();
+            if (placed != null)
+            {
+                placed.Set(saved.prefabId, saved.resource);
+            }
+
+            piece.SetRotationSteps(saved.rotationSteps);
+            piece.transform.localScale = saved.scale;
+            piece.Settle();
+
+            return piece;
+        }
+
+        /// <summary>
+        /// Builds a room into the open world: its pieces and its named areas, onto one floor, turned
+        /// <paramref name="steps"/> quarter turns about its own origin and then moved by
+        /// <paramref name="offset"/>. Returns how many pieces were built.
+        /// </summary>
+        /// <remarks>
+        /// A room is a world file of one floor, the same shape the game saves, so its pieces go
+        /// through <see cref="BuildPiece"/> exactly as a loaded world's do and are ordinary pieces
+        /// afterwards - moved, rotated and deleted one by one, and saved by their own addresses.
+        /// Where it goes is the caller's choice; nothing here checks for room.
+        /// </remarks>
+        public int AddRoom(WorldSave room, int floorIndex, Vector3 offset, int steps, string fallbackName, string address = null)
+        {
+            if (room == null)
+            {
+                return 0;
+            }
+
+            room.Normalised();
+
+            // Every piece of the room under one container, standing where the room was put down.
+            var container = RoomContainer.Create(storeys.Floor(floorIndex), NewRoomId(), fallbackName,
+                address ?? string.Empty, storeys.FromFloor(floorIndex, offset));
+            var into = container.transform;
+            var layer = ResolveLayer();
+            var turn = Quaternion.Euler(0f, PlacementGrid.Normalise(steps) * 90f, 0f);
+            var added = new List<FurniturePiece>();
+            var missing = 0;
+            var areas = 0;
+
+            foreach (var floor in room.floors)
+            {
+                // One floor: a room's own floor 0 goes on whichever floor it is put on.
+                if (floor.index != 0)
+                {
+                    continue;
+                }
+
+                foreach (var saved in floor.pieces)
+                {
+                    // Moved as the room is, and turned with it: about the room's origin, and on
+                    // its own pivot by the same quarter turns.
+                    var moved = new WorldSave.SavedPiece
+                    {
+                        prefabId = saved.prefabId,
+                        resource = saved.resource,
+                        name = saved.name,
+                        position = turn * saved.position + offset,
+                        rotation = turn * saved.rotation,
+                        scale = saved.scale,
+                        rotationSteps = PlacementGrid.Normalise(saved.rotationSteps + steps),
+                        isFloor = saved.isFloor,
+                    };
+
+                    var piece = BuildPiece(moved, floorIndex, into, layer);
+
+                    if (piece != null)
+                    {
+                        added.Add(piece);
+                    }
+                    else
+                    {
+                        missing++;
+                    }
+                }
+            }
+
+            // As a load does: everything standing before the floor list, the cells held and what
+            // rests on what are worked out.
+            Physics.SyncTransforms();
+            placement.RefreshFloors();
+
+            foreach (var piece in added)
+            {
+                piece.SizeTo(grid.CellSize);
+                placement.Register(piece);
+            }
+
+            placement.ResolveSupports();
+
+            foreach (var floor in room.floors)
+            {
+                if (floor.index != 0)
+                {
+                    continue;
+                }
+
+                foreach (var saved in floor.blockAreas)
+                {
+                    if (saved == null || saved.area == null || saved.area.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    var cells = new List<Vector3>(saved.area.Count);
+
+                    foreach (var point in saved.area)
+                    {
+                        cells.Add(storeys.FromFloor(floorIndex, turn * point + offset));
+                    }
+
+                    var name = string.IsNullOrWhiteSpace(saved.name) ? fallbackName : saved.name;
+                    blockAreas.Add(name, floorIndex, cells, saved.areaCellSize > 0f ? saved.areaCellSize : grid.CellSize);
+                    areas++;
+                }
+            }
+
+            storeys.Refresh();
+
+            Debug.Log("[World] added room '" + fallbackName + "' on " + Storeys.LabelFor(floorIndex) + " at ("
+                + offset.x + ", " + offset.z + "), turned " + PlacementGrid.Normalise(steps) * 90 + " degrees - " + added.Count + " piece(s), " + areas + " area(s)"
+                + (missing > 0 ? ", " + missing + " could not be found" : "") + ".", world);
+
+            return added.Count;
         }
 
         /// <summary>The prefab a saved entry refers to: by content address, or by GUID via the manifest.</summary>

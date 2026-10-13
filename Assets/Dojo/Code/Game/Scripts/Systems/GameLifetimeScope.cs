@@ -98,7 +98,7 @@ namespace Dojo.Game.Systems
             if (placement != null)
             {
                 placement.Owner = owner;
-                placement.BakesNavigation = worldSettings == null || worldSettings.Characters;
+                placement.BakesNavigation = worldSettings == null || worldSettings.AnyCharacters;
             }
 
             DeclareAreaPainter(builder, placement);
@@ -221,6 +221,15 @@ namespace Dojo.Game.Systems
             builder.Register<NavigationBaker>(Lifetime.Singleton);
             builder.Register<WorldService>(Lifetime.Singleton);
 
+            // The Rooms tab's two halves: which rooms the packs offer, and putting one down.
+            builder.Register<RoomCatalog>(Lifetime.Singleton);
+            builder.Register<RoomPlacer>(Lifetime.Singleton);
+
+            // Making rooms: the ones the player has made, kept on disk, and the session that
+            // swaps the world for a blank floor and back.
+            builder.Register<CustomRooms>(Lifetime.Singleton);
+            builder.Register<RoomEditor>(Lifetime.Singleton);
+
             // Writes the selected world back whenever anything in it changes. Registered here
             // rather than on the root, because it is only meaningful where there is a world root
             // to save — the same condition this whole method already sits behind.
@@ -298,13 +307,20 @@ namespace Dojo.Game.Systems
                     }
                 }
 
-                // The Agents and You tabs, put away while characters are off: there is nobody for
-                // either to place.
-                if (hasWorld && !container.Resolve<WorldSettings>().Characters)
+                // The Agents tab while agents are off, the You tab while the manager is - there is
+                // nobody for it to place - and both while the inventory is kept to building.
+                if (hasWorld)
                 {
-                    foreach (var screen in FindObjectsByType<InventoryScreen>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                    var settings = container.Resolve<WorldSettings>();
+                    var hideAgents = !settings.Agents || !settings.CharacterTabs;
+                    var hideYou = !settings.Manager || !settings.CharacterTabs;
+
+                    if (hideAgents || hideYou)
                     {
-                        screen.HideCharacterTabs();
+                        foreach (var screen in FindObjectsByType<InventoryScreen>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                        {
+                            screen.HideCharacterTabs(hideAgents, hideYou);
+                        }
                     }
                 }
 
@@ -362,6 +378,20 @@ namespace Dojo.Game.Systems
                     foreach (var lift in FindObjectsByType<ElevatorPanel>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                     {
                         container.Inject(lift);
+                    }
+
+                    // The Rooms tab, which builds rooms into the world and so needs one. Inactive
+                    // included: it is down whenever its tab is not up.
+                    foreach (var rooms in FindObjectsByType<RoomsDisplayUI>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                    {
+                        container.Inject(rooms);
+                    }
+
+                    // The bar shown while a room is being made. Inactive included: it is down
+                    // whenever no room is.
+                    foreach (var bar in FindObjectsByType<RoomEditorBar>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                    {
+                        container.Inject(bar);
                     }
 
                     // The areas' locators, which mark the world's areas on its floors.

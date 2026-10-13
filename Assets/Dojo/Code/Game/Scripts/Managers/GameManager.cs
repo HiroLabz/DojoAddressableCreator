@@ -249,8 +249,8 @@ namespace Dojo.Game.Managers
         /// </remarks>
         void WarnIfNoManager()
         {
-            // Without characters there is meant to be nobody, so there is nothing to warn about.
-            if (World == null || !World.Characters || World.HasOwner)
+            // With the manager switched off there is meant to be nobody, so nothing to warn about.
+            if (World == null || !World.Manager || World.HasOwner)
             {
                 return;
             }
