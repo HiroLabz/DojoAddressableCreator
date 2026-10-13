@@ -172,7 +172,7 @@ namespace Dojo.Game.Placement
             var thumbnailTaken = File.Exists(Path.Combine(ThumbnailFolder, slug + ".png"));
             var prefabTaken = false;
 #if UNITY_EDITOR
-            prefabTaken = File.Exists(Path.Combine(Folder, "Prefabs", slug + ".prefab"));
+            prefabTaken = File.Exists(Path.Combine(Folder, "Editor/Prefabs", slug + ".prefab"));
 #endif
 
             if (thumbnailTaken || prefabTaken)
@@ -232,7 +232,21 @@ namespace Dojo.Game.Placement
 
             if (File.Exists(Path.Combine(ThumbnailFolder, slug + ".png")))
             {
-                UnityEditor.AssetDatabase.ImportAsset("Assets/Process/default/Rooms/Thumbnails/" + slug + ".png");
+                var thumbnail = "Assets/Process/default/Rooms/Thumbnails/" + slug + ".png";
+                UnityEditor.AssetDatabase.ImportAsset(thumbnail);
+
+                // As a single sprite, as every room thumbnail is: a PNG imports as a plain texture,
+                // and a card asking for a sprite would get nothing.
+                var importer = UnityEditor.AssetImporter.GetAtPath(thumbnail) as UnityEditor.TextureImporter;
+
+                if (importer != null)
+                {
+                    importer.textureType = UnityEditor.TextureImporterType.Sprite;
+                    importer.spriteImportMode = UnityEditor.SpriteImportMode.Single;
+                    importer.alphaIsTransparency = true;
+                    importer.mipmapEnabled = false;
+                    importer.SaveAndReimport();
+                }
             }
 #endif
         }
