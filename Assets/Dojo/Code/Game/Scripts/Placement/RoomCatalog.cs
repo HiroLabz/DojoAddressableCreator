@@ -176,7 +176,14 @@ namespace Dojo.Game.Placement
 #if UNITY_EDITOR
             // Not in Addressables yet - a room just promoted, before the generator's next run -
             // so straight from the pack's folder, which is where the generator will find it.
-            return UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(ProjectPathFor(room.icon, ".png"));
+            var fromFile = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(ProjectPathFor(room.icon, ".png"));
+
+            if (fromFile != null)
+            {
+                WarnFallback(room, "thumbnail", room.icon);
+            }
+
+            return fromFile;
 #else
             return null;
 #endif
@@ -188,6 +195,30 @@ namespace Dojo.Game.Placement
         /// </summary>
         static string ProjectPathFor(string address, string extension)
             => "Assets/Process/" + address + extension;
+
+        /// <summary>The addresses already warned about this session, so each is said once.</summary>
+        static readonly HashSet<string> warned = new HashSet<string>(StringComparer.Ordinal);
+
+        /// <summary>
+        /// Says that a room's file or thumbnail came from the project folder, not Addressables.
+        /// </summary>
+        /// <remarks>
+        /// The fallback keeps a room just promoted usable before the generator's next run, but it
+        /// would hide a room that does not resolve at all: a built game has no fallback, and that
+        /// room would be missing or blank there. Said once per address, so a clean Console after
+        /// Clear Addressables and a generator run means every room really resolved.
+        /// </remarks>
+        static void WarnFallback(RoomEntry room, string what, string address)
+        {
+            if (!warned.Add(what + ":" + address))
+            {
+                return;
+            }
+
+            Debug.LogWarning("[Rooms] '" + room.name + "' " + what + " is not in Addressables ('" + address
+                + "'); read from its file in the project instead. A built game would not find it - run the "
+                + "Addressable Generator on the default pack.");
+        }
 
         /// <summary>A piece's prefab, by the content address a room file names it by.</summary>
         public bool TryPrefab(string address, out GameObject prefab)
@@ -226,6 +257,7 @@ namespace Dojo.Game.Placement
                 if (System.IO.File.Exists(path))
                 {
                     text = System.IO.File.ReadAllText(path);
+                    WarnFallback(room, "room file", room.address);
                 }
             }
 #endif
