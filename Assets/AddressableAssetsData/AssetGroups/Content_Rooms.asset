@@ -87,20 +87,8 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 63c2d8dbc2047184487a89e8752a349c
-    m_Address: default/Rooms/room_testroom
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6ec1ab3ff5b18574b8d454c46bd4fbfc
     m_Address: default/Rooms/Thumbnails/room_finance
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 77a0751f773bac04c8443eaeb80e4f8c
-    m_Address: default/Rooms/Thumbnails/room_testroom
     m_ReadOnly: 0
     m_SerializedLabels:
     - default

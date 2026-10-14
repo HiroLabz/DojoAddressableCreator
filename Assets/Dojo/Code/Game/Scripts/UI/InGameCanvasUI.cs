@@ -674,7 +674,7 @@ namespace Dojo.Game.UI
                 : "'" + worlds.OpenWorldName + "' stays saved as it was.";
 
             dialogs.Confirm(
-                "Reset the world? Everything is cleared and a single floor is laid. " + kept
+                "Reset the world? Everything is cleared and the default world is loaded. " + kept
                     + " The reset world is saved under a new name.",
                 ResetWorld);
         }

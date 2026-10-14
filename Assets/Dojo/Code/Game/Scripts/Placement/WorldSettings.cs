@@ -55,7 +55,7 @@ namespace Dojo.Game.Placement
         [SerializeField] bool characterTabs = false;
 
         [Header("Reset")]
-        [Tooltip("Content address of the floor tile RESET WORLD lays, alone, in the middle of floor 1.")]
+        [Tooltip("Content address of the floor tile RESET WORLD lays, alone, in the middle of floor 1 - only when the content has no default world to load instead.")]
         [SerializeField] string resetFloor = "default/default_floor_1";
 
         [Header("Auto save")]

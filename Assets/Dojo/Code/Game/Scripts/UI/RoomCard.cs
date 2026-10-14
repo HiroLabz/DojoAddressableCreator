@@ -22,16 +22,27 @@ namespace Dojo.Game.UI
         [Tooltip("Shown while this card's room is on the cursor.")]
         [SerializeField] GameObject selectedState;
 
+        [Tooltip("Deletes the room. Only on rooms the player made: the pack's own cannot be deleted.")]
+        [SerializeField] Button deleteButton;
+
         public RoomEntry Room { get; private set; }
 
         /// <summary>Raised with the card's room when it is clicked.</summary>
         public event Action<RoomEntry> Picked;
+
+        /// <summary>Raised with the card's room when its DELETE is pressed.</summary>
+        public event Action<RoomEntry> DeletePressed;
 
         void Awake()
         {
             if (button != null)
             {
                 button.onClick.AddListener(() => Picked?.Invoke(Room));
+            }
+
+            if (deleteButton != null)
+            {
+                deleteButton.onClick.AddListener(() => DeletePressed?.Invoke(Room));
             }
 
             if (icon != null)
@@ -45,6 +56,12 @@ namespace Dojo.Game.UI
         public void Bind(RoomEntry room, Sprite thumbnail, Vector2 size)
         {
             Room = room;
+
+            // Only a room the player made can be deleted; the pack's own never show the button.
+            if (deleteButton != null)
+            {
+                deleteButton.gameObject.SetActive(room != null && CustomRooms.IsCustom(room.address));
+            }
 
             if (nameLabel != null)
             {

@@ -824,26 +824,12 @@ namespace Dojo.Game.Placement
         /// </remarks>
         public bool LoadDefault()
         {
-            var template = DefaultWorld.Read(content);
+            var fitted = FittedDefault();
 
-            if (template == null)
+            if (fitted == null)
             {
-                Debug.LogWarning("[World] There is no default world at '" + DefaultWorld.Address
-                    + "' in the content, so there is nothing to start from.", world);
                 return false;
             }
-
-            // Without characters nobody is fitted into the template's places, so none are read.
-            var owner = settings.Manager && managerRoster != null ? managerRoster.ReadOne() : null;
-            var people = settings.Agents && registry != null ? registry.Agents : null;
-            int unplaced;
-            var fitted = DefaultWorld.FitTo(template, people, owner, out unplaced);
-
-            Debug.Log("[World] starting from the default world '" + template.name + "': "
-                + fitted.AgentCount() + " of the player's agent(s) placed"
-                + (unplaced > 0 ? ", " + unplaced + " with no place left (place them from the Agents panel)" : "")
-                + (owner == null ? ", and no manager" : "")
-                + (settings.Agents ? "" : " (agents are off)") + ".", world);
 
             Build(fitted);
             OpenWorldName = null;
@@ -871,13 +857,44 @@ namespace Dojo.Game.Placement
         /// an area painted somewhere else.
         /// </remarks>
         /// <summary>
-        /// Starts over on one floor tile: every piece, floor above the first, elevator and named
-        /// area goes, and a single <see cref="WorldSettings.ResetFloor"/> is laid at the middle of
-        /// floor 1. The saved worlds are not touched.
+        /// The default world from the content pack, with the player's own agents and manager in its
+        /// places; or null, said in the log, when the content has none.
+        /// </summary>
+        WorldSave FittedDefault()
+        {
+            var template = DefaultWorld.Read(content);
+
+            if (template == null)
+            {
+                Debug.LogWarning("[World] There is no default world at '" + DefaultWorld.Address
+                    + "' in the content, so there is nothing to start from.", world);
+                return null;
+            }
+
+            // Without characters nobody is fitted into the template's places, so none are read.
+            var owner = settings.Manager && managerRoster != null ? managerRoster.ReadOne() : null;
+            var people = settings.Agents && registry != null ? registry.Agents : null;
+            int unplaced;
+            var fitted = DefaultWorld.FitTo(template, people, owner, out unplaced);
+
+            Debug.Log("[World] starting from the default world '" + template.name + "': "
+                + fitted.AgentCount() + " of the player's agent(s) placed"
+                + (unplaced > 0 ? ", " + unplaced + " with no place left (place them from the Agents panel)" : "")
+                + (owner == null ? ", and no manager" : "")
+                + (settings.Agents ? "" : " (agents are off)") + ".", world);
+
+            return fitted;
+        }
+
+        /// <summary>
+        /// Starts over from the default world: everything standing goes, and the content pack's
+        /// default world is built in its place, the player's agents and manager in its places. The
+        /// saved worlds are not touched.
         /// </summary>
         /// <remarks>
-        /// Built through <see cref="Build"/> like any load, from a world of one piece, so nothing
-        /// of the old world can survive by being a kind of thing a reset forgot to clear.
+        /// Built through <see cref="Build"/> like any load, so nothing of the old world can survive
+        /// by being a kind of thing a reset forgot to clear. With no default world in the content
+        /// it falls back to one <see cref="WorldSettings.ResetFloor"/> at the middle of floor 1.
         /// <para>
         /// The reset world is a new, unnamed one, as NEW WORLD's is, rather than the open world
         /// emptied: it was first written over the open world's save, which made a world saved a
@@ -887,22 +904,10 @@ namespace Dojo.Game.Placement
         /// </remarks>
         public void ResetWorld()
         {
-            var address = settings.ResetFloor;
+            var start = FittedDefault();
+            var from = start != null ? "the default world" : "one " + settings.ResetFloor;
 
-            var empty = new WorldSave { name = "the reset world" };
-            empty.FloorAt(0).pieces.Add(new WorldSave.SavedPiece
-            {
-                prefabId = string.Empty,
-                resource = address,
-                name = address,
-                position = Vector3.zero,
-                rotation = Quaternion.identity,
-                scale = Vector3.one,
-                rotationSteps = 0,
-                isFloor = true,
-            });
-
-            Build(empty);
+            Build(start ?? OneFloor());
 
             var was = OpenWorldName;
 
@@ -922,9 +927,30 @@ namespace Dojo.Game.Placement
                 selection.ClearCurrent();
             }
 
-            Debug.Log("[World] Reset to one " + address + ". "
+            Debug.Log("[World] Reset to " + from + ". "
                 + (string.IsNullOrEmpty(was) ? "" : "'" + was + "' is still saved as it was; ")
                 + "this world is saved under a new name when it is first saved.", world);
+        }
+
+        /// <summary>A world of one <see cref="WorldSettings.ResetFloor"/>: what a reset falls back to with no default world.</summary>
+        WorldSave OneFloor()
+        {
+            var address = settings.ResetFloor;
+            var single = new WorldSave { name = "the reset world" };
+
+            single.FloorAt(0).pieces.Add(new WorldSave.SavedPiece
+            {
+                prefabId = string.Empty,
+                resource = address,
+                name = address,
+                position = Vector3.zero,
+                rotation = Quaternion.identity,
+                scale = Vector3.one,
+                rotationSteps = 0,
+                isFloor = true,
+            });
+
+            return single;
         }
 
         public void StartBlank()

@@ -1832,6 +1832,18 @@ namespace Dojo.Game.Editor
             Wire(card, "sizeLabel", size);
             Wire(card, "selectedState", selected);
 
+            // DELETE in the top right corner, over the thumbnail and after the selected state so it
+            // stays clickable. Shown by the card only on rooms the player made.
+            var delete = Node("Delete", root.transform);
+            Place(delete.GetComponent<RectTransform>(), 1f, 1f, new Vector2(-8f, -8f), new Vector2(64f, 24f));
+            var deleteFace = Sliced(delete, Art.ButtonDanger);
+            var deleteButton = delete.AddComponent<Button>();
+            deleteButton.targetGraphic = deleteFace;
+            var deleteLabel = Text(delete.transform, "Label", "DELETE", 10f, TextAlignmentOptions.Center);
+            Stretch(deleteLabel.rectTransform);
+            delete.SetActive(false);
+            Wire(card, "deleteButton", deleteButton);
+
             return SavePrefab(root, "RoomCard").GetComponent<RoomCard>();
         }
 

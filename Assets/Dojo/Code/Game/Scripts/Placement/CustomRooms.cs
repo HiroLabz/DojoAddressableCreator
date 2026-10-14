@@ -185,6 +185,84 @@ namespace Dojo.Game.Placement
         }
 
         /// <summary>
+        /// Deletes a room the player made, and everything of it: its file - which holds its area
+        /// too - its thumbnail, and both metas. The pack's own rooms cannot be deleted from here.
+        /// False, with <paramref name="problem"/> saying why, when nothing was deleted.
+        /// </summary>
+        /// <remarks>
+        /// Only an address of this store, naming a <c>room_</c> file, is taken: the pack's rooms
+        /// are <c>default_room_</c> files reached through Addressables, and never match. In the
+        /// editor the files go through the asset database, so the metas go with them and any
+        /// Addressables entry for them is dropped; in a built game they are simply removed.
+        /// Worlds the room was placed in keep their own copy of its pieces and area.
+        /// </remarks>
+        public bool Delete(string address, out string problem)
+        {
+            problem = null;
+
+            if (!IsCustom(address))
+            {
+                problem = "Only rooms you made can be deleted. The pack's own rooms stay.";
+                return false;
+            }
+
+            var slug = address.Substring(AddressPrefix.Length);
+
+            if (!slug.StartsWith(FilePrefix, StringComparison.Ordinal) || slug.IndexOfAny(new[] { '/', '\\', '.' }) >= 0)
+            {
+                problem = "'" + address + "' is not one of the rooms you made.";
+                return false;
+            }
+
+            var json = Path.Combine(Folder, slug + ".json");
+            var png = Path.Combine(ThumbnailFolder, slug + ".png");
+
+            if (!File.Exists(json))
+            {
+                problem = "That room is already gone.";
+                return false;
+            }
+
+            Remove(json, "Assets/Process/default/Rooms/" + slug + ".json");
+            Remove(png, "Assets/Process/default/Rooms/Thumbnails/" + slug + ".png");
+
+            Sprite sprite;
+            if (icons.TryGetValue(address, out sprite))
+            {
+                icons.Remove(address);
+
+                if (sprite != null)
+                {
+                    UnityEngine.Object.Destroy(sprite.texture);
+                    UnityEngine.Object.Destroy(sprite);
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>One of a room's files, and its meta: through the asset database in the editor.</summary>
+        static void Remove(string path, string assetPath)
+        {
+#if UNITY_EDITOR
+            if (UnityEditor.AssetDatabase.DeleteAsset(assetPath))
+            {
+                return;
+            }
+#endif
+            // Not an asset the editor knows - a build, or a file not imported yet: by hand.
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+
+            if (File.Exists(path + ".meta"))
+            {
+                File.Delete(path + ".meta");
+            }
+        }
+
+        /// <summary>
         /// Writes a room and its thumbnail under <paramref name="name"/>, replacing one of that name.
         /// Returns its address.
         /// </summary>

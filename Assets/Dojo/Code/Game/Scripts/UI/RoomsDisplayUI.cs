@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Dojo.Framework.UI;
 using Dojo.Game.Placement;
 using TMPro;
 using UnityEngine;
@@ -51,19 +52,70 @@ namespace Dojo.Game.UI
 
         [Inject]
         public void Construct(RoomCatalog roomCatalog, RoomPlacer roomPlacer, Storeys floors,
-            PlacementController placementController, RoomEditor roomEditor)
+            PlacementController placementController, RoomEditor roomEditor, IDialogManager dialogManager)
         {
             catalog = roomCatalog;
             placer = roomPlacer;
             storeys = floors;
             placement = placementController;
             editor = roomEditor;
+            dialogs = dialogManager;
 
             editor.Changed += OnEditorChanged;
             editor.Saved += OnRoomSaved;
         }
 
         RoomEditor editor;
+        IDialogManager dialogs;
+
+        /// <summary>
+        /// Deletes a room the player made, after asking: its file and area, its thumbnail, and
+        /// their metas. The pack's rooms have no DELETE, and the store refuses them regardless.
+        /// </summary>
+        void OnDelete(RoomEntry room)
+        {
+            if (room == null || catalog == null)
+            {
+                return;
+            }
+
+            if (!CustomRooms.IsCustom(room.address))
+            {
+                Say("'" + room.name + "' is one of the pack's rooms, and cannot be deleted.");
+                return;
+            }
+
+            if (placement != null && placement.IsBusy)
+            {
+                Say("Put down what is in hand first.");
+                return;
+            }
+
+            void Delete()
+            {
+                string problem;
+
+                if (!catalog.Custom.Delete(room.address, out problem))
+                {
+                    Say(problem);
+                    return;
+                }
+
+                plans.Remove(room.address);
+                Rebuild();
+                Say("'" + room.name + "' deleted.");
+                Debug.Log("[Rooms] Deleted room '" + room.name + "' (" + room.address + "): its file, area, thumbnail and metas.");
+            }
+
+            if (dialogs == null)
+            {
+                Delete();
+                return;
+            }
+
+            dialogs.Confirm("Delete '" + room.name + "'? Its file, area and thumbnail are removed for good. "
+                + "Worlds it was placed in keep their copy.", Delete);
+        }
 
         void Awake()
         {
@@ -212,6 +264,7 @@ namespace Dojo.Game.UI
                     var card = Instantiate(cardPrefab, listContent);
                     card.Bind(room, catalog.IconOf(room), plan != null ? plan.Footprint.size : Vector2.zero);
                     card.Picked += OnPicked;
+                    card.DeletePressed += OnDelete;
                     cards.Add(card);
                 }
 
