@@ -268,61 +268,20 @@ namespace Dojo.Game.Editor
                 return "Only a room made in the room editor can be promoted: a room_<name>.json directly in " + Folder + ".";
             }
 
-            var slug = Path.GetFileNameWithoutExtension(fileName).Substring(MadeRoomPrefix.Length);
-            var target = Folder + "/" + PackRoomPrefix + slug + ".json";
-            var thumbnail = ThumbnailFolder + "/" + MadeRoomPrefix + slug + ".png";
-            var address = Pack + "/Rooms/" + PackRoomPrefix + slug;
-            var icon = Pack + "/Rooms/Thumbnails/" + MadeRoomPrefix + slug;
+            // The renaming and the room lists are the game's own promotion - the Rooms tab's PROMOTE
+            // runs the same - and filing into Addressables, which only editor code can do, is added here.
+            var slug = Path.GetFileNameWithoutExtension(fileName);
+            string name;
+            var problem = CustomRooms.PromoteInProject(slug, out name);
 
-            if (File.Exists(target))
+            if (problem != null)
             {
-                return "The pack already has a room at " + target + ".";
+                return problem;
             }
 
-            var index = ReadIndex();
-            if (index == null)
-            {
-                return IndexPath + " could not be read, so the room was not promoted.";
-            }
-
-            if (index.rooms.Exists(r => r != null && string.Equals(r.address, address, StringComparison.Ordinal)))
-            {
-                return "rooms.json already lists " + address + ".";
-            }
-
-            var name = RoomName(assetPath, slug);
-
-            var moved = AssetDatabase.MoveAsset(assetPath, target);
-            if (!string.IsNullOrEmpty(moved))
-            {
-                return "Could not rename " + assetPath + ": " + moved;
-            }
-
-            index.rooms.Add(new RoomEntry { name = name, address = address, icon = icon });
-            File.WriteAllText(IndexPath, JsonUtility.ToJson(index, true));
-
-            AssetDatabase.ImportAsset(target, ImportAssetOptions.ForceUpdate);
-            AssetDatabase.ImportAsset(IndexPath, ImportAssetOptions.ForceUpdate);
-
-            if (File.Exists(thumbnail))
-            {
-                AssetDatabase.ImportAsset(thumbnail, ImportAssetOptions.ForceUpdate);
-                ImportAsSprite(thumbnail);
-            }
-            else
-            {
-                Debug.LogWarning("[RoomsPack] '" + name + "' has no thumbnail at " + thumbnail
-                    + "; rooms.json names it anyway, so its card will be blank until one is there.");
-            }
-
-            // Registered now, at the addresses rooms.json gives, so the Rooms tab offers it as a pack
-            // room straight away rather than after the next generator run - which files it the same.
-            Register(target, address);
-            Register(thumbnail, icon);
-
-            Debug.Log("[RoomsPack] Promoted '" + name + "' into the pack: " + target + ", listed last in "
-                + IndexPath + " and filed into " + GroupName + ".",
-                AssetDatabase.LoadAssetAtPath<TextAsset>(target));
+            var x = slug.Substring(MadeRoomPrefix.Length);
+            Register(Folder + "/" + PackRoomPrefix + x + ".json", Pack + "/Rooms/" + PackRoomPrefix + x);
+            Register(ThumbnailFolder + "/" + slug + ".png", Pack + "/Rooms/Thumbnails/" + slug);
 
             return null;
         }
@@ -350,53 +309,6 @@ namespace Dojo.Game.Editor
             entry.SetLabel(Pack, true, true, false);
             settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryModified, entry, true, true);
             AssetDatabase.SaveAssets();
-        }
-
-        static Index ReadIndex()
-        {
-            if (!File.Exists(IndexPath))
-            {
-                return new Index();
-            }
-
-            try
-            {
-                var index = JsonUtility.FromJson<Index>(File.ReadAllText(IndexPath));
-                if (index != null && index.rooms == null)
-                {
-                    index.rooms = new List<RoomEntry>();
-                }
-
-                return index;
-            }
-            catch (Exception exception)
-            {
-                Debug.LogError("[RoomsPack] " + IndexPath + " could not be read: " + exception.Message);
-                return null;
-            }
-        }
-
-        /// <summary>The name the room was saved under, from its own file; the file name failing that.</summary>
-        static string RoomName(string assetPath, string slug)
-        {
-            try
-            {
-                var library = JsonUtility.FromJson<WorldLibrary>(File.ReadAllText(assetPath));
-                var world = library != null && library.worlds != null && library.worlds.Count > 0
-                    ? library.Find(library.CurrentName()) ?? library.worlds[0]
-                    : null;
-
-                if (world != null && !string.IsNullOrWhiteSpace(world.name))
-                {
-                    return world.name.Trim();
-                }
-            }
-            catch (Exception)
-            {
-                // Falls back to the file name below.
-            }
-
-            return ObjectNames.NicifyVariableName(slug.Replace('_', ' '));
         }
 
         // ── Menu ────────────────────────────────────────────────────────────────────────────

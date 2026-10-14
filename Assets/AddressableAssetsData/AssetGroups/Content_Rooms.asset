@@ -63,6 +63,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 38ca233eff32483283eacb96e0d9581a
+    m_Address: default/Rooms/rooms_default
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4040ed770a804841918391c062eddac5
     m_Address: default/Rooms/rooms
     m_ReadOnly: 0

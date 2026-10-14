@@ -1844,6 +1844,18 @@ namespace Dojo.Game.Editor
             delete.SetActive(false);
             Wire(card, "deleteButton", deleteButton);
 
+            // PROMOTE beside it, to its left. Shown by the card only on rooms the player made, and
+            // only in the editor, where the pack's files can be changed.
+            var promote = Node("Promote", root.transform);
+            Place(promote.GetComponent<RectTransform>(), 1f, 1f, new Vector2(-78f, -8f), new Vector2(72f, 24f));
+            var promoteFace = Sliced(promote, Art.ButtonPrimary);
+            var promoteButton = promote.AddComponent<Button>();
+            promoteButton.targetGraphic = promoteFace;
+            var promoteLabel = Text(promote.transform, "Label", "PROMOTE", 10f, TextAlignmentOptions.Center);
+            Stretch(promoteLabel.rectTransform);
+            promote.SetActive(false);
+            Wire(card, "promoteButton", promoteButton);
+
             return SavePrefab(root, "RoomCard").GetComponent<RoomCard>();
         }
 

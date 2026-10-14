@@ -1,0 +1,88 @@
+{
+    "rooms": [
+        {
+            "name": "Reception",
+            "address": "default/Rooms/default_room_reception",
+            "icon": "default/Rooms/Thumbnails/room_reception",
+            "tag": "default"
+        },
+        {
+            "name": "Sales",
+            "address": "default/Rooms/default_room_sales",
+            "icon": "default/Rooms/Thumbnails/room_sales",
+            "tag": "default"
+        },
+        {
+            "name": "Marketing",
+            "address": "default/Rooms/default_room_marketing",
+            "icon": "default/Rooms/Thumbnails/room_marketing",
+            "tag": "default"
+        },
+        {
+            "name": "Customer Support",
+            "address": "default/Rooms/default_room_customer_support",
+            "icon": "default/Rooms/Thumbnails/room_customer_support",
+            "tag": "default"
+        },
+        {
+            "name": "Customer Success",
+            "address": "default/Rooms/default_room_customer_success",
+            "icon": "default/Rooms/Thumbnails/room_customer_success",
+            "tag": "default"
+        },
+        {
+            "name": "Finance",
+            "address": "default/Rooms/default_room_finance",
+            "icon": "default/Rooms/Thumbnails/room_finance",
+            "tag": "default"
+        },
+        {
+            "name": "Accounting",
+            "address": "default/Rooms/default_room_accounting",
+            "icon": "default/Rooms/Thumbnails/room_accounting",
+            "tag": "default"
+        },
+        {
+            "name": "HR",
+            "address": "default/Rooms/default_room_hr",
+            "icon": "default/Rooms/Thumbnails/room_hr",
+            "tag": "default"
+        },
+        {
+            "name": "Recruitment",
+            "address": "default/Rooms/default_room_recruitment",
+            "icon": "default/Rooms/Thumbnails/room_recruitment",
+            "tag": "default"
+        },
+        {
+            "name": "Legal",
+            "address": "default/Rooms/default_room_legal",
+            "icon": "default/Rooms/Thumbnails/room_legal",
+            "tag": "default"
+        },
+        {
+            "name": "Research",
+            "address": "default/Rooms/default_room_research",
+            "icon": "default/Rooms/Thumbnails/room_research",
+            "tag": "default"
+        },
+        {
+            "name": "Operations",
+            "address": "default/Rooms/default_room_operations",
+            "icon": "default/Rooms/Thumbnails/room_operations",
+            "tag": "default"
+        },
+        {
+            "name": "IT and Security",
+            "address": "default/Rooms/default_room_it_and_security",
+            "icon": "default/Rooms/Thumbnails/room_it_and_security",
+            "tag": "default"
+        },
+        {
+            "name": "Product and Development",
+            "address": "default/Rooms/default_room_product_and_development",
+            "icon": "default/Rooms/Thumbnails/room_product_and_development",
+            "tag": "default"
+        }
+    ]
+}
