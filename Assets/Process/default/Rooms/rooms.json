@@ -83,12 +83,6 @@
             "address": "default/Rooms/default_room_product_and_development",
             "icon": "default/Rooms/Thumbnails/room_product_and_development",
             "tag": "default"
-        },
-        {
-            "name": "testest",
-            "address": "default/Rooms/default_room_testest",
-            "icon": "default/Rooms/Thumbnails/room_testest",
-            "tag": "promoted"
         }
     ]
 }

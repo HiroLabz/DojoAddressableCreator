@@ -33,6 +33,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 19ac6797abc63e242b2624c79cb6335c
+    m_Address: default/Rooms/Thumbnails/room_testest
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 206ecea1cdeb5dc4591b7c2a6037e7c9
     m_Address: default/Rooms/Thumbnails/room_legal
     m_ReadOnly: 0
@@ -137,6 +143,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b195aeef59d542d8aecc03c678f7d604
     m_Address: default/Rooms/default_room_operations
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b8345b75d9e8ef04693d0718f9f347ce
+    m_Address: default/Rooms/default_room_testest
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
