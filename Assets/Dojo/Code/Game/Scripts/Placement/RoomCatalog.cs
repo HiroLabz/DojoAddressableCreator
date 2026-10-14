@@ -22,6 +22,19 @@ namespace Dojo.Game.Placement
         /// Rendered by <c>Tools ▸ Dojo ▸ Generate Room Thumbnails</c>.
         /// </summary>
         public string icon;
+
+        /// <summary>
+        /// What kind of pack room it is: <see cref="DefaultTag"/> for the pack's original rooms,
+        /// <see cref="PromotedTag"/> for a room made in the room editor and promoted into the pack.
+        /// Which of them RESET WORLD keeps depends on it.
+        /// </summary>
+        public string tag;
+
+        /// <summary>One of the pack's original rooms: never deleted by anything.</summary>
+        public const string DefaultTag = "default";
+
+        /// <summary>A room made in the room editor and promoted into the pack.</summary>
+        public const string PromotedTag = "promoted";
     }
 
     /// <summary>
@@ -56,6 +69,9 @@ namespace Dojo.Game.Placement
         /// <summary>The rooms the player has made, kept on disk.</summary>
         public CustomRooms Custom => custom;
 
+        /// <summary>The pack whose room list the player's saved rooms are added to.</summary>
+        const string DefaultPack = "default";
+
         /// <summary>Content address of a pack's room index.</summary>
         public static string IndexAddressFor(string pack) => pack + "/Rooms/rooms";
 
@@ -64,31 +80,52 @@ namespace Dojo.Game.Placement
         {
             var found = new List<RoomEntry>();
 
+            // The rooms made here, by file name, so the pack's list does not offer them again.
+            var madeRooms = custom != null ? custom.All() : new List<RoomEntry>();
+            var made = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var room in madeRooms)
+            {
+                made.Add(CustomRooms.SlugOf(room.address));
+            }
+
             if (content == null)
             {
+                found.AddRange(madeRooms);
                 return found;
             }
 
             foreach (var pack in content.LoadedKeys)
             {
-                TextAsset asset;
-
-                if (!content.TryGet(IndexAddressFor(pack), out asset) || asset == null)
-                {
-                    continue;
-                }
-
                 RoomIndex index;
 
-                try
+                // The default pack's list as kept here - edited by saving and deleting rooms -
+                // once there is one; every other pack's, and the default's until then, as shipped.
+                var kept = pack == DefaultPack && custom != null ? custom.ListedRooms() : null;
+
+                if (kept != null)
                 {
-                    index = JsonUtility.FromJson<RoomIndex>(asset.text);
+                    index = new RoomIndex { rooms = kept };
                 }
-                catch (Exception exception)
+                else
                 {
-                    Debug.LogWarning("[Rooms] The room index at '" + IndexAddressFor(pack)
-                        + "' could not be read: " + exception.Message);
-                    continue;
+                    TextAsset asset;
+
+                    if (!content.TryGet(IndexAddressFor(pack), out asset) || asset == null)
+                    {
+                        continue;
+                    }
+
+                    try
+                    {
+                        index = JsonUtility.FromJson<RoomIndex>(asset.text);
+                    }
+                    catch (Exception exception)
+                    {
+                        Debug.LogWarning("[Rooms] The room index at '" + IndexAddressFor(pack)
+                            + "' could not be read: " + exception.Message);
+                        continue;
+                    }
                 }
 
                 if (index == null || index.rooms == null)
@@ -98,7 +135,11 @@ namespace Dojo.Game.Placement
 
                 foreach (var room in index.rooms)
                 {
-                    if (room != null && !string.IsNullOrWhiteSpace(room.address))
+                    // A room made here is on the list too once saved, but read from its own file
+                    // - which is current the moment it is saved, and can be deleted - rather than
+                    // from the pack, which only has it after the generator's next run.
+                    if (room != null && !string.IsNullOrWhiteSpace(room.address)
+                        && !made.Contains(CustomRooms.SlugOf(room.address)))
                     {
                         found.Add(room);
                     }
@@ -107,10 +148,7 @@ namespace Dojo.Game.Placement
 
             // The rooms the player has made come after the pack's, oldest first, so the one just
             // made is at the bottom of the list.
-            if (custom != null)
-            {
-                found.AddRange(custom.All());
-            }
+            found.AddRange(madeRooms);
 
             return found;
         }
@@ -125,13 +163,61 @@ namespace Dojo.Game.Placement
 
             Sprite sprite;
 
-            if (room == null || content == null || string.IsNullOrEmpty(room.icon)
-                || !content.TryGet(room.icon, out sprite))
+            if (room == null || string.IsNullOrEmpty(room.icon))
             {
                 return null;
             }
 
-            return sprite;
+            if (content != null && content.TryGet(room.icon, out sprite))
+            {
+                return sprite;
+            }
+
+#if UNITY_EDITOR
+            // Not in Addressables yet - a room just promoted, before the generator's next run -
+            // so straight from the pack's folder, which is where the generator will find it.
+            var fromFile = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(ProjectPathFor(room.icon, ".png"));
+
+            if (fromFile != null)
+            {
+                WarnFallback(room, "thumbnail", room.icon);
+            }
+
+            return fromFile;
+#else
+            return null;
+#endif
+        }
+
+        /// <summary>
+        /// Where a pack address's file is in the project: <c>&lt;pack&gt;/Rooms/x</c> is
+        /// <c>Assets/Process/&lt;pack&gt;/Rooms/x</c>, as the Addressable Generator addresses it.
+        /// </summary>
+        static string ProjectPathFor(string address, string extension)
+            => "Assets/Process/" + address + extension;
+
+        /// <summary>The addresses already warned about this session, so each is said once.</summary>
+        static readonly HashSet<string> warned = new HashSet<string>(StringComparer.Ordinal);
+
+        /// <summary>
+        /// Says that a room's file or thumbnail came from the project folder, not Addressables.
+        /// </summary>
+        /// <remarks>
+        /// The fallback keeps a room just promoted usable before the generator's next run, but it
+        /// would hide a room that does not resolve at all: a built game has no fallback, and that
+        /// room would be missing or blank there. Said once per address, so a clean Console after
+        /// Clear Addressables and a generator run means every room really resolved.
+        /// </remarks>
+        static void WarnFallback(RoomEntry room, string what, string address)
+        {
+            if (!warned.Add(what + ":" + address))
+            {
+                return;
+            }
+
+            Debug.LogWarning("[Rooms] '" + room.name + "' " + what + " is not in Addressables ('" + address
+                + "'); read from its file in the project instead. A built game would not find it - run the "
+                + "Addressable Generator on the default pack.");
         }
 
         /// <summary>A piece's prefab, by the content address a room file names it by.</summary>
@@ -149,9 +235,34 @@ namespace Dojo.Game.Placement
                 return custom != null ? custom.Read(room.address) : null;
             }
 
-            TextAsset asset;
+            if (room == null || string.IsNullOrEmpty(room.address))
+            {
+                return null;
+            }
 
-            if (room == null || content == null || !content.TryGet(room.address, out asset) || asset == null)
+            TextAsset asset;
+            string text = null;
+
+            if (content != null && content.TryGet(room.address, out asset) && asset != null)
+            {
+                text = asset.text;
+            }
+#if UNITY_EDITOR
+            else
+            {
+                // Not in Addressables yet - a room just promoted, before the generator's next run -
+                // so straight from the pack's folder, which is where the generator will find it.
+                var path = System.IO.Path.Combine(Application.dataPath, "Process", room.address + ".json");
+
+                if (System.IO.File.Exists(path))
+                {
+                    text = System.IO.File.ReadAllText(path);
+                    WarnFallback(room, "room file", room.address);
+                }
+            }
+#endif
+
+            if (string.IsNullOrEmpty(text))
             {
                 return null;
             }
@@ -160,7 +271,7 @@ namespace Dojo.Game.Placement
 
             try
             {
-                library = JsonUtility.FromJson<WorldLibrary>(asset.text);
+                library = JsonUtility.FromJson<WorldLibrary>(text);
             }
             catch (Exception exception)
             {

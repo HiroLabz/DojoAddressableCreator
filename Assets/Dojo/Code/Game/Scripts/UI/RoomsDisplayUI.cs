@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Dojo.Framework.UI;
 using Dojo.Game.Placement;
 using TMPro;
 using UnityEngine;
@@ -51,19 +52,116 @@ namespace Dojo.Game.UI
 
         [Inject]
         public void Construct(RoomCatalog roomCatalog, RoomPlacer roomPlacer, Storeys floors,
-            PlacementController placementController, RoomEditor roomEditor)
+            PlacementController placementController, RoomEditor roomEditor, IDialogManager dialogManager)
         {
             catalog = roomCatalog;
             placer = roomPlacer;
             storeys = floors;
             placement = placementController;
             editor = roomEditor;
+            dialogs = dialogManager;
 
             editor.Changed += OnEditorChanged;
             editor.Saved += OnRoomSaved;
+
+            if (catalog != null && catalog.Custom != null)
+            {
+                catalog.Custom.Changed += OnRoomsChanged;
+            }
         }
 
         RoomEditor editor;
+        IDialogManager dialogs;
+
+        /// <summary>
+        /// Deletes a room the player made, after asking: its file and area, its thumbnail, and
+        /// their metas. The pack's rooms have no DELETE, and the store refuses them regardless.
+        /// </summary>
+        /// <summary>
+        /// Makes a room the player made one of the pack's, after asking: renamed to the pack's
+        /// naming, added to the end of rooms.json, and both files imported again. From then on it is
+        /// listed once, as a pack room, with neither DELETE nor PROMOTE.
+        /// </summary>
+        void OnPromote(RoomEntry room)
+        {
+            if (room == null || catalog == null || !CustomRooms.IsCustom(room.address))
+            {
+                return;
+            }
+
+            if (placement != null && placement.IsBusy)
+            {
+                Say("Put down what is in hand first.");
+                return;
+            }
+
+            void Promote()
+            {
+                string problem;
+
+                if (!catalog.Custom.Promote(room.address, out problem))
+                {
+                    Say(problem);
+                    return;
+                }
+
+                Say("'" + room.name + "' is one of the pack's rooms now.");
+            }
+
+            if (dialogs == null)
+            {
+                Promote();
+                return;
+            }
+
+            dialogs.Confirm("Promote '" + room.name + "' to the pack? It becomes one of the default rooms: it ships "
+                + "with the pack, is kept by a reset that keeps promoted rooms, and can no longer be deleted here.", Promote);
+        }
+
+        void OnDelete(RoomEntry room)
+        {
+            if (room == null || catalog == null)
+            {
+                return;
+            }
+
+            if (!CustomRooms.IsCustom(room.address))
+            {
+                Say("'" + room.name + "' is one of the pack's rooms, and cannot be deleted.");
+                return;
+            }
+
+            if (placement != null && placement.IsBusy)
+            {
+                Say("Put down what is in hand first.");
+                return;
+            }
+
+            void Delete()
+            {
+                string problem;
+
+                if (!catalog.Custom.Delete(room.address, out problem))
+                {
+                    Say(problem);
+                    return;
+                }
+
+                plans.Remove(room.address);
+                Rebuild();
+                Say("'" + room.name + "' deleted.");
+                Debug.Log("[Rooms] Deleted room '" + room.name + "' (" + room.address + "): its file, area, thumbnail and metas.");
+            }
+
+            if (dialogs == null)
+            {
+                Delete();
+                return;
+            }
+
+            dialogs.Confirm("Delete '" + room.name + "'? Its file, area and thumbnail are removed for good. "
+                + "Worlds it was placed in keep their copy.", Delete);
+        }
 
         void Awake()
         {
@@ -81,6 +179,11 @@ namespace Dojo.Game.UI
             {
                 editor.Changed -= OnEditorChanged;
                 editor.Saved -= OnRoomSaved;
+            }
+
+            if (catalog != null && catalog.Custom != null)
+            {
+                catalog.Custom.Changed -= OnRoomsChanged;
             }
         }
 
@@ -113,6 +216,40 @@ namespace Dojo.Game.UI
         }
 
         /// <summary>The room just made, at the bottom of the list with its thumbnail.</summary>
+        /// <summary>
+        /// Lists the rooms again whenever they change - a room saved or deleted, or every saved
+        /// room deleted by RESET WORLD - so no card is left for a room that is gone. Showing or not:
+        /// a panel down now is rebuilt when it is next shown anyway, but its sizes are not kept.
+        /// </summary>
+        void OnRoomsChanged()
+        {
+            plans.Clear();
+
+            if (gameObject.activeInHierarchy)
+            {
+                Rebuild();
+                stale = false;
+            }
+            else
+            {
+                // Hidden with the inventory - RESET WORLD runs from the menu - and reopening the
+                // inventory on this tab shows it as it was, without Show. Rebuilt on the way back.
+                stale = true;
+            }
+        }
+
+        // True when the rooms changed while the panel was hidden, so its cards are out of date.
+        bool stale;
+
+        void OnEnable()
+        {
+            if (stale && catalog != null)
+            {
+                stale = false;
+                Rebuild();
+            }
+        }
+
         void OnRoomSaved(RoomEntry room)
         {
             // A room saved over one of the same name is a different room now.
@@ -127,6 +264,8 @@ namespace Dojo.Game.UI
 
         public void Show()
         {
+            // Rebuilt below regardless, so not once more on the way in.
+            stale = false;
             gameObject.SetActive(true);
             Listen();
             Say(string.Empty);
@@ -212,6 +351,8 @@ namespace Dojo.Game.UI
                     var card = Instantiate(cardPrefab, listContent);
                     card.Bind(room, catalog.IconOf(room), plan != null ? plan.Footprint.size : Vector2.zero);
                     card.Picked += OnPicked;
+                    card.DeletePressed += OnDelete;
+                    card.PromotePressed += OnPromote;
                     cards.Add(card);
                 }
 

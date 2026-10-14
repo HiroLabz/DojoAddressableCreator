@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Dojo.Framework.Content;
 using UnityEngine;
 
 namespace Dojo.Game.Placement
@@ -26,6 +27,32 @@ namespace Dojo.Game.Placement
         public const string AddressPrefix = "custom/";
 
         readonly Dictionary<string, Sprite> icons = new Dictionary<string, Sprite>(StringComparer.Ordinal);
+
+        // Where a built game finds the pack's room list and its backup, to start its own from.
+        readonly IContentService content;
+
+        /// <summary>
+        /// Raised when the rooms on offer have changed - one saved or deleted, or the list put back
+        /// to the defaults - so whatever lists them can do so again.
+        /// </summary>
+        public event Action Changed;
+
+        // Held while DeleteAll works through them, so it is said once at the end, not per room.
+        bool quiet;
+
+        void Announce()
+        {
+            var handler = Changed;
+            if (!quiet && handler != null)
+            {
+                handler();
+            }
+        }
+
+        public CustomRooms(IContentService content)
+        {
+            this.content = content;
+        }
 
         /// <summary>Every made room's file name starts with this: <c>room_&lt;name&gt;</c>.</summary>
         const string FilePrefix = "room_";
@@ -172,7 +199,7 @@ namespace Dojo.Game.Placement
             var thumbnailTaken = File.Exists(Path.Combine(ThumbnailFolder, slug + ".png"));
             var prefabTaken = false;
 #if UNITY_EDITOR
-            prefabTaken = File.Exists(Path.Combine(Folder, "Prefabs", slug + ".prefab"));
+            prefabTaken = File.Exists(Path.Combine(Folder, "Editor/Prefabs", slug + ".prefab"));
 #endif
 
             if (thumbnailTaken || prefabTaken)
@@ -182,6 +209,127 @@ namespace Dojo.Game.Placement
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Deletes a room the player made, and everything of it: its file - which holds its area
+        /// too - its thumbnail, and both metas. The pack's own rooms cannot be deleted from here.
+        /// False, with <paramref name="problem"/> saying why, when nothing was deleted.
+        /// </summary>
+        /// <remarks>
+        /// Only an address of this store, naming a <c>room_</c> file, is taken: the pack's rooms
+        /// are <c>default_room_</c> files reached through Addressables, and never match. In the
+        /// editor the files go through the asset database, so the metas go with them and any
+        /// Addressables entry for them is dropped; in a built game they are simply removed.
+        /// Worlds the room was placed in keep their own copy of its pieces and area.
+        /// </remarks>
+        public bool Delete(string address, out string problem)
+        {
+            problem = null;
+
+            if (!IsCustom(address))
+            {
+                problem = "Only rooms you made can be deleted. The pack's own rooms stay.";
+                return false;
+            }
+
+            var slug = address.Substring(AddressPrefix.Length);
+
+            if (!slug.StartsWith(FilePrefix, StringComparison.Ordinal) || slug.IndexOfAny(new[] { '/', '\\', '.' }) >= 0)
+            {
+                problem = "'" + address + "' is not one of the rooms you made.";
+                return false;
+            }
+
+            var json = Path.Combine(Folder, slug + ".json");
+            var png = Path.Combine(ThumbnailFolder, slug + ".png");
+
+            if (!File.Exists(json))
+            {
+                problem = "That room is already gone.";
+                return false;
+            }
+
+            Remove(json, "Assets/Process/default/Rooms/" + slug + ".json");
+            Remove(png, "Assets/Process/default/Rooms/Thumbnails/" + slug + ".png");
+
+            // And out of the pack's room list, which saving it put it on.
+            RemoveFromIndex(slug);
+
+            Sprite sprite;
+            if (icons.TryGetValue(address, out sprite))
+            {
+                icons.Remove(address);
+
+                if (sprite != null)
+                {
+                    UnityEngine.Object.Destroy(sprite.texture);
+                    UnityEngine.Object.Destroy(sprite);
+                }
+            }
+
+            Announce();
+            return true;
+        }
+
+        /// <summary>
+        /// Deletes every room the player made, each as <see cref="Delete"/> does: its file and
+        /// area, its thumbnail, both metas, its entry on the room list and - in the editor - its
+        /// Addressables entries. The pack's own rooms are not touched. Returns how many went.
+        /// </summary>
+        public int DeleteAll()
+        {
+            var deleted = 0;
+            quiet = true;
+
+            try
+            {
+                foreach (var room in All())
+                {
+                    string problem;
+
+                    if (Delete(room.address, out problem))
+                    {
+                        deleted++;
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[Rooms] '" + room.name + "' was not deleted: " + problem);
+                    }
+                }
+            }
+            finally
+            {
+                quiet = false;
+            }
+
+            if (deleted > 0)
+            {
+                Announce();
+            }
+
+            return deleted;
+        }
+
+        /// <summary>One of a room's files, and its meta: through the asset database in the editor.</summary>
+        static void Remove(string path, string assetPath)
+        {
+#if UNITY_EDITOR
+            if (UnityEditor.AssetDatabase.DeleteAsset(assetPath))
+            {
+                return;
+            }
+#endif
+            // Not an asset the editor knows - a build, or a file not imported yet: by hand.
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+
+            if (File.Exists(path + ".meta"))
+            {
+                File.Delete(path + ".meta");
+            }
         }
 
         /// <summary>
@@ -210,11 +358,14 @@ namespace Dojo.Game.Placement
                 File.WriteAllBytes(png, thumbnail);
             }
 
+            // Not on the pack's room list: a made room is the player's own until it is promoted
+            // (see Promote), which is what puts it on the list as one of the pack's rooms.
             Import(slug);
 
             var address = AddressPrefix + slug;
             icons.Remove(address);
 
+            Announce();
             return address;
         }
 
@@ -225,6 +376,11 @@ namespace Dojo.Game.Placement
         static void Import(string slug)
         {
 #if UNITY_EDITOR
+            if (File.Exists(Path.Combine(Folder, IndexFile)))
+            {
+                UnityEditor.AssetDatabase.ImportAsset(IndexAssetPath);
+            }
+
             if (File.Exists(Path.Combine(Folder, slug + ".json")))
             {
                 UnityEditor.AssetDatabase.ImportAsset("Assets/Process/default/Rooms/" + slug + ".json");
@@ -232,9 +388,594 @@ namespace Dojo.Game.Placement
 
             if (File.Exists(Path.Combine(ThumbnailFolder, slug + ".png")))
             {
-                UnityEditor.AssetDatabase.ImportAsset("Assets/Process/default/Rooms/Thumbnails/" + slug + ".png");
+                var thumbnail = "Assets/Process/default/Rooms/Thumbnails/" + slug + ".png";
+                UnityEditor.AssetDatabase.ImportAsset(thumbnail);
+
+                // As a single sprite, as every room thumbnail is: a PNG imports as a plain texture,
+                // and a card asking for a sprite would get nothing.
+                var importer = UnityEditor.AssetImporter.GetAtPath(thumbnail) as UnityEditor.TextureImporter;
+
+                if (importer != null)
+                {
+                    importer.textureType = UnityEditor.TextureImporterType.Sprite;
+                    importer.spriteImportMode = UnityEditor.SpriteImportMode.Single;
+                    importer.alphaIsTransparency = true;
+                    importer.mipmapEnabled = false;
+                    importer.SaveAndReimport();
+                }
             }
 #endif
+        }
+
+        // ── The room list ───────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// The room list the Rooms tab reads, beside the rooms: <c>Assets/Process/default/Rooms/rooms.json</c>
+        /// in the editor, which ships in the pack; a copy of it on the device in a built game,
+        /// where the pack's own is read-only. Saving a room puts it on the end; deleting one takes
+        /// it off.
+        /// </summary>
+        const string IndexFile = "rooms.json";
+        const string IndexAssetPath = "Assets/Process/default/Rooms/" + IndexFile;
+
+        /// <summary>
+        /// The pack's own rooms and nothing else: what <see cref="ResetList"/> puts the list back
+        /// to. Never written by saving or deleting.
+        /// </summary>
+        const string DefaultIndexFile = "rooms_default.json";
+
+        /// <summary>The pack's room list and its backup, as content addresses.</summary>
+        const string PackIndexAddress = "default/Rooms/rooms";
+        const string PackDefaultIndexAddress = "default/Rooms/rooms_default";
+
+        /// <summary>Where the room list is kept: in the project in the editor, on the device in a build.</summary>
+        static string ListPath => Path.Combine(Folder, IndexFile);
+
+        /// <summary>The address the Addressable Generator gives a room's file in the pack.</summary>
+        static string PackAddressFor(string slug) => "default/Rooms/" + slug;
+
+        /// <summary>The address the Addressable Generator gives a room's thumbnail in the pack.</summary>
+        static string PackIconFor(string slug) => "default/Rooms/Thumbnails/" + slug;
+
+        [Serializable]
+        sealed class RoomIndex
+        {
+            public List<RoomEntry> rooms = new List<RoomEntry>();
+        }
+
+        /// <summary>
+        /// The room list kept here, or null when there is none of its own yet - a built game that
+        /// has not saved or deleted a room - and the pack's is the one to read.
+        /// </summary>
+        public List<RoomEntry> ListedRooms()
+        {
+            if (!File.Exists(ListPath))
+            {
+                return null;
+            }
+
+            var index = ReadIndex();
+            return index != null ? index.rooms : null;
+        }
+
+        // ── Promoting a made room into the pack ─────────────────────────────────────────────
+
+        /// <summary>The pack's own rooms' file names start with this: <c>default_room_&lt;name&gt;</c>.</summary>
+        const string PackFilePrefix = "default_room_";
+
+        /// <summary>
+        /// Makes a room the player made one of the pack's: <c>room_&lt;x&gt;.json</c> becomes
+        /// <c>default_room_&lt;x&gt;.json</c>, its thumbnail stays <c>Thumbnails/room_&lt;x&gt;.png</c>,
+        /// it goes on the end of <c>rooms.json</c> tagged <see cref="RoomEntry.PromotedTag"/>, and
+        /// both files are imported again. From then on the Rooms tab offers it once, as a pack room.
+        /// Only in the editor: a built game's pack cannot be changed.
+        /// </summary>
+        /// <returns>False, with <paramref name="problem"/> saying why, when it was not promoted.</returns>
+        public bool Promote(string address, out string problem)
+        {
+            if (!IsCustom(address))
+            {
+                problem = "Only a room you made can be promoted; this one is already the pack's.";
+                return false;
+            }
+
+            string name;
+            problem = PromoteInProject(address.Substring(AddressPrefix.Length), out name);
+
+            if (problem != null)
+            {
+                return false;
+            }
+
+            icons.Remove(address);
+            Announce();
+            return true;
+        }
+
+        /// <summary>
+        /// The promotion itself, on the project's files, for <see cref="Promote"/> and for the
+        /// editor's own Promote Room To Pack. <paramref name="slug"/> is the room's file name,
+        /// <c>room_&lt;x&gt;</c>. Returns null when done, otherwise why it was not.
+        /// </summary>
+        public static string PromoteInProject(string slug, out string name)
+        {
+            name = null;
+
+#if UNITY_EDITOR
+            if (string.IsNullOrEmpty(slug) || !slug.StartsWith(FilePrefix, StringComparison.Ordinal)
+                || slug.IndexOfAny(new[] { '/', '\\', '.' }) >= 0)
+            {
+                return "Only a room made in the room editor - a room_<name> file - can be promoted.";
+            }
+
+            var x = slug.Substring(FilePrefix.Length);
+            const string assets = "Assets/Process/default/Rooms/";
+            var from = assets + slug + ".json";
+            var to = assets + PackFilePrefix + x + ".json";
+            var thumbnail = assets + "Thumbnails/" + slug + ".png";
+
+            if (!File.Exists(Path.Combine(Folder, slug + ".json")))
+            {
+                return "That room is gone.";
+            }
+
+            if (File.Exists(Path.Combine(Folder, PackFilePrefix + x + ".json")))
+            {
+                return "The pack already has a room called " + PackFilePrefix + x + ".";
+            }
+
+            var room = ReadFile(Path.Combine(Folder, slug + ".json"));
+            name = room != null && !string.IsNullOrWhiteSpace(room.name) ? room.name.Trim() : x;
+
+            var moved = UnityEditor.AssetDatabase.MoveAsset(from, to);
+            if (!string.IsNullOrEmpty(moved))
+            {
+                return "Could not rename " + from + ": " + moved;
+            }
+
+            var entry = new RoomEntry
+            {
+                name = name,
+                address = PackAddressFor(PackFilePrefix + x),
+                icon = PackIconFor(slug),
+                tag = RoomEntry.PromotedTag,
+            };
+
+            // Onto the end of the list, off it under the made room's own address - a room saved
+            // before made rooms stopped being listed is on there by it. Not onto rooms_default.json:
+            // that stays the pack's 14 originals, and the promoted tag is what a reset goes by.
+            ListAtEnd(Path.Combine(Folder, IndexFile), entry, PackAddressFor(slug));
+
+            // A prefab of it beside the pack's original rooms' own, which the thumbnail tool renders
+            // from and which is how a room is looked at in the editor.
+            if (room != null)
+            {
+                MakePrefab(slug, room);
+            }
+
+            UnityEditor.AssetDatabase.ImportAsset(to, UnityEditor.ImportAssetOptions.ForceUpdate);
+            UnityEditor.AssetDatabase.ImportAsset(IndexAssetPath, UnityEditor.ImportAssetOptions.ForceUpdate);
+
+            if (File.Exists(Path.Combine(ThumbnailFolder, slug + ".png")))
+            {
+                UnityEditor.AssetDatabase.ImportAsset(thumbnail, UnityEditor.ImportAssetOptions.ForceUpdate);
+            }
+
+            Debug.Log("[Rooms] Promoted '" + name + "' into the pack: " + to + ", thumbnail " + thumbnail
+                + ", listed last in rooms.json. Run the Addressable Generator on the default pack to register it.");
+
+            return null;
+#else
+            return "Rooms can only be promoted to the pack in the editor.";
+#endif
+        }
+
+        /// <summary>Where the pack's rooms' prefabs are: editor-only, so the generator leaves them out.</summary>
+        const string PrefabAssetFolder = "Assets/Process/default/Rooms/Editor/Prefabs";
+
+        /// <summary>
+        /// Builds <c>Rooms/Editor/Prefabs/&lt;slug&gt;.prefab</c> from a room's ground floor, laid out
+        /// as the original rooms' prefabs are: a root named for it, and under it Floor, Walls and
+        /// Furniture holding an instance of each piece's own prefab - linked, so a change to a floor
+        /// tile shows in every room - where the room file puts it. Returns its path, or null.
+        /// </summary>
+        static string MakePrefab(string slug, WorldSave room)
+        {
+#if UNITY_EDITOR
+            var folderOnDisk = Path.Combine(Application.dataPath, "Process/default/Rooms/Editor/Prefabs");
+
+            if (!Directory.Exists(folderOnDisk))
+            {
+                Directory.CreateDirectory(folderOnDisk);
+                UnityEditor.AssetDatabase.Refresh();
+            }
+
+            var root = new GameObject(slug);
+            var groups = new Dictionary<string, Transform>();
+            var placed = 0;
+            var missing = new List<string>();
+
+            try
+            {
+                var ground = room.floors.Find(f => f != null && f.index == 0);
+
+                foreach (var piece in ground != null ? ground.pieces : new List<WorldSave.SavedPiece>())
+                {
+                    var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(PiecePrefabPath(piece.resource));
+
+                    if (prefab == null)
+                    {
+                        missing.Add(piece.resource);
+                        continue;
+                    }
+
+                    var groupName = piece.isFloor ? "Floor"
+                        : piece.resource != null && piece.resource.IndexOf("wall", StringComparison.OrdinalIgnoreCase) >= 0 ? "Walls"
+                        : "Furniture";
+
+                    Transform group;
+                    if (!groups.TryGetValue(groupName, out group))
+                    {
+                        group = new GameObject(groupName).transform;
+                        group.SetParent(root.transform, false);
+                        groups[groupName] = group;
+                    }
+
+                    var instance = (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(prefab, group);
+                    instance.transform.localPosition = piece.position;
+                    instance.transform.localRotation = Quaternion.Euler(0f, piece.rotationSteps * 90f, 0f);
+                    instance.transform.localScale = piece.scale == Vector3.zero ? Vector3.one : piece.scale;
+                    placed++;
+                }
+
+                // Floor, Walls, Furniture, whichever there are, in that order, as the originals have them.
+                var order = 0;
+                foreach (var name in new[] { "Floor", "Walls", "Furniture" })
+                {
+                    Transform group;
+                    if (groups.TryGetValue(name, out group))
+                    {
+                        group.SetSiblingIndex(order++);
+                    }
+                }
+
+                var path = PrefabAssetFolder + "/" + slug + ".prefab";
+                UnityEditor.PrefabUtility.SaveAsPrefabAsset(root, path);
+
+                Debug.Log("[Rooms] Made " + path + " - " + placed + " piece(s)"
+                    + (missing.Count > 0 ? "; no prefab found for " + string.Join(", ", missing) : "") + ".");
+
+                return path;
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(root);
+            }
+#else
+            return null;
+#endif
+        }
+
+        /// <summary>
+        /// The prefab a piece's content address names: <c>&lt;pack&gt;/&lt;name&gt;</c> is
+        /// <c>Assets/Process/&lt;pack&gt;/Prefabs/&lt;name&gt;.prefab</c>, as the generator addresses them.
+        /// </summary>
+        static string PiecePrefabPath(string address)
+        {
+            if (string.IsNullOrEmpty(address))
+            {
+                return string.Empty;
+            }
+
+            var slash = address.IndexOf('/');
+            return slash < 0
+                ? string.Empty
+                : "Assets/Process/" + address.Substring(0, slash) + "/Prefabs/" + address.Substring(slash + 1) + ".prefab";
+        }
+
+        /// <summary>
+        /// Puts <paramref name="entry"/> on the end of a room list file, taking off any entry at its
+        /// address or at <paramref name="replaces"/> first. Nothing happens to a file that is not there.
+        /// </summary>
+        static void ListAtEnd(string path, RoomEntry entry, string replaces)
+        {
+            if (!File.Exists(path))
+            {
+                return;
+            }
+
+            RoomIndex index;
+
+            try
+            {
+                index = JsonUtility.FromJson<RoomIndex>(File.ReadAllText(path)) ?? new RoomIndex();
+                index.rooms = index.rooms ?? new List<RoomEntry>();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("[Rooms] " + path + " could not be read, so it was left as it is: " + exception.Message);
+                return;
+            }
+
+            index.rooms.RemoveAll(r => r != null
+                && (string.Equals(r.address, entry.address, StringComparison.Ordinal)
+                    || string.Equals(r.address, replaces, StringComparison.Ordinal)));
+            index.rooms.Add(entry);
+
+            File.WriteAllText(path, JsonUtility.ToJson(index, true));
+        }
+
+        /// <summary>Takes a room off the room list, and has the editor take the list in again.</summary>
+        void RemoveFromIndex(string slug)
+        {
+            var index = ReadIndex();
+            if (index == null)
+            {
+                return;
+            }
+
+            var address = PackAddressFor(slug);
+
+            if (index.rooms.RemoveAll(r => r != null && string.Equals(r.address, address, StringComparison.Ordinal)) == 0)
+            {
+                return;
+            }
+
+            WriteIndex(index);
+            ImportList();
+        }
+
+        /// <summary>
+        /// Puts the room list back to the pack's 14 original rooms, from <c>rooms_default.json</c>,
+        /// and - when <paramref name="keepPromoted"/> - the rooms promoted into the pack after them,
+        /// in the order they were promoted. Rooms made here are never on it. False, with
+        /// <paramref name="problem"/> saying why, when the list could not be put back.
+        /// </summary>
+        public bool ResetList(bool keepPromoted, out string problem)
+        {
+            problem = null;
+
+            var current = ReadIndex();
+            var promoted = keepPromoted && current != null ? Promoted(current) : new List<RoomEntry>();
+            var defaults = ReadDefaults();
+
+            if (defaults == null)
+            {
+                // No backup - a build whose pack does not have it yet. What the list itself tags as
+                // the originals stays, and the promoted rooms when they are being kept.
+                if (current == null)
+                {
+                    problem = "There is no " + DefaultIndexFile + " to put the room list back from, and the "
+                        + "room list could not be read, so it was left as it is.";
+                    return false;
+                }
+
+                defaults = new RoomIndex();
+                defaults.rooms.AddRange(current.rooms.FindAll(r => r != null
+                    && string.Equals(r.tag, RoomEntry.DefaultTag, StringComparison.OrdinalIgnoreCase)));
+
+                Debug.LogWarning("[Rooms] There is no " + DefaultIndexFile + " to put the room list back from; "
+                    + "kept the " + defaults.rooms.Count + " room(s) the list itself tags as the pack's originals.");
+            }
+
+            foreach (var room in promoted)
+            {
+                if (!defaults.rooms.Exists(r => r != null && string.Equals(r.address, room.address, StringComparison.Ordinal)))
+                {
+                    defaults.rooms.Add(room);
+                }
+            }
+
+            WriteIndex(defaults);
+            ImportList();
+
+            Debug.Log("[Rooms] The room list is back to the pack's original rooms"
+                + (keepPromoted ? ", with " + promoted.Count + " promoted room(s) kept." : ", promoted rooms dropped."));
+            Announce();
+            return true;
+        }
+
+        /// <summary>
+        /// Deletes every room promoted into the pack, and everything of it: its file and area, its
+        /// thumbnail, both metas, its entry on the room list and its Addressables entries. Only in
+        /// the editor, where the pack's files are; a built game's pack cannot be changed. The pack's
+        /// original rooms - everything in <c>rooms_default.json</c> - are never touched, whatever
+        /// the list tags them. Returns how many went.
+        /// </summary>
+        public int DeletePromoted()
+        {
+            var current = ReadIndex();
+
+            if (current == null)
+            {
+                return 0;
+            }
+
+            var promoted = Promoted(current);
+
+#if UNITY_EDITOR
+            var deleted = 0;
+
+            foreach (var room in promoted)
+            {
+                // Only ever a default_room_ file, and only one the originals do not list.
+                if (!SlugOf(room.address).StartsWith(PackFilePrefix, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                Remove(Path.Combine(Application.dataPath, "Process", room.address + ".json"), "Assets/Process/" + room.address + ".json");
+
+                if (!string.IsNullOrEmpty(room.icon) && SlugOf(room.icon).StartsWith(FilePrefix, StringComparison.Ordinal))
+                {
+                    Remove(Path.Combine(Application.dataPath, "Process", room.icon + ".png"), "Assets/Process/" + room.icon + ".png");
+
+                    // And the prefab promoting it made, named as its thumbnail is.
+                    var prefabName = SlugOf(room.icon) + ".prefab";
+                    Remove(Path.Combine(Application.dataPath, "Process/default/Rooms/Editor/Prefabs", prefabName),
+                        PrefabAssetFolder + "/" + prefabName);
+                }
+
+                current.rooms.RemoveAll(r => r != null && string.Equals(r.address, room.address, StringComparison.Ordinal));
+                deleted++;
+
+                Debug.Log("[Rooms] Deleted promoted room '" + room.name + "' (" + room.address + "): its file, area, thumbnail and metas.");
+            }
+
+            if (deleted > 0)
+            {
+                WriteIndex(current);
+                ImportList();
+                Announce();
+            }
+
+            return deleted;
+#else
+            if (promoted.Count > 0)
+            {
+                Debug.Log("[Rooms] " + promoted.Count + " promoted room(s) are part of the downloaded pack, which a "
+                    + "built game cannot change; they only come off the room list.");
+            }
+
+            return 0;
+#endif
+        }
+
+        /// <summary>
+        /// The rooms on a list that are promoted ones: tagged so, and not among the pack's
+        /// originals in <c>rooms_default.json</c> - an original is never treated as promoted.
+        /// </summary>
+        List<RoomEntry> Promoted(RoomIndex index)
+        {
+            var originals = new HashSet<string>(StringComparer.Ordinal);
+            var defaults = ReadDefaults();
+
+            if (defaults != null)
+            {
+                foreach (var room in defaults.rooms)
+                {
+                    if (room != null && !string.IsNullOrEmpty(room.address))
+                    {
+                        originals.Add(room.address);
+                    }
+                }
+            }
+
+            return index.rooms.FindAll(r => r != null
+                && string.Equals(r.tag, RoomEntry.PromotedTag, StringComparison.OrdinalIgnoreCase)
+                && !originals.Contains(r.address));
+        }
+
+        /// <summary>The pack's 14 original rooms, from <c>rooms_default.json</c>; null when there is none.</summary>
+        RoomIndex ReadDefaults()
+        {
+            string text = null;
+
+#if UNITY_EDITOR
+            var backup = Path.Combine(Folder, DefaultIndexFile);
+            if (File.Exists(backup))
+            {
+                text = File.ReadAllText(backup);
+            }
+#else
+            TextAsset asset;
+            if (content != null && content.TryGet(PackDefaultIndexAddress, out asset) && asset != null)
+            {
+                text = asset.text;
+            }
+#endif
+
+            if (string.IsNullOrEmpty(text))
+            {
+                return null;
+            }
+
+            try
+            {
+                var index = JsonUtility.FromJson<RoomIndex>(text);
+
+                if (index == null)
+                {
+                    return null;
+                }
+
+                index.rooms = index.rooms ?? new List<RoomEntry>();
+                return index;
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("[Rooms] " + DefaultIndexFile + " could not be read: " + exception.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// The room list as kept here; the pack's, when a built game has none of its own yet, so
+        /// the first save or delete starts from it. Null - said in the log - when it cannot be read.
+        /// </summary>
+        RoomIndex ReadIndex()
+        {
+            string text = null;
+
+            if (File.Exists(ListPath))
+            {
+                text = File.ReadAllText(ListPath);
+            }
+            else
+            {
+                TextAsset asset;
+                if (content != null && content.TryGet(PackIndexAddress, out asset) && asset != null)
+                {
+                    text = asset.text;
+                }
+            }
+
+            if (string.IsNullOrEmpty(text))
+            {
+                return new RoomIndex();
+            }
+
+            try
+            {
+                var index = JsonUtility.FromJson<RoomIndex>(text) ?? new RoomIndex();
+                index.rooms = index.rooms ?? new List<RoomEntry>();
+                return index;
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("[Rooms] The room list could not be read, so it was left as it is: " + exception.Message);
+                return null;
+            }
+        }
+
+        static void WriteIndex(RoomIndex index)
+        {
+            Directory.CreateDirectory(Folder);
+            File.WriteAllText(ListPath, JsonUtility.ToJson(index, true));
+        }
+
+        /// <summary>In the editor, has the project take the room list in again.</summary>
+        static void ImportList()
+        {
+#if UNITY_EDITOR
+            UnityEditor.AssetDatabase.ImportAsset(IndexAssetPath);
+#endif
+        }
+
+        /// <summary>
+        /// The file name an address ends in - <c>room_kitchen</c> for both <c>custom/room_kitchen</c>
+        /// and <c>default/Rooms/room_kitchen</c> - so <see cref="RoomCatalog"/> can tell a listed room
+        /// that was made here, and offer it once.
+        /// </summary>
+        public static string SlugOf(string address)
+        {
+            if (string.IsNullOrEmpty(address))
+            {
+                return string.Empty;
+            }
+
+            var slash = address.LastIndexOf('/');
+            return slash >= 0 ? address.Substring(slash + 1) : address;
         }
 
         static WorldSave ReadFile(string path)

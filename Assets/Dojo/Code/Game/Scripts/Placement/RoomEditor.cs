@@ -195,7 +195,13 @@ namespace Dojo.Game.Placement
                 return false;
             }
 
-            var room = ToRoom(world.Capture());
+            var built = world.Capture();
+
+            // The room's own area over every floor tile it was built with, named as the room is -
+            // as each of the pack's rooms carries one - so placing it brings its area with it.
+            var tiles = AddFloorArea(built, name.Trim(), EditingName);
+
+            var room = ToRoom(built);
 
             if (room.PieceCount() == 0)
             {
@@ -207,7 +213,8 @@ namespace Dojo.Game.Placement
             var thumbnail = RoomThumbnailCamera.Render(storeys.Floor(0), LayerMask.NameToLayer(settings.PlacedLayerName));
             var address = catalog.Custom.Save(name.Trim(), room, thumbnail);
 
-            Debug.Log("[Rooms] Saved room '" + name.Trim() + "' - " + room.PieceCount() + " piece(s), to "
+            Debug.Log("[Rooms] Saved room '" + name.Trim() + "' - " + room.PieceCount() + " piece(s), "
+                + (tiles > 0 ? "an area of " + tiles + " tile(s) over its floors" : "no floor tiles, so no area") + ", to "
                 + CustomRooms.Folder + (thumbnail == null ? " (no thumbnail could be rendered)" : ""));
 
             End();
@@ -258,6 +265,103 @@ namespace Dojo.Game.Placement
             EditingName = null;
 
             Raise(Changed);
+        }
+
+        /// <summary>
+        /// Gives the built ground floor an area named <paramref name="name"/> covering every floor
+        /// tile on it, cell by cell on the area grid. One already there under that name, or under
+        /// <paramref name="previousName"/> - the room's own area from when it was loaded to be
+        /// edited - is replaced rather than kept beside it. Returns how many tiles it covers.
+        /// </summary>
+        /// <remarks>
+        /// From the floor tiles' colliders as they stand, since a saved piece knows only where it
+        /// is and not how far it reaches. Every other area painted while building is kept as it is.
+        /// </remarks>
+        int AddFloorArea(WorldSave built, string name, string previousName)
+        {
+            Physics.SyncTransforms();
+
+            var cells = new HashSet<Vector2Int>();
+            var top = float.MinValue;
+            var pieces = new List<Transform>();
+            Storeys.AddPiecesUnder(storeys.Floor(0), pieces);
+
+            foreach (var child in pieces)
+            {
+                var piece = child.GetComponent<FurniturePiece>();
+                Bounds bounds;
+
+                if (piece == null || !piece.IsFloor || !FurniturePlacementService.TryColliderBounds(child.gameObject, out bounds))
+                {
+                    continue;
+                }
+
+                top = Mathf.Max(top, bounds.max.y);
+
+                // Every cell whose middle is on the tile: cells sit at 0.125 + 0.25k, as painted ones do.
+                var fromX = Mathf.CeilToInt((bounds.min.x - AreaCell * 0.5f) / AreaCell - 0.001f);
+                var toX = Mathf.FloorToInt((bounds.max.x - AreaCell * 0.5f) / AreaCell + 0.001f);
+                var fromZ = Mathf.CeilToInt((bounds.min.z - AreaCell * 0.5f) / AreaCell - 0.001f);
+                var toZ = Mathf.FloorToInt((bounds.max.z - AreaCell * 0.5f) / AreaCell + 0.001f);
+
+                for (var x = fromX; x <= toX; x++)
+                {
+                    for (var z = fromZ; z <= toZ; z++)
+                    {
+                        cells.Add(new Vector2Int(x, z));
+                    }
+                }
+            }
+
+            var ground = built.FloorAt(0);
+            ground.blockAreas.RemoveAll(area => area != null
+                && (string.Equals(area.name, name, StringComparison.OrdinalIgnoreCase)
+                    || (!string.IsNullOrEmpty(previousName) && string.Equals(area.name, previousName, StringComparison.OrdinalIgnoreCase))));
+
+            if (cells.Count == 0)
+            {
+                return 0;
+            }
+
+            var height = storeys.ToFloor(0, new Vector3(0f, top, 0f)).y;
+            var points = new List<Vector3>(cells.Count);
+
+            foreach (var cell in cells)
+            {
+                points.Add(new Vector3(cell.x * AreaCell + AreaCell * 0.5f, height, cell.y * AreaCell + AreaCell * 0.5f));
+            }
+
+            ground.blockAreas.Add(new WorldSave.SavedBlockArea
+            {
+                id = AreaIdFor(name),
+                name = name,
+                area = points,
+                areaCellSize = AreaCell,
+            });
+
+            return cells.Count;
+        }
+
+        /// <summary>The size of an area's cells: the placement grid's, which painted areas use too.</summary>
+        const float AreaCell = 0.25f;
+
+        /// <summary>
+        /// A stable id for a room's area, from its name. Only the room file keeps it: a placed
+        /// room's area is given a fresh id in the world it is placed in.
+        /// </summary>
+        static int AreaIdFor(string name)
+        {
+            unchecked
+            {
+                var hash = (int)2166136261;
+
+                foreach (var c in name.ToLowerInvariant())
+                {
+                    hash = (hash ^ c) * 16777619;
+                }
+
+                return (hash & 0x7FFFFFFF) | 1;
+            }
         }
 
         /// <summary>

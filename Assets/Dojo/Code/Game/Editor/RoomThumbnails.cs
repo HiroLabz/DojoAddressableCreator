@@ -13,16 +13,17 @@ namespace Dojo.Game.Editor
     /// preview-scene render keyed out to a transparent background - but from a little higher, so a
     /// room reads as a floor plan with its walls and desks rather than as a wall seen side on.
     /// <para>
-    /// Each image is imported as a sprite and filed into the default group at
-    /// <c>default/Rooms/Thumbnails/room_&lt;name&gt;</c>, the address the room index gives as its
-    /// icon. Run it again after a room prefab changes.
+    /// The prefabs are read from <c>Rooms/Editor/Prefabs</c>, which only this tool uses and the
+    /// Addressable Generator leaves out of the pack. Each image is imported as a sprite and filed
+    /// into <see cref="RoomsPack.GroupName"/> at <c>default/Rooms/Thumbnails/room_&lt;name&gt;</c>,
+    /// the address the room index gives as its icon. Run it again after a room prefab changes.
     /// </para>
     /// </remarks>
     public static class RoomThumbnails
     {
         const string Pack = "default";
-        const string PrefabFolder = "Assets/Process/default/Rooms/Prefabs";
-        const string OutputFolder = "Assets/Process/default/Rooms/Thumbnails";
+        const string PrefabFolder = RoomsPack.PrefabFolder;
+        const string OutputFolder = RoomsPack.ThumbnailFolder;
 
         const int Size = 256;
         const float Yaw = 135f;
@@ -215,20 +216,22 @@ namespace Dojo.Game.Editor
         }
 
         /// <summary>
-        /// Files one thumbnail into the default group under its address, with the pack's label so
-        /// a preload of the pack takes it in. An entry already elsewhere keeps its group.
+        /// Files one thumbnail into the rooms' group under its address, with the pack's label so a
+        /// preload of the pack takes it in. One filed anywhere else is moved there.
         /// </summary>
         static bool Register(string guid, string address)
         {
             var settings = AddressableAssetSettingsDefaultObject.Settings;
+            var group = RoomsPack.EnsureGroup(settings);
 
-            if (settings == null || settings.DefaultGroup == null)
+            if (group == null)
             {
-                Debug.LogError("[RoomThumbnails] There are no Addressables settings to file the thumbnails into.");
+                Debug.LogError("[RoomThumbnails] There is no " + RoomsPack.GroupName + " group to file the thumbnails into.");
                 return false;
             }
 
-            var entry = settings.FindAssetEntry(guid) ?? settings.CreateOrMoveEntry(guid, settings.DefaultGroup, false, false);
+            // CreateOrMoveEntry takes an existing entry into the group as well as making a new one.
+            var entry = settings.CreateOrMoveEntry(guid, group, false, false);
 
             if (entry == null)
             {

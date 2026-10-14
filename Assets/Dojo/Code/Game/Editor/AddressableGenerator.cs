@@ -622,6 +622,53 @@ namespace Dojo.Game.Editor
         /// in <c>Content_Audio</c> with nothing to set, and a kind of content nobody has made a
         /// group for yet still goes somewhere remote rather than nowhere.
         /// </remarks>
+        /// <summary>The pack folder whose contents build into <see cref="RoomsPack.GroupName"/>.</summary>
+        const string RoomsFolderName = "Rooms";
+
+        /// <summary>
+        /// Takes out every entry for a file under the Rooms folder's <c>Editor/</c>, and any left at
+        /// an address the room prefabs used to have: what only editor tools read stays out of the
+        /// download, wherever an earlier run filed it.
+        /// </summary>
+        void ReleaseEditorOnlyEntries(AddressableAssetSettings settings, string roomsFolder, List<string> problems)
+        {
+            var editorFolder = roomsFolder + "/Editor/";
+            var oldPrefabAddresses = Prefix + "/" + RoomsFolderName + "/Prefabs/";
+            var stale = new List<string>();
+
+            foreach (var group in settings.groups)
+            {
+                if (group == null)
+                {
+                    continue;
+                }
+
+                foreach (var entry in group.entries)
+                {
+                    if (entry == null)
+                    {
+                        continue;
+                    }
+
+                    var path = AssetDatabase.GUIDToAssetPath(entry.guid);
+
+                    if ((!string.IsNullOrEmpty(path) && path.StartsWith(editorFolder, StringComparison.OrdinalIgnoreCase))
+                        || (entry.address != null && entry.address.StartsWith(oldPrefabAddresses, StringComparison.Ordinal)))
+                    {
+                        stale.Add(entry.guid);
+                    }
+                }
+            }
+
+            foreach (var guid in stale)
+            {
+                if (settings.RemoveAssetEntry(guid, false))
+                {
+                    problems.Add("removed editor-only entry " + AssetDatabase.GUIDToAssetPath(guid));
+                }
+            }
+        }
+
         static string GroupFor(AddressableAssetSettings settings, string folderName)
         {
             var wanted = GroupPrefix + folderName;
@@ -882,11 +929,38 @@ namespace Dojo.Game.Editor
             var groupsUsed = new List<string>();
             var report = "\n\nOther folders:";
 
+            var roomWarnings = new List<string>();
+
             foreach (var folder in folders)
             {
                 var name = Path.GetFileName(folder);
+
+                // The pack's rooms build into a group of their own, made on first need with
+                // Content_Shared's settings. Before GroupFor, so it finds the group.
+                var isRooms = string.Equals(name, RoomsFolderName, StringComparison.OrdinalIgnoreCase);
+                if (isRooms)
+                {
+                    RoomsPack.EnsureGroup(settings);
+                    ReleaseEditorOnlyEntries(settings, folder, problems);
+                    roomWarnings.AddRange(RoomsPack.CheckIndex(folder, Prefix));
+                }
+
                 var group = GroupFor(settings, name);
                 var assets = FindExtraAssets(folder);
+
+                if (isRooms)
+                {
+                    // Every room thumbnail is drawn as a sprite; one saved as a plain texture would
+                    // resolve as nothing when a card asks for one.
+                    foreach (var assetPath in assets)
+                    {
+                        if (assetPath.StartsWith(folder + "/Thumbnails/", StringComparison.OrdinalIgnoreCase)
+                            && assetPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                        {
+                            RoomsPack.ImportAsSprite(assetPath);
+                        }
+                    }
+                }
 
                 var claims = new Dictionary<string, int>(StringComparer.Ordinal);
                 foreach (var assetPath in assets)
@@ -903,7 +977,9 @@ namespace Dojo.Game.Editor
                     var bare = AddressForExtra(folder, assetPath, false);
                     var address = claims[bare] > 1 ? AddressForExtra(folder, assetPath, true) : bare;
 
-                    if (Assign(settings, assetPath, address, group, problems))
+                    // Rooms are taken into their own group even when an earlier run filed them
+                    // elsewhere; every other folder's entries keep whatever group they are in.
+                    if (Assign(settings, assetPath, address, group, problems, isRooms))
                     {
                         registered++;
                     }
@@ -927,6 +1003,18 @@ namespace Dojo.Game.Editor
             foreach (var group in groupsUsed)
             {
                 report += BundlingWarning(settings, group);
+            }
+
+            // Said, never fixed: rooms.json's order is a choice, so it is not rewritten here.
+            if (roomWarnings.Count > 0)
+            {
+                report += "\n\nRooms - rooms.json does not match the files (" + roomWarnings.Count + "), not rewritten:\n  "
+                    + string.Join("\n  ", roomWarnings);
+
+                foreach (var warning in roomWarnings)
+                {
+                    Debug.LogWarning("[AddressableGenerator] " + warning);
+                }
             }
 
             if (problems.Count > 0)
@@ -1008,7 +1096,8 @@ namespace Dojo.Game.Editor
             string assetPath,
             string address,
             string groupName,
-            List<string> problems)
+            List<string> problems,
+            bool takeIntoGroup = false)
         {
             if (string.IsNullOrEmpty(assetPath))
             {
@@ -1047,6 +1136,10 @@ namespace Dojo.Game.Editor
                     problems.Add("could not add " + assetPath + " to " + groupName);
                     return false;
                 }
+            }
+            else if (takeIntoGroup && entry.parentGroup != group)
+            {
+                settings.MoveEntry(entry, group, false, false);
             }
 
             if (!string.IsNullOrEmpty(address) && entry.address != address)

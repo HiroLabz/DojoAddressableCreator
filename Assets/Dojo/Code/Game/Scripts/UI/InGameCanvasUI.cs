@@ -157,8 +157,10 @@ namespace Dojo.Game.UI
         /// </remarks>
         [Inject]
         public void Construct(IDialogManager dialogManager, WorldService worldService, IWorldSource worldSource,
-            ILoadingService loadingService, WorldPictures worldPictures, RoomEditor roomEditor)
+            ILoadingService loadingService, WorldPictures worldPictures, RoomEditor roomEditor,
+            CustomRooms customRooms)
         {
+            madeRooms = customRooms;
             dialogs = dialogManager;
             worlds = worldService;
             source = worldSource;
@@ -168,6 +170,7 @@ namespace Dojo.Game.UI
         }
 
         RoomEditor editor;
+        CustomRooms madeRooms;
 
         /// <summary>
         /// True for the entries that act on the world - leaving it, saving, loading, resetting -
@@ -659,8 +662,14 @@ namespace Dojo.Game.UI
             worlds.Load(worldName);
         }
 
+        /// <summary>The two resets, as the chooser lists them.</summary>
+        const string ResetKeepingPromoted = "Reset, keep promoted rooms";
+        const string ResetToDefaults = "Reset to the 14 default rooms";
+
         /// <summary>
-        /// Asks before clearing the world, because anything built since the last save is lost.
+        /// Asks which reset - keeping the rooms promoted into the pack, or back to the pack's 14
+        /// original rooms alone - and then asks again before doing it, because anything built since
+        /// the last save is lost and deleted rooms do not come back.
         /// </summary>
         void AskToResetWorld()
         {
@@ -669,14 +678,25 @@ namespace Dojo.Game.UI
                 return;
             }
 
-            var kept = string.IsNullOrEmpty(worlds.OpenWorldName)
-                ? "Your saved worlds are kept."
-                : "'" + worlds.OpenWorldName + "' stays saved as it was.";
+            dialogs.Choose("Reset world", new List<string> { ResetKeepingPromoted, ResetToDefaults }, chosen =>
+            {
+                var keepPromoted = chosen != ResetToDefaults;
 
-            dialogs.Confirm(
-                "Reset the world? Everything is cleared and a single floor is laid. " + kept
-                    + " The reset world is saved under a new name.",
-                ResetWorld);
+                var kept = string.IsNullOrEmpty(worlds.OpenWorldName)
+                    ? "Your saved worlds are kept."
+                    : "'" + worlds.OpenWorldName + "' stays saved as it was.";
+
+                var rooms = keepPromoted
+                    ? "every saved room is deleted, and the room list goes back to the 14 default rooms and "
+                        + "your promoted rooms."
+                    : "every saved room AND every promoted room is deleted - files, thumbnails and all - and "
+                        + "the room list goes back to the 14 default rooms.";
+
+                dialogs.Confirm(
+                    "Reset the world? Everything is cleared, the default world is loaded, " + rooms + " " + kept
+                        + " The reset world is saved under a new name.",
+                    () => ResetWorld(keepPromoted));
+            });
         }
 
         /// <summary>Clears the world, then puts the camera back where it started over it.</summary>
@@ -685,9 +705,29 @@ namespace Dojo.Game.UI
         /// one. Found rather than injected: the rig is on the camera, outside anything this canvas
         /// is handed.
         /// </remarks>
-        void ResetWorld()
+        void ResetWorld(bool keepPromoted)
         {
             worlds.ResetWorld();
+
+            // And the rooms back to the pack's: every saved room deleted with all of it - file,
+            // area, thumbnail, metas, list entry, Addressables entries - and, unless they are being
+            // kept, every promoted room the same way; then the room list put back from
+            // rooms_default.json, with the promoted rooms after it when they are kept.
+            if (madeRooms != null)
+            {
+                var deleted = madeRooms.DeleteAll();
+                var promotedDeleted = keepPromoted ? 0 : madeRooms.DeletePromoted();
+
+                string problem;
+                if (!madeRooms.ResetList(keepPromoted, out problem))
+                {
+                    Debug.LogWarning("[Rooms] " + problem, this);
+                }
+
+                Debug.Log("[Rooms] Reset: " + deleted + " saved room(s) deleted"
+                    + (keepPromoted ? ", promoted rooms kept" : ", " + promotedDeleted + " promoted room(s) deleted")
+                    + "; the room list is the 14 default rooms" + (keepPromoted ? " and the promoted ones." : "."), this);
+            }
 
             foreach (var rig in FindObjectsByType<Dojo.Game.InGame.Controllers.CameraRig>(FindObjectsSortMode.None))
             {
