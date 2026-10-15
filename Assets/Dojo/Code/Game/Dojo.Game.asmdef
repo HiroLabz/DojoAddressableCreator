@@ -1,7 +1,20 @@
 {
     "name": "Dojo.Game",
     "rootNamespace": "Dojo.Game",
-    "references": [],
+    "references": [
+        "Dojo.Content",
+        "Dojo.Inventory",
+        "Dojo.Framework",
+        "Dojo.Hiro",
+        "VContainer",
+        "UnityEngine.UI",
+        "Unity.InputSystem",
+        "LeanTween",
+        "Unity.TextMeshPro",
+        "Unity.AI.Navigation",
+        "Unity.Cinemachine",
+        "Unity.RenderPipelines.Universal.Runtime"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

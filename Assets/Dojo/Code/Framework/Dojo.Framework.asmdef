@@ -1,7 +1,13 @@
 {
     "name": "Dojo.Framework",
     "rootNamespace": "Dojo.Framework",
-    "references": [],
+    "references": [
+        "VContainer",
+        "UnityEngine.UI",
+        "LeanTween",
+        "Unity.TextMeshPro",
+        "Unity.InputSystem"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

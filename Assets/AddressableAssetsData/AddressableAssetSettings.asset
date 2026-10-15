@@ -63,6 +63,7 @@ MonoBehaviour:
   m_GroupAssets:
   - {fileID: 11400000, guid: f09f3331535c7d7458d6db827e0e342b, type: 2}
   - {fileID: 11400000, guid: cde4bfaba097cb442a512e79f85eb5d5, type: 2}
+  - {fileID: 11400000, guid: d3c869351abca0444aac5e6f271d39e9, type: 2}
   - {fileID: 11400000, guid: b03ac3e5ba1949a489c36388eed16c17, type: 2}
   - {fileID: 11400000, guid: 64be309e29e04204ab5b691735ff4591, type: 2}
   - {fileID: 11400000, guid: 611d10b93beeba44f87873eae21fa32d, type: 2}
@@ -85,7 +86,7 @@ MonoBehaviour:
       - m_Id: 8c2b38fcf9d448449a1be708c18a3e2c
         m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
       - m_Id: 9dd7de5537a1c3e428f09f83de84aba3
-        m_Value: E:/xamp/htdocs/addressableTest/DojoAddressables/development
+        m_Value: E:\hirolabz\DojoAddressables\development
       - m_Id: faf3d6217f89f2c4aafb4a59f7e1968e
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
     m_ProfileEntryNames:

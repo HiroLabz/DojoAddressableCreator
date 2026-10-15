@@ -4,9 +4,13 @@
     "references": [
         "Dojo.Game",
         "Dojo.Framework",
+        "Dojo.Framework.Editor",
+        "VContainer",
         "Unity.Addressables",
         "Unity.Addressables.Editor",
-        "Unity.ResourceManager"
+        "Unity.ResourceManager",
+        "UnityEngine.UI",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [
         "Editor"
