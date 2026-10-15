@@ -9,8 +9,8 @@ using VContainer;
 namespace Dojo.Game.UI
 {
     /// <summary>
-    /// The bar shown while a room is being made: what is going on, and SAVE ROOM, LOAD ROOM and
-    /// CANCEL.
+    /// The bar shown while a room is being made: what is going on, ENTRANCE and EXIT for marking
+    /// its doors, and SAVE ROOM, LOAD ROOM and CANCEL.
     /// </summary>
     /// <remarks>
     /// Building itself is the inventory's, exactly as in the world; this bar only starts and ends
@@ -26,26 +26,48 @@ namespace Dojo.Game.UI
         [SerializeField] Button loadButton;
         [SerializeField] Button cancelButton;
 
-        [Tooltip("Left showing while a room is being made: the line of controls at the top of the " +
-                 "screen. Everything else beside this bar is put away.")]
-        [SerializeField] string keepShowing = "ControlsHintBar";
+        [Tooltip("Takes up the opening tool to make entrances: see RoomOpeningTool.")]
+        [SerializeField] Button entranceButton;
+
+        [Tooltip("Takes up the opening tool to make exits.")]
+        [SerializeField] Button exitButton;
+
+        [Tooltip("Left showing while a room is being made, by name: the line of controls at the top " +
+                 "of the screen, and the view cube, for looking at the room from every side. " +
+                 "Everything else beside this bar is put away.")]
+        [SerializeField] string[] keepShowingNames = { "ControlsHintBar", "ViewCube" };
 
         RoomEditor editor;
         RoomCatalog catalog;
         IDialogManager dialogs;
+        RoomOpeningTool openings;
 
         // What this bar put away when a room started being made, to bring back when it ends.
         readonly List<GameObject> putAway = new List<GameObject>();
         bool focused;
 
         [Inject]
-        public void Construct(RoomEditor roomEditor, RoomCatalog roomCatalog, IDialogManager dialogManager)
+        public void Construct(RoomEditor roomEditor, RoomCatalog roomCatalog, IDialogManager dialogManager,
+            PlacementController placementController)
         {
             editor = roomEditor;
             catalog = roomCatalog;
             dialogs = dialogManager;
 
+            // Here rather than in Awake: the bar starts switched off, so Awake waits for the first
+            // room, and the tool has to be listening before then.
+            openings = GetComponent<RoomOpeningTool>();
+            if (openings == null)
+            {
+                openings = gameObject.AddComponent<RoomOpeningTool>();
+            }
+
+            openings.Init(editor, placementController);
+            openings.Said += Say;
+            openings.ModeChanged += Refresh;
+
             editor.Changed += Refresh;
+            editor.Refused += Say;
             Refresh();
         }
 
@@ -59,6 +81,8 @@ namespace Dojo.Game.UI
             if (saveButton != null) saveButton.onClick.AddListener(OnSave);
             if (loadButton != null) loadButton.onClick.AddListener(OnLoad);
             if (cancelButton != null) cancelButton.onClick.AddListener(OnCancel);
+            if (entranceButton != null) entranceButton.onClick.AddListener(() => TakeUp(RoomOpenings.Entrance));
+            if (exitButton != null) exitButton.onClick.AddListener(() => TakeUp(RoomOpenings.Exit));
 
             Refresh();
         }
@@ -68,6 +92,21 @@ namespace Dojo.Game.UI
             if (editor != null)
             {
                 editor.Changed -= Refresh;
+                editor.Refused -= Say;
+            }
+
+            if (openings != null)
+            {
+                openings.Said -= Say;
+                openings.ModeChanged -= Refresh;
+            }
+        }
+
+        void TakeUp(string kind)
+        {
+            if (openings != null)
+            {
+                openings.Toggle(kind);
             }
         }
 
@@ -83,11 +122,21 @@ namespace Dojo.Game.UI
 
             Focus(editing);
 
-            if (editing)
+            var mode = editing && openings != null ? openings.Mode : null;
+            Highlight(entranceButton, mode == RoomOpenings.Entrance);
+            Highlight(exitButton, mode == RoomOpenings.Exit);
+
+            if (editing && openings != null && openings.Mode != null)
             {
-                Say(string.IsNullOrEmpty(editor.EditingName)
-                    ? "Build a room with the inventory, then save it."
-                    : "Editing '" + editor.EditingName + "'. Save it under its name to replace it.");
+                Say("Click a wall or amber gap to make " + (openings.Mode == RoomOpenings.Entrance ? Legend.Entrance : Legend.Exit)
+                    + ". Click an opening to take it off or switch it, drag it to move it. Esc to stop.");
+            }
+            else if (editing)
+            {
+                Say((string.IsNullOrEmpty(editor.EditingName)
+                    ? "Build a room, mark its one entrance and one exit, then save it. "
+                    : "Editing '" + editor.EditingName + "'. Save it under its name to replace it. ")
+                    + Legend.Entrance + ": arrow out. " + Legend.Exit + ": arrow in.");
             }
         }
 
@@ -104,10 +153,29 @@ namespace Dojo.Game.UI
                 return;
             }
 
+            // Before a name is asked for, so a room that cannot be saved says why straight away.
+            string openingProblem;
+            if (!editor.CheckOpenings(out openingProblem))
+            {
+                Say(openingProblem);
+                return;
+            }
+
+            if (openings != null)
+            {
+                openings.Stop();
+            }
+
             var made = new List<string>();
             foreach (var room in catalog.Custom.All())
             {
                 made.Add(room.name);
+            }
+
+            // The room being edited too, so its own name reads OVERWRITE - one of the pack's included.
+            if (!string.IsNullOrEmpty(editor.EditingName) && !made.Contains(editor.EditingName))
+            {
+                made.Add(editor.EditingName);
             }
 
             dialogs.SaveAs("Save room", made, name =>
@@ -140,6 +208,11 @@ namespace Dojo.Game.UI
             {
                 Say("There are no rooms to load.");
                 return;
+            }
+
+            if (openings != null)
+            {
+                openings.Stop();
             }
 
             dialogs.Choose("Load room", names, chosen =>
@@ -201,7 +274,8 @@ namespace Dojo.Game.UI
                     {
                         var go = sibling.gameObject;
 
-                        if (go == root || go == gameObject || !go.activeSelf || go.name == keepShowing
+                        if (go == root || go == gameObject || !go.activeSelf
+                            || System.Array.IndexOf(keepShowingNames, go.name) >= 0
                             || (inventory != null && go == inventory.gameObject))
                         {
                             continue;
@@ -233,6 +307,41 @@ namespace Dojo.Game.UI
             if (inventory != null)
             {
                 inventory.SetRoomEditing(false);
+            }
+        }
+
+        /// <summary>The kinds' names in the colours the opening tool draws them in, for the status line.</summary>
+        static class Legend
+        {
+            public static readonly string Entrance = "<color=#" + ColorUtility.ToHtmlStringRGB(RoomOpeningTool.EntranceColour) + "><b>ENTRANCE</b></color>";
+            public static readonly string Exit = "<color=#" + ColorUtility.ToHtmlStringRGB(RoomOpeningTool.ExitColour) + "><b>EXIT</b></color>";
+        }
+
+        /// <summary>Gold: what an opening button is lit with while its tool is in hand.</summary>
+        static readonly Color Lit = new Color(1f, 0.78f, 0.2f);
+
+        /// <summary>
+        /// Lights an opening button gold while its tool is in hand, and puts it back when it is not.
+        /// The label stays white, bold while lit.
+        /// </summary>
+        static void Highlight(Button button, bool on)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            var face = button.targetGraphic;
+            if (face != null)
+            {
+                face.color = on ? Lit : Color.white;
+            }
+
+            var label = button.GetComponentInChildren<TMP_Text>(true);
+            if (label != null)
+            {
+                label.color = Color.white;
+                label.fontStyle = on ? FontStyles.Bold : FontStyles.Normal;
             }
         }
 

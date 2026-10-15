@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using VContainer;
 
 namespace Dojo.Game.Placement
 {
@@ -18,6 +19,11 @@ namespace Dojo.Game.Placement
     /// pieces and an area, has no one <c>FurniturePiece</c> to hold, and is checked against the
     /// whole floor rather than cell by cell.
     /// </para>
+    /// <para>
+    /// A room already in the world goes through the same gesture: a press on any piece of it lifts
+    /// the whole room, which then follows the cursor from where it was grabbed. Put down, it stays
+    /// one room; put back, it returns to where it stood.
+    /// </para>
     /// </remarks>
     public sealed partial class PlacementController
     {
@@ -30,6 +36,16 @@ namespace Dojo.Game.Placement
         int roomSteps;
         Vector2 roomOffset;
         bool roomFits;
+
+        // The room lifted out of the world, or null when the room in hand came from the Rooms tab;
+        // and where on it the cursor took hold, relative to its origin at no turn.
+        RoomPlacer.Move roomMove;
+        Vector2 roomGrab;
+
+        // The room's floor tiles, relative to its origin, and the floor's around it: what lines the
+        // room up with the floor it is put beside.
+        List<RoomPlacer.Tile> roomTiles;
+        List<RoomPlacer.Tile> floorTiles;
 
         /// <summary>True while a room is on the cursor.</summary>
         public bool IsPlacingRoom => state == State.Room;
@@ -46,6 +62,13 @@ namespace Dojo.Game.Placement
         /// </summary>
         public bool BeginRoomFromInventory(RoomPlacer placer, RoomPlacer.Plan plan)
         {
+            if (ViewBlocked)
+            {
+                Debug.LogWarning("[Placement] Rooms can't be placed from a side view. Switch the view "
+                    + "cube to Top or Perspective first.", this);
+                return false;
+            }
+
             if (state != State.Idle)
             {
                 Log("room refused: a gesture is already running");
@@ -65,6 +88,8 @@ namespace Dojo.Game.Placement
             roomSteps = 0;
             roomTaken = placer.TakenOn(roomFloor);
             roomGhost = placer.BuildGhost(plan, ghostLayer);
+            roomTiles = RoomPlacer.TilesOf(roomGhost);
+            floorTiles = placer.FloorTilesOn(roomFloor, null);
 
             // Straight to the carried state, as a piece from the drawer is: the room arrives from a
             // click, so there is no press to release.
@@ -76,6 +101,57 @@ namespace Dojo.Game.Placement
 
             Log("LIFTED room '" + plan.Entry.name + "' out of the inventory, footprint "
                 + plan.Footprint.size + " (" + (roomFits ? "fits" : "blocked") + ")");
+
+            return true;
+        }
+
+        /// <summary>
+        /// Lifts a room already in the world, whole, onto the cursor. False, with nothing lifted,
+        /// when it cannot be moved.
+        /// </summary>
+        bool BeginRoomMove(RoomContainer room, Mouse mouse)
+        {
+            RoomPlacer placer;
+
+            if (resolver == null || !resolver.TryResolve(out placer))
+            {
+                Log("room press ignored: no RoomPlacer in this scene");
+                return false;
+            }
+
+            string problem;
+            var move = placer.Lift(room, out problem);
+
+            if (move == null)
+            {
+                Debug.LogWarning("[Placement] " + problem, room);
+                return false;
+            }
+
+            roomPlacer = placer;
+            roomMove = move;
+            roomPlan = move.Plan;
+            roomFloor = move.Floor;
+            roomSteps = 0;
+            roomTaken = placer.TakenOn(roomFloor, move);
+            roomTiles = RoomPlacer.TilesOf(room.transform);
+            floorTiles = placer.FloorTilesOn(roomFloor, move);
+
+            // Held where it was grabbed, so it does not jump to centre itself on the cursor.
+            Vector3 point;
+            var origin = new Vector2(move.From.x, move.From.z);
+            roomGrab = TryCursorOnPlane(mouse, move.From.y, out point)
+                ? new Vector2(point.x, point.z) - origin
+                : move.Plan.Footprint.center;
+
+            state = State.Room;
+            SetRigSuppressed(true);
+            SetManagerSuppressed(true);
+
+            MoveRoomToCursor(mouse);
+
+            Log("LIFTED room '" + room.RoomName + "' with " + move.Pieces.Count + " piece(s), "
+                + move.Riders.Count + " carried and " + move.Areas.Count + " area(s)");
 
             return true;
         }
@@ -107,6 +183,13 @@ namespace Dojo.Game.Placement
             if (cancelled)
             {
                 Log("room cancelled");
+
+                if (roomMove != null)
+                {
+                    // Back where it stood, as a piece goes back when a move is called off.
+                    roomPlacer.PutDown(roomMove, new Vector2(roomMove.From.x, roomMove.From.z), 0, false);
+                }
+
                 EndRoom();
                 return;
             }
@@ -128,6 +211,22 @@ namespace Dojo.Game.Placement
             var floor = roomFloor;
             var offset = roomOffset;
             var steps = roomSteps;
+            var move = roomMove;
+
+            if (move != null)
+            {
+                EndRoom();
+                placer.PutDown(move, offset, steps, true);
+
+                Log("MOVED room '" + plan.Entry.name + "' to " + offset + ", turned " + steps * 90 + " degrees");
+
+                if (BakesNavigation)
+                {
+                    RebuildNavigation();
+                }
+
+                return;
+            }
 
             // The ghost goes first, so the real room is not built through it.
             EndRoom();
@@ -159,10 +258,28 @@ namespace Dojo.Game.Placement
             }
 
             var footprint = RoomPlacer.FootprintAt(roomPlan, roomSteps);
-            roomOffset = RoomPlacer.Snapped(new Vector2(point.x, point.z) - footprint.center);
+
+            if (roomMove != null)
+            {
+                // The grab point turns with the room, so the room turns about the cursor.
+                var grab = Quaternion.Euler(0f, roomSteps * 90f, 0f) * new Vector3(roomGrab.x, 0f, roomGrab.y);
+                roomOffset = RoomPlacer.Snapped(new Vector2(point.x - grab.x, point.z - grab.z));
+            }
+            else
+            {
+                roomOffset = RoomPlacer.Snapped(new Vector2(point.x, point.z) - footprint.center);
+            }
+
+            // Near the floor, onto its tiles' lattice, so the room's floor meets it edge to edge.
+            roomOffset = RoomPlacer.AlignToTiles(roomTiles, floorTiles, roomOffset, roomSteps);
 
             var placed = new Rect(footprint.position + roomOffset, footprint.size);
             roomFits = RoomPlacer.IsFree(placed, roomTaken, out roomBlocker);
+
+            if (roomMove != null)
+            {
+                RoomPlacer.Carry(roomMove, roomOffset, roomSteps);
+            }
 
             if (roomGhost != null)
             {
@@ -192,6 +309,9 @@ namespace Dojo.Game.Placement
             }
 
             roomGhost = null;
+            roomMove = null;
+            roomTiles = null;
+            floorTiles = null;
             roomPlan = null;
             roomPlacer = null;
             roomTaken = null;
@@ -210,6 +330,12 @@ namespace Dojo.Game.Placement
             if (roomGhost != null)
             {
                 Destroy(roomGhost.gameObject);
+            }
+
+            // A room lifted out of the world is part of it: torn down mid-move, it goes back.
+            if (roomMove != null && roomPlacer != null && roomMove.Room != null)
+            {
+                roomPlacer.PutDown(roomMove, new Vector2(roomMove.From.x, roomMove.From.z), 0, false);
             }
         }
     }

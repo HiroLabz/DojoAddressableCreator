@@ -70,6 +70,12 @@ namespace Dojo.Game.UI
         const int ResetWorldEntry = 5;
 
         /// <summary>
+        /// Added after RESET WORLD, so every other entry keeps its index; on screen it sits just
+        /// under RESET WORLD. Put there by <c>Tools ▸ Dojo ▸ Add Clear World Entry</c>.
+        /// </summary>
+        const int ClearWorldEntry = 6;
+
+        /// <summary>
         /// The one content key with a pack behind it, as used by the BuyStrawberry harness.
         /// </summary>
         /// <remarks>
@@ -116,6 +122,9 @@ namespace Dojo.Game.UI
 
         /// <summary>Raised when the player asks to reset the world, before they are asked to confirm.</summary>
         public event Action ResetWorldRequested;
+
+        /// <summary>Raised when the player asks to clear the world, before they are asked to confirm.</summary>
+        public event Action ClearWorldRequested;
 
         /// <summary>Raised whenever the menu changes state.</summary>
         /// <remarks>
@@ -177,7 +186,8 @@ namespace Dojo.Game.UI
         /// which have nothing to act on while a room is being made in its place.
         /// </summary>
         static bool ActsOnWorld(int index)
-            => index == BackEntry || index == SaveWorldEntry || index == LoadWorldEntry || index == ResetWorldEntry;
+            => index == BackEntry || index == SaveWorldEntry || index == LoadWorldEntry || index == ResetWorldEntry
+                || index == ClearWorldEntry;
 
         /// <summary>
         /// Esc, while the entries are up, is BACK - the key the mock prints beside it.
@@ -436,6 +446,11 @@ namespace Dojo.Game.UI
                     AskToResetWorld();
                     break;
 
+                case ClearWorldEntry:
+                    Raise(ClearWorldRequested);
+                    AskToClearWorld();
+                    break;
+
                 default:
                     // An entry was added to the prefab and nobody taught this what it means. Worth
                     // saying out loud, because the button will otherwise look merely unresponsive.
@@ -660,6 +675,39 @@ namespace Dojo.Game.UI
         void OnLoadConfirmed(string worldName)
         {
             worlds.Load(worldName);
+        }
+
+        /// <summary>
+        /// Asks before clearing the world down to one floor, because anything built since the last
+        /// save is lost. Unlike a reset, nothing else is touched: the default world is not loaded,
+        /// and the rooms and the saved worlds stay as they are.
+        /// </summary>
+        void AskToClearWorld()
+        {
+            if (!DialogsReady())
+            {
+                return;
+            }
+
+            var kept = string.IsNullOrEmpty(worlds.OpenWorldName)
+                ? "Your saved worlds are kept."
+                : "'" + worlds.OpenWorldName + "' stays saved as it was.";
+
+            dialogs.Confirm(
+                "Clear the world? Everything in it is removed and a single floor is laid. Rooms are not "
+                    + "touched. " + kept + " The cleared world is saved under a new name.",
+                ClearWorld);
+        }
+
+        /// <summary>Clears the world to one floor, then puts the camera back where it started over it.</summary>
+        void ClearWorld()
+        {
+            worlds.ClearWorld();
+
+            foreach (var rig in FindObjectsByType<Dojo.Game.InGame.Controllers.CameraRig>(FindObjectsSortMode.None))
+            {
+                rig.ResetView();
+            }
         }
 
         /// <summary>The two resets, as the chooser lists them.</summary>

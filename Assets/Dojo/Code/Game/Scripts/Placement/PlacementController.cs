@@ -352,7 +352,7 @@ namespace Dojo.Game.Placement
 
         void TickIdle(Mouse mouse)
         {
-            if (suppressGesture)
+            if (suppressGesture || ViewBlocked)
             {
                 // The manager is deliberately not handed back: whoever suppressed this owns the
                 // button and is suppressing the manager too, and will release both when it is
@@ -457,12 +457,43 @@ namespace Dojo.Game.Placement
                 return;
             }
 
+            // While a room is being made, a floor tile with one of its doors on its edge stays put:
+            // moved, it would leave the door standing on no floor.
+            var making = RoomBeingMade();
+            if (making != null && making.RefuseLift(nearest))
+            {
+                Log("press on " + nearest.gameObject.name + " refused: a door of the room is on its edge");
+                return;
+            }
+
+            // A piece of a room lifts the whole room: a room is one thing once it is placed.
+            var room = nearest.transform.parent != null ? nearest.transform.parent.GetComponent<RoomContainer>() : null;
+
+            if (room != null)
+            {
+                BeginRoomMove(room, mouse);
+                return;
+            }
+
             // Worked out before the lift, because BeginDrag needs it to keep the piece under the
             // cursor exactly where it was grabbed instead of jumping.
             pressHasGround = TryCursorOnPlane(mouse, nearest.transform.position.y, out pressGroundPoint);
 
             SetManagerSuppressed(true);
             BeginDrag(nearest);
+        }
+
+        RoomEditor roomEditor;
+
+        /// <summary>The room editor while a room is being made, else null. Looked up once; a scene may have none.</summary>
+        RoomEditor RoomBeingMade()
+        {
+            if (roomEditor == null && resolver != null)
+            {
+                resolver.TryResolve(out roomEditor);
+            }
+
+            return roomEditor != null && roomEditor.IsEditing ? roomEditor : null;
         }
 
         void Log(string message)
@@ -671,6 +702,13 @@ namespace Dojo.Game.Placement
         /// </returns>
         public bool BeginDragFromInventory(GameObject prefab, string prefabId = null, string resource = null)
         {
+            if (ViewBlocked)
+            {
+                Debug.LogWarning("[Placement] Pieces can't be placed from a side view. Switch the view "
+                    + "cube to Top or Perspective first.", this);
+                return false;
+            }
+
             if (state != State.Idle)
             {
                 Log("inventory drag refused: a gesture is already running");
@@ -1300,6 +1338,17 @@ namespace Dojo.Game.Placement
         /// Set by the scope, which holds the world settings.
         /// </summary>
         public bool BakesNavigation { get; set; } = true;
+
+        /// <summary>
+        /// While true, nothing can be picked up or dropped from the inventory: the camera is in a
+        /// side view (<c>CameraViews</c>), where the floor is edge-on and no cursor can land on it.
+        /// </summary>
+        /// <remarks>
+        /// Its own flag rather than <see cref="SuppressGesture"/>, which the area painter raises and
+        /// lowers for the length of a session: sharing one bool, the painter finishing would hand
+        /// pick-up back in the middle of a side view.
+        /// </remarks>
+        public bool ViewBlocked { get; set; }
 
         public ManagerController Owner
         {

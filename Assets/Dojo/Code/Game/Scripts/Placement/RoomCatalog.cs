@@ -168,6 +168,19 @@ namespace Dojo.Game.Placement
                 return null;
             }
 
+#if UNITY_EDITOR
+            // Saved over from the room editor this session: the thumbnail just rendered, from its file.
+            if (CustomRooms.WasRewritten(room.icon))
+            {
+                var rewritten = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(ProjectPathFor(room.icon, ".png"));
+
+                if (rewritten != null)
+                {
+                    return rewritten;
+                }
+            }
+#endif
+
             if (content != null && content.TryGet(room.icon, out sprite))
             {
                 return sprite;
@@ -243,6 +256,16 @@ namespace Dojo.Game.Placement
             TextAsset asset;
             string text = null;
 
+#if UNITY_EDITOR
+            // Saved over from the room editor this session: the file as just written.
+            var rewrittenPath = System.IO.Path.Combine(Application.dataPath, "Process", room.address + ".json");
+
+            if (CustomRooms.WasRewritten(room.address) && System.IO.File.Exists(rewrittenPath))
+            {
+                text = System.IO.File.ReadAllText(rewrittenPath);
+            }
+            else
+#endif
             if (content != null && content.TryGet(room.address, out asset) && asset != null)
             {
                 text = asset.text;

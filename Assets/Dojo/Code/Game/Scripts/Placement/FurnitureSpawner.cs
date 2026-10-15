@@ -216,7 +216,9 @@ namespace Dojo.Game.Placement
                 return null;
             }
 
-            var footprint = FootprintFor(bounds, cellSize);
+            var footprint = RoomOpenings.IsWall(prefab.name)
+                ? WallFootprintFor(bounds, cellSize)
+                : FootprintFor(bounds, cellSize);
 
             // Ground is exempt from the cap. The limit exists to stop a mis-scaled model reserving
             // half the map, and a floor reserves nothing at all — a floor slab is legitimately
@@ -383,6 +385,33 @@ namespace Dojo.Game.Placement
             var along = Mathf.CeilToInt(bounds.size.z / cellSize - CellEpsilon);
 
             return new Vector2Int(Mathf.Max(1, across), Mathf.Max(1, along));
+        }
+
+        /// <summary>
+        /// A wall's cells: its thickness rounded up as any piece's is, but its length rounded down
+        /// to the width it is laid at - see <see cref="RoomOpenings.LaidWidth"/>.
+        /// </summary>
+        /// <remarks>
+        /// A wall's art runs a little past the step it is laid at, so its neighbours' ends overlap
+        /// and a run of walls has no seams: the default pack's wall measures 2.68 m and is laid every
+        /// 2.5 m. Rounded up like anything else, it held 11 cells, so two could never be put down
+        /// closer than 2.75 m by hand - looser than the pack's own rooms are built. At its laid width
+        /// it holds 10, and walls go end to end on the grid exactly as the rooms have them.
+        /// </remarks>
+        static Vector2Int WallFootprintFor(Bounds bounds, float cellSize)
+        {
+            var footprint = FootprintFor(bounds, cellSize);
+
+            if (bounds.size.x >= bounds.size.z)
+            {
+                footprint.x = Mathf.Max(1, Mathf.RoundToInt(RoomOpenings.LaidWidth(bounds.size.x) / cellSize));
+            }
+            else
+            {
+                footprint.y = Mathf.Max(1, Mathf.RoundToInt(RoomOpenings.LaidWidth(bounds.size.z) / cellSize));
+            }
+
+            return footprint;
         }
     }
 }

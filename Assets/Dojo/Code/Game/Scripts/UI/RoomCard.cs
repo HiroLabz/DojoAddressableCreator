@@ -29,6 +29,10 @@ namespace Dojo.Game.UI
                  "editor, where the pack's files can be changed.")]
         [SerializeField] Button promoteButton;
 
+        [Tooltip("Opens the room in the room editor, to be saved over itself. On rooms the player " +
+                 "made, and in the editor on the pack's rooms too.")]
+        [SerializeField] Button editButton;
+
         public RoomEntry Room { get; private set; }
 
         /// <summary>Raised with the card's room when it is clicked.</summary>
@@ -39,6 +43,9 @@ namespace Dojo.Game.UI
 
         /// <summary>Raised with the card's room when its PROMOTE is pressed.</summary>
         public event Action<RoomEntry> PromotePressed;
+
+        /// <summary>Raised with the card's room when its EDIT is pressed.</summary>
+        public event Action<RoomEntry> EditPressed;
 
         void Awake()
         {
@@ -55,6 +62,11 @@ namespace Dojo.Game.UI
             if (promoteButton != null)
             {
                 promoteButton.onClick.AddListener(() => PromotePressed?.Invoke(Room));
+            }
+
+            if (editButton != null)
+            {
+                editButton.onClick.AddListener(() => EditPressed?.Invoke(Room));
             }
 
             if (icon != null)
@@ -81,6 +93,12 @@ namespace Dojo.Game.UI
             if (promoteButton != null)
             {
                 promoteButton.gameObject.SetActive(made && Application.isEditor);
+            }
+
+            // A pack room's file is only there to write in the editor; a made room's always is.
+            if (editButton != null)
+            {
+                editButton.gameObject.SetActive(room != null && (made || Application.isEditor));
             }
 
             if (nameLabel != null)

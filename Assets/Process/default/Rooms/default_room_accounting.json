@@ -12372,6 +12372,32 @@
                             ],
                             "areaCellSize": 0.25
                         }
+                    ],
+                    "openings": [
+                        {
+                            "kind": "entrance",
+                            "centre": {
+                                "x": 0.0,
+                                "z": -5.8632
+                            },
+                            "facing": {
+                                "x": 0.0,
+                                "z": -1.0
+                            },
+                            "width": 2.5
+                        },
+                        {
+                            "kind": "exit",
+                            "centre": {
+                                "x": 0.0,
+                                "z": -5.8632
+                            },
+                            "facing": {
+                                "x": 0.0,
+                                "z": -1.0
+                            },
+                            "width": 2.5
+                        }
                     ]
                 }
             ],

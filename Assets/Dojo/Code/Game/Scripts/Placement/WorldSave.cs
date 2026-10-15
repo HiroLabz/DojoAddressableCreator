@@ -572,8 +572,15 @@ namespace Dojo.Game.Placement
             /// <summary>The named areas painted on this floor, given to agents or to nobody.</summary>
             public List<SavedBlockArea> blockAreas = new List<SavedBlockArea>();
 
+            /// <summary>
+            /// Where a room can be walked into and out of. Only a room file's floor 0 has any; see
+            /// <c>Room-File-Format.md</c> in dojo-game-app, which this follows.
+            /// </summary>
+            public List<SavedOpening> openings = new List<SavedOpening>();
+
             internal void EnsureLists()
             {
+                if (openings == null) openings = new List<SavedOpening>();
                 if (pieces == null) pieces = new List<SavedPiece>();
                 if (agents == null) agents = new List<SavedAgent>();
                 if (agentAreas == null) agentAreas = new List<SavedAgentArea>();
@@ -581,6 +588,46 @@ namespace Dojo.Game.Placement
                 if (managerAreas == null) managerAreas = new List<SavedAgentArea>();
                 if (blockAreas == null) blockAreas = new List<SavedBlockArea>();
             }
+        }
+
+        /// <summary>A point or direction across the ground, written as <c>{x, z}</c>.</summary>
+        [Serializable]
+        public struct GroundPoint
+        {
+            public float x;
+            public float z;
+
+            public GroundPoint(float x, float z)
+            {
+                this.x = x;
+                this.z = z;
+            }
+
+            public Vector2 ToVector2() => new Vector2(x, z);
+
+            public static GroundPoint From(Vector2 value) => new GroundPoint(value.x, value.y);
+        }
+
+        /// <summary>
+        /// A door of a room: where it is, which way it faces and how wide it is. The shape is set by
+        /// <c>Room-File-Format.md</c>, shared with the game.
+        /// </summary>
+        [Serializable]
+        public sealed class SavedOpening
+        {
+            /// <summary><c>entrance</c> for the room's main door, <c>exit</c> for a secondary one.</summary>
+            public string kind;
+
+            /// <summary>Middle of the opening, on the edge of the room's floor, in the room's frame.</summary>
+            public GroundPoint centre;
+
+            /// <summary>Which way you walk out through it: one of (1,0), (-1,0), (0,1), (0,-1).</summary>
+            public GroundPoint facing;
+
+            /// <summary>Clear width in metres: a whole number of wall pieces.</summary>
+            public float width;
+
+            public SavedOpening Copy() => new SavedOpening { kind = kind, centre = centre, facing = facing, width = width };
         }
 
         /// <summary>A named patch of one floor.</summary>

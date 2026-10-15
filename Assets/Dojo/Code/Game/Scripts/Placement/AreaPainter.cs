@@ -93,6 +93,12 @@ namespace Dojo.Game.Placement
         public bool IsActive { get; private set; }
 
         /// <summary>
+        /// While true, no session can start: the camera is in a side view (<c>CameraViews</c>),
+        /// where the floor is edge-on and no cursor can land on it.
+        /// </summary>
+        public bool Blocked { get; set; }
+
+        /// <summary>
         /// While true, the left button erases instead of painting — Ctrl held down permanently.
         /// </summary>
         /// <remarks>
@@ -271,6 +277,13 @@ namespace Dojo.Game.Placement
             // screen and in the console, and there is nothing for anybody to go on. Log() is gated
             // behind the logGesture tickbox, which is off by default, so this is the one path here
             // that must never be quiet.
+            if (Blocked)
+            {
+                Debug.LogWarning("[Area] Areas can't be painted from a side view. Switch the view "
+                    + "cube to Top or Perspective first.", this);
+                return false;
+            }
+
             if (placement != null && placement.IsBusy)
             {
                 Debug.LogWarning("[Area] Cannot define an area while a piece is on the cursor. "
