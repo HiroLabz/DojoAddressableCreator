@@ -350,8 +350,8 @@ namespace Dojo.Game.Placement
         /// on the very same spot - one door, walked in and out.
         /// </summary>
         /// <remarks>
-        /// Looser than <c>Room-File-Format.md</c> version 1, whose rule 4 has no two openings
-        /// overlap at all; the format is to be changed to match.
+        /// <c>Room-File-Format.md</c> rule 4, as of version 2 (16 Oct 2026). Version 1 had no two
+        /// openings overlap at all; it was changed to match this.
         /// </remarks>
         public static bool Clash(Opening a, Opening b) => a.kind == b.kind && Overlap(a, b);
 
@@ -555,8 +555,8 @@ namespace Dojo.Game.Placement
                 }
             }
 
-            // One of each, exactly: the creator's rule, tighter than the format's rule 3, which asks
-            // only for an entrance. They may share a spot - see Clash.
+            // One of each, exactly: Room-File-Format.md rule 3, as of version 2 (version 1 asked only
+            // for an entrance). They may share a spot - see Clash.
             if (exits == 0)
             {
                 failures.Insert(0, "The room has no exit (rule 3). Use EXIT on a wall of the floor's edge, on a marked gap, or on the entrance to share its spot.");
