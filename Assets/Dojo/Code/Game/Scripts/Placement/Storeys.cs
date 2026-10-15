@@ -134,6 +134,35 @@ namespace Dojo.Game.Placement
         /// <summary>The floor the player is looking at, from 0.</summary>
         public int Viewed { get; private set; }
 
+        /// <summary>
+        /// While true, only the viewed floor is drawn: the floors below are hidden as well as the
+        /// ones above. For the fixed camera views (<c>CameraViews</c>), where a floor seen from
+        /// straight above or from the side would otherwise sit in front of, or behind, the others.
+        /// </summary>
+        /// <remarks>
+        /// Hidden the way the floors above always are - renderers off, objects and colliders kept -
+        /// so agents down there keep working.
+        /// </remarks>
+        public bool SoloViewed
+        {
+            get { return soloViewed; }
+            set
+            {
+                if (soloViewed == value)
+                {
+                    return;
+                }
+
+                soloViewed = value;
+                ApplyVisibility();
+            }
+        }
+
+        bool soloViewed;
+
+        /// <summary>Whether a floor is out of sight: above the viewed one, or - solo - any but it.</summary>
+        public static bool IsHidden(int index, int viewed, bool solo) => index > viewed || (solo && index < viewed);
+
         /// <summary>The most floors a world may have. 0 means there is no limit.</summary>
         public int Limit => settings != null ? settings.MaxFloors : 0;
 
@@ -533,7 +562,7 @@ namespace Dojo.Game.Placement
 
             var fade = floor == away.floor ? away : floor == arriving.floor ? arriving : null;
             var fading = fade != null && fade.Running;
-            var amount = fade != null ? fade.amount : floor.Index > Viewed ? 1f : 0f;
+            var amount = fade != null ? fade.amount : IsHidden(floor.Index, Viewed, soloViewed) ? 1f : 0f;
 
             if (fading)
             {

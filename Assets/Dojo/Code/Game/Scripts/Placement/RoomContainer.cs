@@ -8,10 +8,11 @@ namespace Dojo.Game.Placement
     /// <remarks>
     /// Made when a room is placed from the Rooms tab and again when a world with rooms is loaded,
     /// so a room is one thing in the hierarchy - <c>Floor 1 / Room - Marketing / …</c> - rather than
-    /// dozens of loose pieces. It is a grouping and nothing more: the pieces under it are ordinary
-    /// pieces, picked up, turned and deleted one by one, and it has no collider or renderer of its
-    /// own. It stands where the room was put down, square to the world, so its pieces keep the
-    /// turns they were given.
+    /// dozens of loose pieces. It is also what moves: a press on any piece of a room lifts the
+    /// whole room, so it is picked up, turned and put down as one thing (see
+    /// <c>PlacementController.Rooms.cs</c>). It has no collider or renderer of its own. It stands
+    /// where the room was put down, square to the world, so its pieces keep the turns they were
+    /// given; a turn made while moving it is handed to each piece when it is put down.
     /// </remarks>
     [DisallowMultipleComponent]
     public sealed class RoomContainer : MonoBehaviour

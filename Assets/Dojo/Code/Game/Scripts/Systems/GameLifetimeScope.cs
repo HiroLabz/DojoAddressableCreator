@@ -51,6 +51,9 @@ namespace Dojo.Game.Systems
             if (hasWorld)
             {
                 RegisterWorld(builder);
+
+                // The view cube's views need the world's floors, so only where there is a world.
+                DeclareCameraViews(builder);
             }
 
             // Passed on because GameManager opens the starting world, and it can only be given the
@@ -153,6 +156,34 @@ namespace Dojo.Game.Systems
         /// component for injection when the container finishes building, which is what lets a
         /// registered component both be a dependency and have dependencies of its own.
         /// </remarks>
+        /// <summary>
+        /// The view cube's camera views, beside the camera rig they move, and the cube itself.
+        /// </summary>
+        /// <remarks>
+        /// Created on the rig's object when the scene has not authored it, as the area brush is on
+        /// the placement object: it only works beside the rig. No rig, no views, and the cube stays
+        /// hidden.
+        /// </remarks>
+        void DeclareCameraViews(IContainerBuilder builder)
+        {
+            var rig = InThisScene<CameraRig>();
+
+            if (rig == null)
+            {
+                return;
+            }
+
+            var views = rig.GetComponent<CameraViews>();
+
+            if (views == null)
+            {
+                views = rig.gameObject.AddComponent<CameraViews>();
+            }
+
+            builder.RegisterComponent(views);
+            Declare<ViewCube>(builder);
+        }
+
         T Declare<T>(IContainerBuilder builder) where T : Component
         {
             var found = InThisScene<T>();

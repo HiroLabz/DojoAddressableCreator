@@ -388,22 +388,111 @@ namespace Dojo.Game.Placement
 
             if (File.Exists(Path.Combine(ThumbnailFolder, slug + ".png")))
             {
-                var thumbnail = "Assets/Process/default/Rooms/Thumbnails/" + slug + ".png";
-                UnityEditor.AssetDatabase.ImportAsset(thumbnail);
-
-                // As a single sprite, as every room thumbnail is: a PNG imports as a plain texture,
-                // and a card asking for a sprite would get nothing.
-                var importer = UnityEditor.AssetImporter.GetAtPath(thumbnail) as UnityEditor.TextureImporter;
-
-                if (importer != null)
-                {
-                    importer.textureType = UnityEditor.TextureImporterType.Sprite;
-                    importer.spriteImportMode = UnityEditor.SpriteImportMode.Single;
-                    importer.alphaIsTransparency = true;
-                    importer.mipmapEnabled = false;
-                    importer.SaveAndReimport();
-                }
+                ImportSprite("Assets/Process/default/Rooms/Thumbnails/" + slug + ".png");
             }
+#endif
+        }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Imports a thumbnail as a single sprite, as every room thumbnail is: a PNG imports as a
+        /// plain texture, and a card asking for a sprite would get nothing.
+        /// </summary>
+        static void ImportSprite(string assetPath)
+        {
+            UnityEditor.AssetDatabase.ImportAsset(assetPath, UnityEditor.ImportAssetOptions.ForceUpdate);
+
+            var importer = UnityEditor.AssetImporter.GetAtPath(assetPath) as UnityEditor.TextureImporter;
+
+            if (importer != null)
+            {
+                importer.textureType = UnityEditor.TextureImporterType.Sprite;
+                importer.spriteImportMode = UnityEditor.SpriteImportMode.Single;
+                importer.alphaIsTransparency = true;
+                importer.mipmapEnabled = false;
+                importer.SaveAndReimport();
+            }
+        }
+#endif
+
+        /// <summary>
+        /// The pack addresses - room files and thumbnails - written over this session by
+        /// <see cref="SavePackRoom"/>. Read from the project rather than Addressables from then on,
+        /// so what was just saved is what is shown and placed.
+        /// </summary>
+        static readonly HashSet<string> rewritten = new HashSet<string>(StringComparer.Ordinal);
+
+        /// <summary>True when <paramref name="address"/> was written over by <see cref="SavePackRoom"/> this session.</summary>
+        public static bool WasRewritten(string address) => !string.IsNullOrEmpty(address) && rewritten.Contains(address);
+
+        /// <summary>
+        /// Writes an edited room over one of the pack's own - an original or a promoted one - in
+        /// the editor: its file, its thumbnail, and its prefab in <c>Rooms/Editor/Prefabs</c>, made
+        /// again from it. It keeps its name, address and place on the room list. False, with
+        /// <paramref name="problem"/> saying why, when nothing was written.
+        /// </summary>
+        /// <remarks>
+        /// The pack ships inside the game, so a built game cannot change it: there, only the rooms
+        /// the player made can be edited. Worlds the room was placed in keep their own copy.
+        /// </remarks>
+        public bool SavePackRoom(RoomEntry entry, WorldSave room, byte[] thumbnail, out string problem)
+        {
+#if UNITY_EDITOR
+            problem = null;
+
+            if (entry == null || string.IsNullOrEmpty(entry.address) || IsCustom(entry.address))
+            {
+                problem = "That is not one of the pack's rooms.";
+                return false;
+            }
+
+            var jsonAsset = "Assets/Process/" + entry.address + ".json";
+            var jsonPath = Path.Combine(Application.dataPath, "Process", entry.address + ".json");
+
+            if (!File.Exists(jsonPath))
+            {
+                problem = "The file for '" + entry.name + "' is not at " + jsonAsset + ", so it was not saved.";
+                return false;
+            }
+
+            // The name inside the file stays as it was - Room_Reception, say - since nothing lists by it.
+            var before = ReadFile(jsonPath);
+            room.name = before != null && !string.IsNullOrWhiteSpace(before.name) ? before.name : entry.name;
+            room.savedUtc = DateTime.UtcNow.ToString("o");
+
+            var library = new WorldLibrary();
+            library.worlds.Add(room);
+            library.current = room.name;
+
+            File.WriteAllText(jsonPath, JsonUtility.ToJson(library, true));
+            UnityEditor.AssetDatabase.ImportAsset(jsonAsset, UnityEditor.ImportAssetOptions.ForceUpdate);
+            rewritten.Add(entry.address);
+
+            if (thumbnail != null && thumbnail.Length > 0 && !string.IsNullOrEmpty(entry.icon))
+            {
+                var pngPath = Path.Combine(Application.dataPath, "Process", entry.icon + ".png");
+                Directory.CreateDirectory(Path.GetDirectoryName(pngPath));
+                File.WriteAllBytes(pngPath, thumbnail);
+                ImportSprite("Assets/Process/" + entry.icon + ".png");
+                rewritten.Add(entry.icon);
+            }
+
+            // default_room_x's prefab is room_x, as the originals' and the promoted rooms' are.
+            var file = entry.address.Substring(entry.address.LastIndexOf('/') + 1);
+            var prefabSlug = file.StartsWith(PackFilePrefix, StringComparison.Ordinal)
+                ? FilePrefix + file.Substring(PackFilePrefix.Length)
+                : file;
+
+            MakePrefab(prefabSlug, room);
+
+            Debug.Log("[Rooms] Saved the pack's room '" + entry.name + "' over " + jsonAsset
+                + (thumbnail != null && thumbnail.Length > 0 ? ", with a new thumbnail" : "") + ", and made its prefab again.");
+
+            Announce();
+            return true;
+#else
+            problem = "The pack's own rooms can only be edited in the editor. Save it under a new name to keep a copy.";
+            return false;
 #endif
         }
 

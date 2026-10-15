@@ -158,6 +158,23 @@ namespace Dojo.Game.InGame.Controllers
         /// </remarks>
         public bool PanOnly { get; set; }
 
+        /// <summary>
+        /// While true the camera is in one of the fixed views (<c>CameraViews</c>): straight down
+        /// or straight from the side. A drag then pans across the screen rather than over the
+        /// ground, and the wheel zooms even under <see cref="PanOnly"/>; turning stays off.
+        /// </summary>
+        /// <remarks>
+        /// Panning over the ground needs a camera that looks at the ground at an angle: straight
+        /// down, the camera's forward has no part along the floor to pan with, and from the side the
+        /// ground is edge-on. Across the screen is what both views want. Zoom is allowed back because
+        /// a whole floor seen square-on is the point of these views, and placement and painting
+        /// still take the wheel for themselves through <see cref="InputSuppressed"/>.
+        /// </remarks>
+        public bool FixedView { get; set; }
+
+        /// <summary>The transform that frames the shot now: the steered virtual camera, or this one.</summary>
+        public Transform Steered => Rig;
+
         /// <summary>True while a drag is in progress.</summary>
         public bool IsDragging => dragging;
 
@@ -415,6 +432,13 @@ namespace Dojo.Game.InGame.Controllers
                 // Drag only. A rotation already under way is dropped here rather than allowed to
                 // finish, so the view does not keep swinging after the drawer opened.
                 rotating = false;
+
+                // A fixed view zooms as well: a whole floor seen square-on is the point of it.
+                if (FixedView)
+                {
+                    HandleZoom(mouse);
+                }
+
                 HandleDrag(mouse);
                 return;
             }
@@ -952,6 +976,15 @@ namespace Dojo.Game.InGame.Controllers
             // Measured against whichever transform is actually framing the shot, so a drag tracks
             // the cursor identically whether the rig or Cinemachine is holding the view.
             var rig = Rig;
+
+            if (FixedView)
+            {
+                // Across the screen: the picture is square to the camera, so a pixel is the same
+                // distance whichever way the drag goes.
+                var across = rig.right * (deltaPixels.x * worldPerPixel) + rig.up * (deltaPixels.y * worldPerPixel);
+                return invertDrag ? across : -across;
+            }
+
             var right = Vector3.ProjectOnPlane(rig.right, Vector3.up).normalized;
             var groundForward = Vector3.ProjectOnPlane(rig.forward, Vector3.up).normalized;
 

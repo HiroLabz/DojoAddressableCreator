@@ -23,6 +23,7 @@ namespace Dojo.Game.Placement
         readonly Storeys storeys;
         readonly RoomCatalog catalog;
         readonly WorldSettings settings;
+        readonly FurniturePlacementService placement;
 
         WorldSave kept;
         string keptName;
@@ -32,19 +33,69 @@ namespace Dojo.Game.Placement
         /// <summary>Rooms move in whole grid cells, so a room centred on its origin keeps its pieces on their cells.</summary>
         const float Snap = 0.25f;
 
-        public RoomEditor(WorldService world, Storeys storeys, RoomCatalog catalog, WorldSettings settings)
+        public RoomEditor(WorldService world, Storeys storeys, RoomCatalog catalog, WorldSettings settings,
+            FurniturePlacementService placement)
         {
             this.world = world;
             this.storeys = storeys;
             this.catalog = catalog;
             this.settings = settings;
+            this.placement = placement;
         }
+
+        /// <summary>
+        /// The room's doors while it is being made, where they stand on the ground floor. Written
+        /// into the room file on save, moved with the room as it is centred.
+        /// </summary>
+        public readonly List<WorldSave.SavedOpening> Openings = new List<WorldSave.SavedOpening>();
+
+        /// <summary>Raised when an opening is made, changed or taken out.</summary>
+        public event Action OpeningsChanged;
+
+        /// <summary>Raised with why a piece was not let go of to be moved, for the room bar to say.</summary>
+        public event Action<string> Refused;
+
+        /// <summary>
+        /// True, and says why, when <paramref name="piece"/> may not be picked up while the room is
+        /// being made: a floor tile with an entrance or exit on its edge. Moved, it would leave the
+        /// door on no floor; take the door off, or drag it elsewhere, first.
+        /// </summary>
+        public bool RefuseLift(FurniturePiece piece)
+        {
+            Bounds bounds;
+
+            if (!IsEditing || piece == null || !piece.IsFloor || Openings.Count == 0
+                || !FurniturePlacementService.TryColliderBounds(piece.gameObject, out bounds))
+            {
+                return false;
+            }
+
+            var tile = Rect.MinMaxRect(bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z);
+            var held = Openings.FindAll(opening => RoomOpenings.OnEdgeOf(tile, opening));
+
+            if (held.Count == 0)
+            {
+                return false;
+            }
+
+            var what = held.Count > 1 ? "the room's entrance and exit are" : "the room's " + held[0].kind + " is";
+            Refused?.Invoke("That floor tile stays put: " + what + " on its edge. Drag the door to another spot, "
+                + "or take it off with its tool, to move the tile.");
+
+            return true;
+        }
+
+        /// <summary>Where the ground floor's ground is, which a room is built on.</summary>
+        public float GroundHeight => storeys.BaseOf(0);
 
         /// <summary>True from <see cref="Begin"/> until the room is saved or cancelled.</summary>
         public bool IsEditing { get; private set; }
 
         /// <summary>The name of the room loaded to be edited, when one was: what saving suggests.</summary>
-        public string EditingName { get; private set; }
+        public string EditingName => editing != null ? editing.name : null;
+
+        /// <summary>The room loaded to be edited, when one was. Saved under its own name, it is replaced.</summary>
+        RoomEntry editing;
 
         /// <summary>Raised when making a room starts or ends.</summary>
         public event Action Changed;
@@ -85,7 +136,8 @@ namespace Dojo.Game.Placement
             // empty floor over the world.
             world.SavingSuspended = true;
             IsEditing = true;
-            EditingName = null;
+            editing = null;
+            Openings.Clear();
 
             world.Show(Blank(), null);
 
@@ -121,6 +173,37 @@ namespace Dojo.Game.Placement
             }
         }
 
+        /// <summary>
+        /// Leaves the world to edit <paramref name="entry"/>: the room editor, with that room in
+        /// it. Saved under its own name, it replaces the room - a room the player made anywhere,
+        /// one of the pack's only in the editor. False, having left nothing open, when it could not.
+        /// </summary>
+        public bool Edit(RoomEntry entry, out string problem)
+        {
+            problem = null;
+
+            if (IsEditing)
+            {
+                problem = "A room is already being made. Save it or cancel first.";
+                return false;
+            }
+
+            if (!Begin())
+            {
+                problem = "The room editor is not set up in this scene. Run Tools > Dojo > Add Rooms Tab and save the scene.";
+                return false;
+            }
+
+            if (!Load(entry, out problem))
+            {
+                Cancel();
+                return false;
+            }
+
+            Raise(Changed);
+            return true;
+        }
+
         /// <summary>Puts a room in front of the player to be edited, in place of whatever is being built.</summary>
         public bool Load(RoomEntry entry, out string problem)
         {
@@ -152,7 +235,25 @@ namespace Dojo.Game.Placement
             room.rooms.Clear();
 
             world.Show(room, null);
-            EditingName = entry.name;
+            editing = entry;
+
+            // Its doors as its file has them: the room is built where its file puts it, so they
+            // are where they belong already.
+            Openings.Clear();
+            var ground = room.floors.Find(f => f != null && f.index == 0);
+
+            if (ground != null && ground.openings != null)
+            {
+                foreach (var opening in ground.openings)
+                {
+                    if (opening != null)
+                    {
+                        Openings.Add(opening.Copy());
+                    }
+                }
+            }
+
+            Raise(OpeningsChanged);
 
             foreach (var rig in Rigs())
             {
@@ -183,8 +284,18 @@ namespace Dojo.Game.Placement
                 return false;
             }
 
+            // One of the pack's rooms, loaded and saved under its own name: written over itself.
+            var overPack = editing != null && !CustomRooms.IsCustom(editing.address)
+                && string.Equals(name.Trim(), (editing.name ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase);
+
+            if (overPack && !Application.isEditor)
+            {
+                problem = "The pack's own rooms can only be changed in the editor. Save it under a new name to keep a copy.";
+                return false;
+            }
+
             // Its thumbnail goes beside the pack rooms' own, so a name of theirs would replace one.
-            if (!catalog.Custom.IsNameFree(name, out problem))
+            if (!overPack && !catalog.Custom.IsNameFree(name, out problem))
             {
                 return false;
             }
@@ -195,13 +306,30 @@ namespace Dojo.Game.Placement
                 return false;
             }
 
+            if (!CheckOpenings(out problem))
+            {
+                return false;
+            }
+
             var built = world.Capture();
 
             // The room's own area over every floor tile it was built with, named as the room is -
             // as each of the pack's rooms carries one - so placing it brings its area with it.
             var tiles = AddFloorArea(built, name.Trim(), EditingName);
 
-            var room = ToRoom(built);
+            Vector3 shift;
+            var room = ToRoom(built, out shift);
+
+            // The doors, moved with everything else as the room is centred on its origin.
+            var groundFloor = room.FloorAt(0);
+            groundFloor.openings.Clear();
+
+            foreach (var opening in Openings)
+            {
+                var moved = opening.Copy();
+                moved.centre = new WorldSave.GroundPoint(opening.centre.x - shift.x, opening.centre.z - shift.z);
+                groundFloor.openings.Add(moved);
+            }
 
             if (room.PieceCount() == 0)
             {
@@ -211,18 +339,33 @@ namespace Dojo.Game.Placement
 
             // Rendered now, while the room is the thing standing.
             var thumbnail = RoomThumbnailCamera.Render(storeys.Floor(0), LayerMask.NameToLayer(settings.PlacedLayerName));
-            var address = catalog.Custom.Save(name.Trim(), room, thumbnail);
+            RoomEntry entry;
 
-            Debug.Log("[Rooms] Saved room '" + name.Trim() + "' - " + room.PieceCount() + " piece(s), "
+            if (overPack)
+            {
+                if (!catalog.Custom.SavePackRoom(editing, room, thumbnail, out problem))
+                {
+                    return false;
+                }
+
+                entry = new RoomEntry { name = editing.name, address = editing.address, icon = editing.icon, tag = editing.tag };
+            }
+            else
+            {
+                var address = catalog.Custom.Save(name.Trim(), room, thumbnail);
+                entry = new RoomEntry { name = name.Trim(), address = address, icon = address };
+            }
+
+            Debug.Log("[Rooms] Saved room '" + entry.name + "' - " + room.PieceCount() + " piece(s), "
                 + (tiles > 0 ? "an area of " + tiles + " tile(s) over its floors" : "no floor tiles, so no area") + ", to "
-                + CustomRooms.Folder + (thumbnail == null ? " (no thumbnail could be rendered)" : ""));
+                + (overPack ? "the pack, over itself" : CustomRooms.Folder) + (thumbnail == null ? " (no thumbnail could be rendered)" : ""));
 
             End();
 
             var saved = Saved;
             if (saved != null)
             {
-                saved(new RoomEntry { name = name.Trim(), address = address, icon = address });
+                saved(entry);
             }
 
             return true;
@@ -262,7 +405,8 @@ namespace Dojo.Game.Placement
             kept = null;
             keptName = null;
             IsEditing = false;
-            EditingName = null;
+            editing = null;
+            Openings.Clear();
 
             Raise(Changed);
         }
@@ -369,8 +513,9 @@ namespace Dojo.Game.Placement
         /// own origin in whole grid cells. Agents, managers, elevators and other floors are not
         /// part of a room.
         /// </summary>
-        static WorldSave ToRoom(WorldSave built)
+        static WorldSave ToRoom(WorldSave built, out Vector3 shift)
         {
+            shift = Vector3.zero;
             var room = new WorldSave();
             var ground = room.FloorAt(0);
             var source = built.floors.Find(f => f.index == 0);
@@ -403,7 +548,7 @@ namespace Dojo.Game.Placement
             }
 
             var centre = (min + max) * 0.5f;
-            var shift = new Vector3(Mathf.Round(centre.x / Snap) * Snap, 0f, Mathf.Round(centre.y / Snap) * Snap);
+            shift = new Vector3(Mathf.Round(centre.x / Snap) * Snap, 0f, Mathf.Round(centre.y / Snap) * Snap);
 
             foreach (var piece in ground.pieces)
             {
@@ -419,6 +564,318 @@ namespace Dojo.Game.Placement
             }
 
             return room;
+        }
+
+        // ── Openings ────────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// The ground floor as it stands: its floor tiles, and its walls with the piece each one is,
+        /// by <see cref="RoomOpenings.Wall.Id"/>.
+        /// </summary>
+        public void Measure(List<Rect> tiles, List<RoomOpenings.Wall> walls, List<Transform> wallPieces)
+        {
+            Physics.SyncTransforms();
+
+            var pieces = new List<Transform>();
+            Storeys.AddPiecesUnder(storeys.Floor(0), pieces);
+
+            foreach (var child in pieces)
+            {
+                Bounds bounds;
+
+                if (!child.gameObject.activeInHierarchy || !FurniturePlacementService.TryColliderBounds(child.gameObject, out bounds))
+                {
+                    continue;
+                }
+
+                var piece = child.GetComponent<FurniturePiece>();
+
+                if (piece != null && piece.IsFloor)
+                {
+                    tiles.Add(Rect.MinMaxRect(bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z));
+                }
+                else if (IsWall(child))
+                {
+                    walls.Add(RoomOpenings.WallFrom(new Vector2(bounds.center.x, bounds.center.z),
+                        new Vector2(bounds.size.x, bounds.size.z), wallPieces.Count));
+                    wallPieces.Add(child);
+                }
+            }
+        }
+
+        /// <summary>A wall, as the room file format tells: its resource names one.</summary>
+        public static bool IsWall(Transform piece)
+        {
+            var placed = piece != null ? piece.GetComponent<PlacedPiece>() : null;
+            return RoomOpenings.IsWall(placed != null && !string.IsNullOrEmpty(placed.Resource) ? placed.Resource : piece != null ? piece.name : null);
+        }
+
+        /// <summary>The gaps in the walls along the floor's edge that are not openings yet.</summary>
+        public List<WorldSave.SavedOpening> Gaps()
+        {
+            var tiles = new List<Rect>();
+            var walls = new List<RoomOpenings.Wall>();
+            Measure(tiles, walls, new List<Transform>());
+
+            return RoomOpenings.Gaps(tiles, walls, Openings);
+        }
+
+        /// <summary>
+        /// Takes a wall of the floor's edge out and makes the gap an opening of
+        /// <paramref name="kind"/>. False, with nothing changed, when the wall is not on the edge or
+        /// an opening is there already.
+        /// </summary>
+        public bool CutOpening(Transform wallPiece, string kind, out string problem)
+        {
+            problem = RoomOpenings.OneOfEach(Openings, kind);
+
+            if (problem != null)
+            {
+                return false;
+            }
+
+            var tiles = new List<Rect>();
+            var walls = new List<RoomOpenings.Wall>();
+            var wallPieces = new List<Transform>();
+            Measure(tiles, walls, wallPieces);
+
+            var at = wallPieces.IndexOf(wallPiece);
+            WorldSave.SavedOpening opening;
+
+            if (at < 0 || !RoomOpenings.TryAtWall(tiles, walls[at], kind, out opening))
+            {
+                problem = "That wall is not on the edge of the floor, so it cannot be a door. Pick a wall with floor on one side only.";
+                return false;
+            }
+
+            foreach (var other in Openings)
+            {
+                if (RoomOpenings.Clash(opening, other))
+                {
+                    problem = "There is " + (kind == RoomOpenings.Entrance ? "an entrance" : "an exit") + " there already.";
+                    return false;
+                }
+            }
+
+            // Every wall across the span, the one picked included.
+            foreach (var wall in walls)
+            {
+                if (RoomOpenings.Crosses(wall, opening))
+                {
+                    RemovePiece(wallPieces[wall.Id]);
+                }
+            }
+
+            Openings.Add(opening);
+            Raise(OpeningsChanged);
+            return true;
+        }
+
+        /// <summary>How far from the cursor a place on the floor's edge may be for a dragged opening to go to it.</summary>
+        const float MoveReach = 1.5f;
+
+        /// <summary>
+        /// Where the opening at <paramref name="index"/> would go if let go of near
+        /// <paramref name="point"/>: onto the wall or the gap on the floor's edge nearest it, as
+        /// wide as it is. False when there is nowhere near, or the place nearest is taken by another
+        /// opening - then <paramref name="target"/> is that place anyway, to show where it was refused.
+        /// </summary>
+        public bool TryMoveTarget(int index, Vector2 point, out WorldSave.SavedOpening target)
+        {
+            target = null;
+
+            if (index < 0 || index >= Openings.Count)
+            {
+                return false;
+            }
+
+            var moving = Openings[index];
+            var tiles = new List<Rect>();
+            var walls = new List<RoomOpenings.Wall>();
+            Measure(tiles, walls, new List<Transform>());
+
+            // Its own place counts as a gap, so it can be put back where it was.
+            var others = new List<WorldSave.SavedOpening>(Openings);
+            others.RemoveAt(index);
+
+            var best = MoveReach;
+
+            foreach (var wall in walls)
+            {
+                WorldSave.SavedOpening atWall;
+
+                if (!RoomOpenings.TryAtWall(tiles, wall, moving.kind, out atWall))
+                {
+                    continue;
+                }
+
+                atWall.width = moving.width;
+                var distance = RoomOpenings.DistanceTo(atWall, point);
+
+                if (distance < best)
+                {
+                    best = distance;
+                    target = atWall;
+                }
+            }
+
+            // Onto a door of the other kind, to share its spot.
+            foreach (var other in others)
+            {
+                if (other.kind == moving.kind)
+                {
+                    continue;
+                }
+
+                var shared = other.Copy();
+                shared.width = moving.width;
+                var distance = RoomOpenings.DistanceTo(shared, point);
+
+                if (distance < best)
+                {
+                    best = distance;
+                    target = shared;
+                }
+            }
+
+            foreach (var gap in RoomOpenings.Gaps(tiles, walls, others))
+            {
+                var inGap = RoomOpenings.Within(gap, point, moving.width);
+                var distance = RoomOpenings.DistanceTo(inGap, point);
+
+                if (distance < best)
+                {
+                    best = distance;
+                    target = inGap;
+                }
+            }
+
+            if (target == null)
+            {
+                return false;
+            }
+
+            target.kind = moving.kind;
+
+            var place = target;
+            return !others.Exists(other => RoomOpenings.Clash(place, other));
+        }
+
+        /// <summary>
+        /// Moves the opening at <paramref name="index"/> to <paramref name="target"/>, taking out the
+        /// walls across it there. The place it leaves stays open, as a gap.
+        /// </summary>
+        public void MoveOpening(int index, WorldSave.SavedOpening target)
+        {
+            if (index < 0 || index >= Openings.Count || target == null)
+            {
+                return;
+            }
+
+            var tiles = new List<Rect>();
+            var walls = new List<RoomOpenings.Wall>();
+            var wallPieces = new List<Transform>();
+            Measure(tiles, walls, wallPieces);
+
+            foreach (var wall in walls)
+            {
+                if (RoomOpenings.Crosses(wall, target))
+                {
+                    RemovePiece(wallPieces[wall.Id]);
+                }
+            }
+
+            Openings[index].centre = target.centre;
+            Openings[index].facing = target.facing;
+            Raise(OpeningsChanged);
+        }
+
+        /// <summary>
+        /// Adds an opening of <paramref name="kind"/> on the very spot of <paramref name="place"/> -
+        /// an exit on an entrance's, or the other way round - so one door is both. False, with
+        /// <paramref name="problem"/> saying why, when one of that kind is there already.
+        /// </summary>
+        public bool AddAt(WorldSave.SavedOpening place, string kind, out string problem)
+        {
+            problem = RoomOpenings.OneOfEach(Openings, kind);
+
+            if (problem != null)
+            {
+                return false;
+            }
+
+            var opening = place.Copy();
+            opening.kind = kind;
+
+            if (Openings.Exists(other => RoomOpenings.Clash(opening, other)))
+            {
+                problem = "There is " + (kind == RoomOpenings.Entrance ? "an entrance" : "an exit") + " there already.";
+                return false;
+            }
+
+            Openings.Add(opening);
+            Raise(OpeningsChanged);
+            return true;
+        }
+
+        /// <summary>Makes a gap already in the walls an opening of <paramref name="kind"/>.</summary>
+        public bool MarkGap(WorldSave.SavedOpening gap, string kind, out string problem)
+        {
+            problem = RoomOpenings.OneOfEach(Openings, kind);
+
+            if (problem != null)
+            {
+                return false;
+            }
+
+            var opening = gap.Copy();
+            opening.kind = kind;
+            Openings.Add(opening);
+            Raise(OpeningsChanged);
+            return true;
+        }
+
+        /// <summary>Forgets an opening. The gap in the walls stays, offered as a gap again.</summary>
+        public void RemoveOpening(int index)
+        {
+            if (index >= 0 && index < Openings.Count)
+            {
+                Openings.RemoveAt(index);
+                Raise(OpeningsChanged);
+            }
+        }
+
+        /// <summary>
+        /// True when the room's openings keep the rules of the room file format; otherwise
+        /// <paramref name="problem"/> says which rule failed.
+        /// </summary>
+        public bool CheckOpenings(out string problem)
+        {
+            var tiles = new List<Rect>();
+            var walls = new List<RoomOpenings.Wall>();
+            Measure(tiles, walls, new List<Transform>());
+
+            return RoomOpenings.Validate(tiles, walls, Openings, out problem);
+        }
+
+        void RemovePiece(Transform piece)
+        {
+            if (piece == null)
+            {
+                return;
+            }
+
+            var furniture = piece.GetComponent<FurniturePiece>();
+
+            if (furniture != null)
+            {
+                placement.Release(furniture);
+            }
+
+            // Switched off first: Destroy waits for the end of the frame, and the next measure must
+            // not find it.
+            piece.gameObject.SetActive(false);
+            UnityEngine.Object.Destroy(piece.gameObject);
         }
 
         static WorldSave Blank()

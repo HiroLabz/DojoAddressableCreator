@@ -1537,7 +1537,7 @@ namespace Dojo.Game.Editor
                 Object.DestroyImmediate(old.gameObject);
             }
 
-            const float width = 760f;
+            const float width = 1000f;
             const float height = 76f;
 
             var root = Node("RoomEditor", parent);
@@ -1562,14 +1562,43 @@ namespace Dojo.Game.Editor
             var load = BarButton(root.transform, "Load", "LOAD ROOM", Art.Ghost, -Pad - 118f);
             var save = BarButton(root.transform, "Save", "SAVE ROOM", Art.ButtonPrimary, -Pad - 236f);
 
+            // The opening tool, left of the save: the room's doors are marked before it is saved.
+            var exit = BarButton(root.transform, "Exit", "EXIT", Art.ButtonSolid, -Pad - 354f);
+            var entrance = BarButton(root.transform, "Entrance", "ENTRANCE", Art.ButtonSolid, -Pad - 472f);
+
             var bar = root.AddComponent<RoomEditorBar>();
             Wire(bar, "root", root);
             Wire(bar, "statusLabel", status);
             Wire(bar, "saveButton", save);
             Wire(bar, "loadButton", load);
             Wire(bar, "cancelButton", cancel);
+            Wire(bar, "entranceButton", entrance);
+            Wire(bar, "exitButton", exit);
 
             root.SetActive(false);
+        }
+
+        /// <summary>
+        /// Builds the room editor's bar again - with ENTRANCE and EXIT - without touching the rest of
+        /// the inventory. Safe to run again.
+        /// </summary>
+        [MenuItem("Tools/Dojo/Rebuild Room Editor Bar")]
+        public static void RebuildRoomEditorBarOnly()
+        {
+            var inventory = GameObject.Find(InventoryPath);
+
+            if (inventory == null || inventory.transform.parent == null)
+            {
+                Debug.LogError("[InventoryScreenBuilder] Could not find the inventory screen at " + InventoryPath
+                    + ". Open the Runtime scene first.");
+                return;
+            }
+
+            font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath);
+            RebuildRoomEditorBar(inventory.transform.parent);
+            UnityEditor.SceneManagement.EditorSceneManager.MarkAllScenesDirty();
+
+            Debug.Log("[InventoryScreenBuilder] Rebuilt the room editor bar. Save the scene to keep it.", inventory);
         }
 
         /// <summary>One of the room bar's buttons, <paramref name="x"/> in from its right edge.</summary>
@@ -1856,7 +1885,65 @@ namespace Dojo.Game.Editor
             promote.SetActive(false);
             Wire(card, "promoteButton", promoteButton);
 
+            AddRoomCardEdit(root, card);
+
             return SavePrefab(root, "RoomCard").GetComponent<RoomCard>();
+        }
+
+        /// <summary>
+        /// EDIT in the top left corner of a room card: opens the room in the room editor, to be
+        /// saved over itself. Shown by the card on rooms the player made, and in the editor on the
+        /// pack's rooms too.
+        /// </summary>
+        static void AddRoomCardEdit(GameObject root, RoomCard card)
+        {
+            var edit = Node("Edit", root.transform);
+            Place(edit.GetComponent<RectTransform>(), 0f, 1f, new Vector2(8f, -8f), new Vector2(52f, 24f));
+            var editFace = Sliced(edit, Art.ButtonSolid);
+            var editButton = edit.AddComponent<Button>();
+            editButton.targetGraphic = editFace;
+            var editLabel = Text(edit.transform, "Label", "EDIT", 10f, TextAlignmentOptions.Center);
+            Stretch(editLabel.rectTransform);
+            edit.SetActive(false);
+            Wire(card, "editButton", editButton);
+        }
+
+        /// <summary>
+        /// Puts EDIT on the room card prefab already in the project, without rebuilding the Rooms
+        /// tab. Safe to run again.
+        /// </summary>
+        [MenuItem("Tools/Dojo/Add Edit Button To Room Card")]
+        public static void AddEditToRoomCard()
+        {
+            var path = PrefabFolder + "/RoomCard.prefab";
+
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(path) == null)
+            {
+                Debug.LogError("[InventoryScreenBuilder] There is no " + path + ". Run Tools > Dojo > Add Rooms Tab first.");
+                return;
+            }
+
+            font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath);
+            var root = PrefabUtility.LoadPrefabContents(path);
+
+            try
+            {
+                var card = root.GetComponent<RoomCard>();
+
+                if (root.transform.Find("Edit") != null)
+                {
+                    Debug.Log("[InventoryScreenBuilder] The room card already has EDIT.");
+                    return;
+                }
+
+                AddRoomCardEdit(root, card);
+                PrefabUtility.SaveAsPrefabAsset(root, path);
+                Debug.Log("[InventoryScreenBuilder] Added EDIT to " + path + ".");
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
         }
 
         /// <summary>A small button on the right of a row, <paramref name="x"/> in from its right edge.</summary>

@@ -14,8 +14,8 @@ namespace Dojo.Game.UI
     /// <remarks>
     /// Clicking a card puts the room on the cursor the way a floor tile or a wall is - see
     /// <see cref="PlacementController.BeginRoomFromInventory"/> - and the card stays lit until the
-    /// room is put down or put back. Once down its pieces are ordinary pieces, so moving or
-    /// trimming a room afterwards is the same as for anything else placed.
+    /// room is put down or put back. Once down it moves as one: a press on any of its pieces lifts
+    /// the whole room. EDIT on a card opens that room in the room editor, to be saved over itself.
     /// </remarks>
     public sealed class RoomsDisplayUI : MonoBehaviour
     {
@@ -116,6 +116,37 @@ namespace Dojo.Game.UI
 
             dialogs.Confirm("Promote '" + room.name + "' to the pack? It becomes one of the default rooms: it ships "
                 + "with the pack, is kept by a reset that keeps promoted rooms, and can no longer be deleted here.", Promote);
+        }
+
+        /// <summary>
+        /// Opens a room in the room editor, to be changed and saved over itself. Places it was put
+        /// down already keep the copy they have.
+        /// </summary>
+        void OnEdit(RoomEntry room)
+        {
+            if (room == null || editor == null || editor.IsEditing)
+            {
+                return;
+            }
+
+            if (placement != null && placement.IsBusy)
+            {
+                Say("Put down what is in hand first.");
+                return;
+            }
+
+            if (!CustomRooms.IsCustom(room.address) && !Application.isEditor)
+            {
+                Say("'" + room.name + "' is one of the pack's rooms, and can only be changed in the editor.");
+                return;
+            }
+
+            string problem;
+
+            if (!editor.Edit(room, out problem))
+            {
+                Say(problem);
+            }
         }
 
         void OnDelete(RoomEntry room)
@@ -255,10 +286,13 @@ namespace Dojo.Game.UI
             // A room saved over one of the same name is a different room now.
             plans.Remove(room.address);
 
+            // Saved over itself, it keeps its place; a new one goes last.
+            var listed = cards.Exists(card => card != null && card.Room != null && card.Room.address == room.address);
+
             if (gameObject.activeInHierarchy)
             {
                 Rebuild();
-                Say("'" + room.name + "' saved. It is at the bottom of the list.");
+                Say("'" + room.name + "' saved." + (listed ? "" : " It is at the bottom of the list."));
             }
         }
 
@@ -353,6 +387,7 @@ namespace Dojo.Game.UI
                     card.Picked += OnPicked;
                     card.DeletePressed += OnDelete;
                     card.PromotePressed += OnPromote;
+                    card.EditPressed += OnEdit;
                     cards.Add(card);
                 }
 

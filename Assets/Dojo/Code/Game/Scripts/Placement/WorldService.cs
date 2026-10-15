@@ -908,11 +908,34 @@ namespace Dojo.Game.Placement
             var from = start != null ? "the default world" : "one " + settings.ResetFloor;
 
             Build(start ?? OneFloor());
+            StartUnsaved("Reset to " + from);
+        }
 
+        /// <summary>
+        /// Clears the world down to a single floor: every piece, room, floor above the first,
+        /// elevator, area and character goes, and one <see cref="WorldSettings.ResetFloor"/> is laid
+        /// at the middle of floor 1. Unlike <see cref="ResetWorld"/> it does not load the default
+        /// world, and nothing outside the world is touched - the saved worlds, and the rooms.
+        /// </summary>
+        /// <remarks>
+        /// A new, unnamed world, as a reset's is, so nothing writes the empty floor over the world
+        /// that was open; its first save is under a name of its own.
+        /// </remarks>
+        public void ClearWorld()
+        {
+            Build(OneFloor());
+            StartUnsaved("Cleared to one " + settings.ResetFloor);
+        }
+
+        /// <summary>
+        /// Lets go of the world that was open after building a new one in its place, so nothing - an
+        /// auto save included - writes the new one over it. Nothing is selected until it is saved
+        /// under its own name.
+        /// </summary>
+        void StartUnsaved(string what)
+        {
             var was = OpenWorldName;
 
-            // Let go of the world that was open, so nothing - an auto save included - writes the
-            // reset over it. Nothing is selected until this world is saved under its own name.
             OpenWorldName = null;
 
             var held = library.Read();
@@ -927,7 +950,7 @@ namespace Dojo.Game.Placement
                 selection.ClearCurrent();
             }
 
-            Debug.Log("[World] Reset to " + from + ". "
+            Debug.Log("[World] " + what + ". "
                 + (string.IsNullOrEmpty(was) ? "" : "'" + was + "' is still saved as it was; ")
                 + "this world is saved under a new name when it is first saved.", world);
         }
@@ -1279,7 +1302,18 @@ namespace Dojo.Game.Placement
                 + assembled + " agent(s), " + bosses + " manager(s), " + restored + " area(s)"
                 + (missing > 0 ? ", " + missing + " could not be found" : "")
                 + ", baked " + baked + " navigation surface(s).", world);
+
+            Built?.Invoke();
         }
+
+        /// <summary>
+        /// Raised when a world has been built, whether loaded, started from the default or reset.
+        /// </summary>
+        /// <remarks>
+        /// Not a <c>WorldChanged</c>: that one means the player changed something and sets off an
+        /// autosave, and a load changes nothing that needs saving.
+        /// </remarks>
+        public event System.Action Built;
 
         /// <summary>
         /// Builds the manager the save was holding, and hands him to the player.
@@ -1483,8 +1517,8 @@ namespace Dojo.Game.Placement
         /// </summary>
         /// <remarks>
         /// A room is a world file of one floor, the same shape the game saves, so its pieces go
-        /// through <see cref="BuildPiece"/> exactly as a loaded world's do and are ordinary pieces
-        /// afterwards - moved, rotated and deleted one by one, and saved by their own addresses.
+        /// through <see cref="BuildPiece"/> exactly as a loaded world's do, and are saved by their
+        /// own addresses. In play they move as one: picking up any of them lifts the whole room.
         /// Where it goes is the caller's choice; nothing here checks for room.
         /// </remarks>
         public int AddRoom(WorldSave room, int floorIndex, Vector3 offset, int steps, string fallbackName, string address = null)
