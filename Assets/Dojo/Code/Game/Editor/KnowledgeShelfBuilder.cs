@@ -15,9 +15,10 @@ namespace Dojo.Game.Editor
     /// <item>Address <c>default/default_knowledge_shelf</c> (item id <c>default.defaultknowledgeshelf</c>,
     /// thumbnail <c>default/Thumbnails/default_knowledge_shelf</c>), from the prefab's name.</item>
     /// <item>The footprint: 2 m wide by 0.5 m deep - 8 by 2 cells on the 0.25 m grid - and 2 m tall,
-    /// standing on its own origin, its front facing -z.</item>
+    /// standing on its own origin, its front facing +z - the way the pack's other furniture faces,
+    /// and the side its thumbnail is rendered from.</item>
     /// <item>The marker: a child transform named <c>StandPoint</c>, 0.85 m in front of the shelf on the
-    /// ground, facing it (+z). It is where someone stands to use the shelf; it carries no renderer or
+    /// ground, facing it (-z). It is where someone stands to use the shelf; it carries no renderer or
     /// collider, so it changes neither the footprint nor what can be clicked. No script is on the
     /// prefab: the game recognises the shelf by its address and finds the stand point by name.</item>
     /// </list>
@@ -64,7 +65,7 @@ namespace Dojo.Game.Editor
             Directory.CreateDirectory(PackFolder + "/Materials");
             Directory.CreateDirectory(PackFolder + "/Prefabs");
 
-            var mesh = SaveMesh(BuildMesh());
+            var mesh = SaveMesh();
 
             var materials = new Material[1 + BookColours.Length];
             materials[0] = SaveMaterial(Name + "_frame", Wood, 0.25f);
@@ -87,11 +88,11 @@ namespace Dojo.Game.Editor
                 collider.center = new Vector3(0f, Height * 0.5f, 0f);
                 collider.size = new Vector3(Width, Height, Depth);
 
-                // Where someone stands to use it: on the ground in front, facing the shelf.
+                // Where someone stands to use it: on the ground in front (+z), facing the shelf (-z).
                 var stand = new GameObject(StandPointName);
                 stand.transform.SetParent(root.transform, false);
-                stand.transform.localPosition = new Vector3(0f, 0f, -(Depth * 0.5f + StandDistance));
-                stand.transform.localRotation = Quaternion.identity;
+                stand.transform.localPosition = new Vector3(0f, 0f, Depth * 0.5f + StandDistance);
+                stand.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
 
                 var path = PackFolder + "/Prefabs/" + Name + ".prefab";
                 PrefabUtility.SaveAsPrefabAsset(root, path);
@@ -113,7 +114,8 @@ namespace Dojo.Game.Editor
             public readonly List<int> Triangles = new List<int>();
         }
 
-        static Mesh BuildMesh()
+        /// <summary>Fills <paramref name="mesh"/> with the shelf, replacing whatever it held.</summary>
+        static void BuildMesh(Mesh mesh)
         {
             var vertices = new List<Vector3>();
             var normals = new List<Vector3>();
@@ -132,7 +134,7 @@ namespace Dojo.Game.Editor
             Box(vertices, normals, uvs, frame, new Vector3(-(Width - Board) * 0.5f, Height * 0.5f, 0f), new Vector3(Board, Height, Depth));
             Box(vertices, normals, uvs, frame, new Vector3((Width - Board) * 0.5f, Height * 0.5f, 0f), new Vector3(Board, Height, Depth));
             Box(vertices, normals, uvs, frame, new Vector3(0f, Height - Board * 0.5f, 0f), new Vector3(inner, Board, Depth));
-            Box(vertices, normals, uvs, frame, new Vector3(0f, Height * 0.5f, Depth * 0.5f - 0.01f), new Vector3(inner, Height - Board * 2f, 0.02f));
+            Box(vertices, normals, uvs, frame, new Vector3(0f, Height * 0.5f, -(Depth * 0.5f - 0.01f)), new Vector3(inner, Height - Board * 2f, 0.02f));
 
             // The shelf boards, and a row of books on each.
             var random = new System.Random(15);
@@ -169,7 +171,7 @@ namespace Dojo.Game.Editor
                     var colour = parts[1 + (book + s) % BookColours.Length];
 
                     Box(vertices, normals, uvs, colour,
-                        new Vector3(x + thick * 0.5f, top + tall * 0.5f, Depth * 0.5f - 0.02f - deep * 0.5f),
+                        new Vector3(x + thick * 0.5f, top + tall * 0.5f, -(Depth * 0.5f - 0.02f - deep * 0.5f)),
                         new Vector3(thick, tall, deep));
 
                     x += thick + 0.004f;
@@ -177,7 +179,8 @@ namespace Dojo.Game.Editor
                 }
             }
 
-            var mesh = new Mesh { name = Name };
+            mesh.Clear();
+            mesh.name = Name;
             mesh.SetVertices(vertices);
             mesh.SetNormals(normals);
             mesh.SetUVs(0, uvs);
@@ -190,8 +193,6 @@ namespace Dojo.Game.Editor
 
             mesh.RecalculateBounds();
             mesh.RecalculateTangents();
-
-            return mesh;
         }
 
         /// <summary>A box with its own vertices per face, so its edges stay sharp.</summary>
@@ -243,7 +244,7 @@ namespace Dojo.Game.Editor
 
         // ── Assets ──────────────────────────────────────────────────────────────────────────
 
-        static Mesh SaveMesh(Mesh mesh)
+        static Mesh SaveMesh()
         {
             var path = PackFolder + "/Meshes/" + Name + ".asset";
             var existing = AssetDatabase.LoadAssetAtPath<Mesh>(path);
@@ -251,12 +252,16 @@ namespace Dojo.Game.Editor
             if (existing != null)
             {
                 // Rebuilt in place, so the prefab and anything else pointing at it keep pointing at it.
-                EditorUtility.CopySerialized(mesh, existing);
+                // Through the Mesh API rather than CopySerialized: that changed the data on disk but
+                // left the editor drawing the old shape, and the thumbnail was rendered from it.
+                BuildMesh(existing);
                 EditorUtility.SetDirty(existing);
                 AssetDatabase.SaveAssets();
                 return existing;
             }
 
+            var mesh = new Mesh();
+            BuildMesh(mesh);
             AssetDatabase.CreateAsset(mesh, path);
             return mesh;
         }
