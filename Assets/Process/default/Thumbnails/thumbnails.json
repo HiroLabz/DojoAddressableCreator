@@ -1,5 +1,5 @@
 {
-    "generatedUtc": "2026-10-15T12:54:57.8098818Z",
+    "generatedUtc": "2026-10-16T16:40:12.2608100Z",
     "pixelSize": 256,
     "sourceFolder": "Assets/Process/default/Prefabs",
     "pack": "default",
@@ -79,6 +79,17 @@
             "thumbnailFile": "default_grayFloor.png",
             "thumbnailPath": "Assets/Process/default/Thumbnails/default_grayFloor.png",
             "thumbnailResource": "default/Thumbnails/default_grayFloor",
+            "pack": "default"
+        },
+        {
+            "prefabId": "0a257fc346f1287449a06fef3cc88154",
+            "prefabName": "default_knowledge_shelf",
+            "prefabPath": "Assets/Process/default/Prefabs/default_knowledge_shelf.prefab",
+            "prefabResource": "default/default_knowledge_shelf",
+            "thumbnailId": "f0922af5b27ed3e44b33894412c68d95",
+            "thumbnailFile": "default_knowledge_shelf.png",
+            "thumbnailPath": "Assets/Process/default/Thumbnails/default_knowledge_shelf.png",
+            "thumbnailResource": "default/Thumbnails/default_knowledge_shelf",
             "pack": "default"
         },
         {
