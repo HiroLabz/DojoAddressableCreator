@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Content_Thumbnails
   m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
   m_GroupName: Content_Thumbnails
-  m_GUID: 8f2f8f1b33e081644a2ccdf60b8782d0
+  m_GUID: f9426a6c47bb3c74f9ab373334095485
   m_SerializeEntries:
   - m_GUID: 00a640abe4bbd9342bc9e483c762fff0
     m_Address: strawberry/Thumbnails/default_table_orange
@@ -183,6 +183,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f0922af5b27ed3e44b33894412c68d95
+    m_Address: default/Thumbnails/default_knowledge_shelf
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f9c6f88c44320a04ca7901fbaa35cc96
     m_Address: Packs/strawberry/items
     m_ReadOnly: 0
@@ -199,5 +205,5 @@ MonoBehaviour:
   m_Settings: {fileID: 11400000, guid: 878d66ff5773b60499b24cccd4ffc09c, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 08335cadc742f534b963e42dc1067efd, type: 2}
-    - {fileID: 11400000, guid: 3786f9a99ecff1a4abb54c5115c2d6b5, type: 2}
+    - {fileID: 11400000, guid: 0d2ac49f28da67e44a704988a56605e9, type: 2}
+    - {fileID: 11400000, guid: 26a746f780d1608438162452eee6e737, type: 2}

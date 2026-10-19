@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Content_Rooms
   m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
   m_GroupName: Content_Rooms
-  m_GUID: 226bf10012abfc04b963d52bc2e029c6
+  m_GUID: b849e8bc07c240a448895582b46103ac
   m_SerializeEntries:
   - m_GUID: 054b6b9d2f00424e95a4479590892fed
     m_Address: default/Rooms/default_room_product_and_development
@@ -199,5 +199,5 @@ MonoBehaviour:
   m_Settings: {fileID: 11400000, guid: 878d66ff5773b60499b24cccd4ffc09c, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 6fded1b8657d16b46b6fd2d6b275b18a, type: 2}
-    - {fileID: 11400000, guid: 7c710ebdb092b084f9d63773ea12958e, type: 2}
+    - {fileID: 11400000, guid: 85ce31b72c65b714a8e08e5d1c5e2fac, type: 2}
+    - {fileID: 11400000, guid: 3ee40b1e649cacd449a41b209d9c5a5e, type: 2}

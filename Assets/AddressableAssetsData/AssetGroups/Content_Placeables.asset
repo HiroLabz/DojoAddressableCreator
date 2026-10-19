@@ -13,8 +13,14 @@ MonoBehaviour:
   m_Name: Content_Placeables
   m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
   m_GroupName: Content_Placeables
-  m_GUID: aca34312995e6b74689646b129ff2fd1
+  m_GUID: 8bad167d222d40f4096e9a4ff1465aed
   m_SerializeEntries:
+  - m_GUID: 0a257fc346f1287449a06fef3cc88154
+    m_Address: default/default_knowledge_shelf
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0cf83f2d27b2fb34b9cd517e301388f8
     m_Address: strawberry/default_wall_1
     m_ReadOnly: 0
@@ -187,5 +193,5 @@ MonoBehaviour:
   m_Settings: {fileID: 11400000, guid: 878d66ff5773b60499b24cccd4ffc09c, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 4f1c0f5c8d0c1f84ea3ebc7ee4f77e74, type: 2}
-    - {fileID: 11400000, guid: 2779283706b6f924a8ee4b1099469fb9, type: 2}
+    - {fileID: 11400000, guid: 6005f149ac8a2cb419ad87f1940f20d1, type: 2}
+    - {fileID: 11400000, guid: d9dadb5ea57e9cb42b246dff73d4e2d4, type: 2}

@@ -235,6 +235,19 @@
                 "y": 0
             },
             "data": ""
+        },
+        {
+            "id": "default.defaultknowledgeshelf",
+            "category": "drawers",
+            "name": "default_knowledge_shelf",
+            "address": "default/default_knowledge_shelf",
+            "icon": "default/Thumbnails/default_knowledge_shelf",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
         }
     ]
 }

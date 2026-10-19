@@ -81,6 +81,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1bb323de6cac89540b7a619fd023c164
+    m_Address: default/Materials/default_knowledge_shelf_books_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1cb16d5a13d70144987c9d1c6f432952
     m_Address: default/Textures/default_table_orange_albedo
     m_ReadOnly: 0
@@ -224,6 +230,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5bc31bd3329722b46bdfde255745e8ed
+    m_Address: default/Materials/default_knowledge_shelf_frame
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5c1486f31a69ce243856160780851f96
     m_Address: strawberry/Textures/default_chair_red_normal
     m_ReadOnly: 0
@@ -238,6 +250,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 68ca4ac834511d24c830e4625910ae39
     m_Address: default/Materials/elevator_lamp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 697c92355b2f9f54490498351c7c0d36
+    m_Address: default/Meshes/default_knowledge_shelf
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -402,6 +420,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b0c69b0ab96102446ad7fbc54a1856d4
+    m_Address: default/Materials/default_knowledge_shelf_books_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b555e4e425da5ad4d90de4545a48a645
     m_Address: default/Materials/Material_0.006
     m_ReadOnly: 0
@@ -476,6 +500,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d0eb7d76eb23194478ebc1102216fcce
     m_Address: default/Materials/LocationPin_Red
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d11ddaffe17b7a54bbf5f466162bb577
+    m_Address: default/Materials/default_knowledge_shelf_books_3
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
