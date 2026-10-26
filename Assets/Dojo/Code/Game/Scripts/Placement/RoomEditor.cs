@@ -268,7 +268,14 @@ namespace Dojo.Game.Placement
         /// Saves what was built as a room called <paramref name="name"/> and goes back to the world.
         /// False, with <paramref name="problem"/> saying why, when there is no name or nothing built.
         /// </summary>
-        public bool Save(string name, out string problem)
+        public bool Save(string name, out string problem) => Save(name, null, false, out problem);
+
+        /// <summary>
+        /// As <see cref="Save(string, out string)"/>, with the room's own area given
+        /// <paramref name="department"/> and marked a conference room or not. A null department keeps
+        /// the one the room had when it was loaded to be edited.
+        /// </summary>
+        public bool Save(string name, string department, bool conferenceRoom, out string problem)
         {
             problem = null;
 
@@ -315,7 +322,7 @@ namespace Dojo.Game.Placement
 
             // The room's own area over every floor tile it was built with, named as the room is -
             // as each of the pack's rooms carries one - so placing it brings its area with it.
-            var tiles = AddFloorArea(built, name.Trim(), EditingName);
+            var tiles = AddFloorArea(built, name.Trim(), EditingName, department, conferenceRoom);
 
             Vector3 shift;
             var room = ToRoom(built, out shift);
@@ -421,7 +428,7 @@ namespace Dojo.Game.Placement
         /// From the floor tiles' colliders as they stand, since a saved piece knows only where it
         /// is and not how far it reaches. Every other area painted while building is kept as it is.
         /// </remarks>
-        int AddFloorArea(WorldSave built, string name, string previousName)
+        int AddFloorArea(WorldSave built, string name, string previousName, string department = null, bool conferenceRoom = false)
         {
             Physics.SyncTransforms();
 
@@ -486,8 +493,11 @@ namespace Dojo.Game.Placement
                 name = name,
                 area = points,
                 areaCellSize = AreaCell,
-                department = replaced != null ? replaced.department ?? string.Empty : string.Empty,
-                conferenceRoom = replaced != null && replaced.conferenceRoom,
+                // Asked as the room was saved; with no answer, what it had when it was loaded.
+                department = department != null
+                    ? Dojo.Game.InGame.Agents.Departments.Normalise(department)
+                    : replaced != null ? replaced.department ?? string.Empty : string.Empty,
+                conferenceRoom = department != null ? conferenceRoom : replaced != null && replaced.conferenceRoom,
             });
 
             return cells.Count;
