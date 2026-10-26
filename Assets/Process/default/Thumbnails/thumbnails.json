@@ -1,5 +1,5 @@
 {
-    "generatedUtc": "2026-10-16T16:50:45.6098638Z",
+    "generatedUtc": "2026-10-26T12:06:25.7520421Z",
     "pixelSize": 256,
     "sourceFolder": "Assets/Process/default/Prefabs",
     "pack": "default",
@@ -115,6 +115,39 @@
             "pack": "default"
         },
         {
+            "prefabId": "a4546cd0bea87ca4586d9a15f9d0f0c3",
+            "prefabName": "default_plant_box",
+            "prefabPath": "Assets/Process/default/Prefabs/default_plant_box.prefab",
+            "prefabResource": "default/default_plant_box",
+            "thumbnailId": "bd3301e6d684a784b865f588d7955c75",
+            "thumbnailFile": "default_plant_box.png",
+            "thumbnailPath": "Assets/Process/default/Thumbnails/default_plant_box.png",
+            "thumbnailResource": "default/Thumbnails/default_plant_box",
+            "pack": "default"
+        },
+        {
+            "prefabId": "30e067e205c437948863d9f920280dd3",
+            "prefabName": "default_plant_desk",
+            "prefabPath": "Assets/Process/default/Prefabs/default_plant_desk.prefab",
+            "prefabResource": "default/default_plant_desk",
+            "thumbnailId": "693392ebf0a4a5e4897c3776463d7599",
+            "thumbnailFile": "default_plant_desk.png",
+            "thumbnailPath": "Assets/Process/default/Thumbnails/default_plant_desk.png",
+            "thumbnailResource": "default/Thumbnails/default_plant_desk",
+            "pack": "default"
+        },
+        {
+            "prefabId": "b43caedb848bfb54286b39dc1c85c920",
+            "prefabName": "default_plant_office",
+            "prefabPath": "Assets/Process/default/Prefabs/default_plant_office.prefab",
+            "prefabResource": "default/default_plant_office",
+            "thumbnailId": "98a30bf817586dc49b559ec08817befd",
+            "thumbnailFile": "default_plant_office.png",
+            "thumbnailPath": "Assets/Process/default/Thumbnails/default_plant_office.png",
+            "thumbnailResource": "default/Thumbnails/default_plant_office",
+            "pack": "default"
+        },
+        {
             "prefabId": "c09b45738ca7dde43800be88697a3069",
             "prefabName": "default_stairs",
             "prefabPath": "Assets/Process/default/Prefabs/default_stairs.prefab",
@@ -156,6 +189,17 @@
             "thumbnailFile": "default_superComputer_3.png",
             "thumbnailPath": "Assets/Process/default/Thumbnails/default_superComputer_3.png",
             "thumbnailResource": "default/Thumbnails/default_superComputer_3",
+            "pack": "default"
+        },
+        {
+            "prefabId": "95fa97c2b0434a2a981a6fdf8d074f0a",
+            "prefabName": "default_table_conference",
+            "prefabPath": "Assets/Process/default/Prefabs/default_table_conference.prefab",
+            "prefabResource": "default/default_table_conference",
+            "thumbnailId": "d69b8a5eecf9d58479fc8e8ea77687c5",
+            "thumbnailFile": "default_table_conference.png",
+            "thumbnailPath": "Assets/Process/default/Thumbnails/default_table_conference.png",
+            "thumbnailResource": "default/Thumbnails/default_table_conference",
             "pack": "default"
         },
         {

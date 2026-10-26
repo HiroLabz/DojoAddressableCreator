@@ -83,6 +83,12 @@
             "address": "default/Rooms/default_room_product_and_development",
             "icon": "default/Rooms/Thumbnails/room_product_and_development",
             "tag": "default"
+        },
+        {
+            "name": "Conference Room",
+            "address": "default/Rooms/default_room_conference_room",
+            "icon": "default/Rooms/Thumbnails/room_conference_room",
+            "tag": "default"
         }
     ]
 }

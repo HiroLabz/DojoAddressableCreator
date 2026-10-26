@@ -45,6 +45,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 30e067e205c437948863d9f920280dd3
+    m_Address: default/default_plant_desk
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 32085844b28776545adc1dc21cbc4610
     m_Address: default/default_wall_3
     m_ReadOnly: 0
@@ -99,6 +105,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 95fa97c2b0434a2a981a6fdf8d074f0a
+    m_Address: default/default_table_conference
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 99eba9f6a26fba948a4767dd6c26c96f
     m_Address: strawberry/default_table_white
     m_ReadOnly: 0
@@ -119,6 +131,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9f8002f05dd952d41ba136e912f48272
     m_Address: default/default_superComputer
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a4546cd0bea87ca4586d9a15f9d0f0c3
+    m_Address: default/default_plant_box
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -147,6 +165,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b43caedb848bfb54286b39dc1c85c920
+    m_Address: default/default_plant_office
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bc3efb788555e204f8c3e6ca5bad7365
     m_Address: default/default_dojo_animated_pin
     m_ReadOnly: 0
@@ -173,12 +197,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e1baa99316f52f54fab923ec9d06bfad
     m_Address: default/default_table_white
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 95fa97c2b0434a2a981a6fdf8d074f0a
-    m_Address: default/default_table_conference
     m_ReadOnly: 0
     m_SerializedLabels:
     - default

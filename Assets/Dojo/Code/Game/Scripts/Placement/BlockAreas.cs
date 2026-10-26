@@ -34,6 +34,12 @@ namespace Dojo.Game.Placement
         /// <summary>Middle of every painted cell, in world space.</summary>
         public List<Vector3> Cells { get; internal set; }
 
+        /// <summary>The department the area belongs to, or empty. Kept for the game, which uses it.</summary>
+        public string Department { get; internal set; }
+
+        /// <summary>Whether the area is a conference room. Kept for the game, which holds meetings in it.</summary>
+        public bool ConferenceRoom { get; internal set; }
+
         /// <summary>
         /// The middle of the area: the average of its cells' middles. For an area that bends - an
         /// L - it can fall outside the area.

@@ -458,9 +458,14 @@ namespace Dojo.Game.Placement
             }
 
             var ground = built.FloorAt(0);
-            ground.blockAreas.RemoveAll(area => area != null
+            System.Predicate<WorldSave.SavedBlockArea> isRoomsOwn = area => area != null
                 && (string.Equals(area.name, name, StringComparison.OrdinalIgnoreCase)
-                    || (!string.IsNullOrEmpty(previousName) && string.Equals(area.name, previousName, StringComparison.OrdinalIgnoreCase))));
+                    || (!string.IsNullOrEmpty(previousName) && string.Equals(area.name, previousName, StringComparison.OrdinalIgnoreCase)));
+
+            // What the area being replaced was, so painting it again does not undo it: a conference
+            // room stays one, and a department's room stays that department's.
+            var replaced = ground.blockAreas.Find(isRoomsOwn);
+            ground.blockAreas.RemoveAll(isRoomsOwn);
 
             if (cells.Count == 0)
             {
@@ -481,6 +486,8 @@ namespace Dojo.Game.Placement
                 name = name,
                 area = points,
                 areaCellSize = AreaCell,
+                department = replaced != null ? replaced.department ?? string.Empty : string.Empty,
+                conferenceRoom = replaced != null && replaced.conferenceRoom,
             });
 
             return cells.Count;

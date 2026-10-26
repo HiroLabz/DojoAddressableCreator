@@ -645,6 +645,18 @@ namespace Dojo.Game.Placement
 
             /// <summary>Width of those cells in metres.</summary>
             public float areaCellSize = 0.25f;
+
+            /// <summary>
+            /// The department the area belongs to, or empty. Written by the game; kept here so a
+            /// world or room passing through the creator does not lose it.
+            /// </summary>
+            public string department;
+
+            /// <summary>
+            /// Whether the area is a conference room, where the owner's meetings are held. The game
+            /// acts on it; the creator keeps it, so a room or world saved here carries it on.
+            /// </summary>
+            public bool conferenceRoom;
         }
 
         /// <summary>Which block area one set of credentials uses.</summary>
