@@ -78,6 +78,18 @@ namespace Dojo.Game.UI
             managerRoster = managerFile;
         }
 
+        /// <summary>The Department popup, where the scene has one (the Game scope registers it).</summary>
+        [Inject]
+        public void ConstructDepartments(IObjectResolver resolver)
+        {
+            if (resolver != null)
+            {
+                resolver.TryResolve(out departments);
+            }
+        }
+
+        AreaDepartmentPrompt departments;
+
         void Awake()
         {
             if (newAreaButton != null)
@@ -185,6 +197,7 @@ namespace Dojo.Game.UI
                     row.Bind(area.Id, area.Name, HoldersOf(area));
                     row.RepaintPressed += OnRepaint;
                     row.RenamePressed += OnRename;
+                    row.DepartmentPressed += OnDepartment;
                     row.DeletePressed += OnDelete;
                     row.SetInteractable(!painting);
                     rows.Add(row);
@@ -251,7 +264,9 @@ namespace Dojo.Game.UI
             }
 
             var detail = names.Count == 0 ? "NOT ASSIGNED" : string.Join(", ", names).ToUpperInvariant();
-            return detail + " · " + area.Cells.Count + " CELLS";
+            var department = string.IsNullOrEmpty(area.Department) ? "NO DEPARTMENT" : area.Department.ToUpperInvariant();
+            var conference = area.ConferenceRoom ? " · CONFERENCE ROOM" : string.Empty;
+            return department + conference + " · " + detail + " · " + area.Cells.Count + " CELLS";
         }
 
         void RefreshPainting()
@@ -356,7 +371,16 @@ namespace Dojo.Game.UI
             AskName("Name this area",
                 "What should this area be called? It's how agents and the elevator will know it.",
                 SuggestedName(),
-                name => areas.Add(name, floor, cells, size));
+                name =>
+                {
+                    var added = areas.Add(name, floor, cells, size);
+
+                    // As the game: once named, which department it belongs to.
+                    if (departments != null)
+                    {
+                        departments.Ask("'" + added.Name + "'", new[] { added.Id });
+                    }
+                });
         }
 
         void OnCancelled()
@@ -379,6 +403,18 @@ namespace Dojo.Game.UI
 
             AskName("Rename '" + area.Name + "'", "What should this area be called now?", area.Name,
                 name => areas.Rename(areaId, name));
+        }
+
+        void OnDepartment(int areaId)
+        {
+            var area = areas != null ? areas.Find(areaId) : null;
+
+            if (area == null || departments == null)
+            {
+                return;
+            }
+
+            departments.Ask("'" + area.Name + "'", new[] { areaId }, true);
         }
 
         void OnDelete(int areaId)

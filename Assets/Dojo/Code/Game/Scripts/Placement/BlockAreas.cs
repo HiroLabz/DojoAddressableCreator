@@ -220,6 +220,84 @@ namespace Dojo.Game.Placement
             return true;
         }
 
+        // ── Departments (as the game's BlockAreas) ──────────────────────────────────────────
+
+        /// <summary>
+        /// Gives an area to a department, in the preset's spelling when it is one; null or blank
+        /// gives it none.
+        /// </summary>
+        public bool SetDepartment(int id, string department)
+        {
+            var area = Find(id);
+
+            if (area == null)
+            {
+                return false;
+            }
+
+            var tidy = Dojo.Game.InGame.Agents.Departments.Normalise(department);
+            area.Department = tidy.Length > 40 ? tidy.Substring(0, 40) : tidy;
+            Announce(area.Department.Length > 0
+                ? "area '" + area.Name + "' given to " + area.Department
+                : "area '" + area.Name + "' given no department");
+            return true;
+        }
+
+        /// <summary>Marks an area as a conference room, or not. Unchanged is not announced.</summary>
+        public bool SetConferenceRoom(int id, bool conferenceRoom)
+        {
+            var area = Find(id);
+
+            if (area == null)
+            {
+                return false;
+            }
+
+            if (area.ConferenceRoom == conferenceRoom)
+            {
+                return true;
+            }
+
+            area.ConferenceRoom = conferenceRoom;
+            Announce(conferenceRoom
+                ? "area '" + area.Name + "' made a conference room"
+                : "area '" + area.Name + "' is no longer a conference room");
+            return true;
+        }
+
+        /// <summary>Every area that is a conference room, in the order they were painted.</summary>
+        public List<BlockArea> ConferenceRooms()
+        {
+            var found = new List<BlockArea>();
+
+            foreach (var area in areas)
+            {
+                if (area.ConferenceRoom)
+                {
+                    found.Add(area);
+                }
+            }
+
+            return found;
+        }
+
+        /// <summary>Every department an area of this world has, once each.</summary>
+        public List<string> Departments()
+        {
+            var found = new List<string>();
+
+            foreach (var area in areas)
+            {
+                if (!string.IsNullOrEmpty(area.Department)
+                    && !found.Exists(d => string.Equals(d, area.Department, System.StringComparison.OrdinalIgnoreCase)))
+                {
+                    found.Add(area.Department);
+                }
+            }
+
+            return found;
+        }
+
         /// <summary>Removes an area. Anybody who had it is left with none.</summary>
         public bool Delete(int id)
         {

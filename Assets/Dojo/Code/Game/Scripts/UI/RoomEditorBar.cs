@@ -71,6 +71,20 @@ namespace Dojo.Game.UI
             Refresh();
         }
 
+        /// <summary>The Department popup and the world's areas, where the scene has them.</summary>
+        [Inject]
+        public void ConstructDepartments(IObjectResolver resolver)
+        {
+            if (resolver != null)
+            {
+                resolver.TryResolve(out departments);
+                resolver.TryResolve(out areas);
+            }
+        }
+
+        AreaDepartmentPrompt departments;
+        Dojo.Game.Placement.BlockAreas areas;
+
         void Awake()
         {
             if (root == null)
@@ -180,13 +194,64 @@ namespace Dojo.Game.UI
 
             dialogs.SaveAs("Save room", made, name =>
             {
-                string problem;
-
-                if (!editor.Save(name, out problem))
+                // As the game asks of a placed room: which department it belongs to. Its answer is
+                // written onto the room's own area, so the room file carries it.
+                if (departments == null)
                 {
-                    Say(problem);
+                    SaveAs(name, null, false);
+                    return;
                 }
+
+                string current;
+                bool conference;
+                var changing = CurrentDepartment(name, out current, out conference);
+
+                departments.AskFor("the " + name.Trim(), current, conference, changing,
+                    (department, conferenceRoom) => SaveAs(name, department, conferenceRoom),
+                    () => Say("Not saved: the room needs its department. Save again to choose one."));
             });
+        }
+
+        void SaveAs(string name, string department, bool conferenceRoom)
+        {
+            string problem;
+
+            if (!editor.Save(name, department, conferenceRoom, out problem))
+            {
+                Say(problem);
+            }
+        }
+
+        /// <summary>
+        /// Where the Department popup starts for a room: its own area's department when it is being
+        /// edited (true), or its name when that is one of the preset departments (false).
+        /// </summary>
+        bool CurrentDepartment(string name, out string department, out bool conferenceRoom)
+        {
+            department = null;
+            conferenceRoom = false;
+
+            if (areas != null)
+            {
+                foreach (var area in areas.All)
+                {
+                    if (string.Equals(area.Name, editor.EditingName, System.StringComparison.OrdinalIgnoreCase)
+                        || string.Equals(area.Name, name.Trim(), System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        department = area.Department;
+                        conferenceRoom = area.ConferenceRoom;
+                        return !string.IsNullOrEmpty(area.Department) || area.ConferenceRoom;
+                    }
+                }
+            }
+
+            if (Dojo.Game.InGame.Agents.Departments.IndexOf(name) >= 0)
+            {
+                department = name.Trim();
+            }
+
+            conferenceRoom = name.IndexOf("conference", System.StringComparison.OrdinalIgnoreCase) >= 0;
+            return false;
         }
 
         void OnLoad()

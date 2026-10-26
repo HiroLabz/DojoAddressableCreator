@@ -248,6 +248,10 @@ namespace Dojo.Game.Systems
             builder.Register<BlockAreas>(Lifetime.Singleton);
             builder.Register<AgentAreaBinding>(Lifetime.Singleton);
 
+            // The Department popup's question, as the game asks it: after an area is named, from
+            // its row's Department button, and after a room is placed.
+            builder.Register<Dojo.Game.UI.AreaDepartmentPrompt>(Lifetime.Singleton);
+
             builder.Register<WorldLibraryFile>(Lifetime.Singleton);
             builder.Register<NavigationBaker>(Lifetime.Singleton);
             builder.Register<WorldService>(Lifetime.Singleton);
