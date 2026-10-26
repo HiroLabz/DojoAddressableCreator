@@ -2027,7 +2027,25 @@
                     ],
                     "agents": [],
                     "agentAreas": [],
-                    "managers": [],
+                    "managers": [
+                        {
+                            "credentialId": 100,
+                            "name": "",
+                            "workId": "",
+                            "position": {
+                                "x": 3.125,
+                                "y": 0.03963569179177284,
+                                "z": -0.625
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "rotationSteps": 0
+                        }
+                    ],
                     "managerAreas": [],
                     "blockAreas": [
                         {
