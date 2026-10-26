@@ -619,6 +619,9 @@ namespace Dojo.Game.UI
         /// nothing yet that knows whether anything changed since. A picture of the world is taken
         /// first, for the Lobby's continue card.
         /// </remarks>
+        // Said once, not on every press.
+        bool warnedNoLobby;
+
         void GoToLobby()
         {
             if (loading == null)
@@ -629,6 +632,21 @@ namespace Dojo.Game.UI
 
             if (loading.IsLoading)
             {
+                return;
+            }
+
+            // The Addressable Creator has no Lobby: it is one scene, the world. There BACK closes
+            // the menu - the only way back there is - rather than asking for a scene that is not
+            // in the build and failing.
+            if (!Application.CanStreamedLevelBeLoaded(lobbySceneName))
+            {
+                if (!warnedNoLobby)
+                {
+                    warnedNoLobby = true;
+                    Debug.Log("[Menu] There is no '" + lobbySceneName + "' scene in this build, so BACK closes the menu.", this);
+                }
+
+                SetState(InGameMenuState.Closed);
                 return;
             }
 
