@@ -81,6 +81,10 @@ namespace Dojo.Game.Placement
                 savedUtc = template.savedUtc,
                 connectors = template.connectors ?? new List<WorldSave.SavedConnector>(),
                 navigation = template.navigation ?? new List<WorldSave.SavedSurface>(),
+
+                // The rooms placed in it, so their pieces come back grouped - one room each, moved
+                // and deleted whole - rather than loose on their floors.
+                rooms = template.rooms ?? new List<WorldSave.SavedRoom>(),
             };
 
             var people = new List<AgentCredential>();

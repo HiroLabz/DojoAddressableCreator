@@ -89,6 +89,12 @@
             "address": "default/Rooms/default_room_conference_room",
             "icon": "default/Rooms/Thumbnails/room_conference_room",
             "tag": "default"
+        },
+        {
+            "name": "Manager's Room",
+            "address": "default/Rooms/default_room_managers_room",
+            "icon": "default/Rooms/Thumbnails/room_managers_room",
+            "tag": "default"
         }
     ]
 }

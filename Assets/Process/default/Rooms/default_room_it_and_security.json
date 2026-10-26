@@ -3,7 +3,7 @@
     "worlds": [
         {
             "name": "Room_ItAndSecurity",
-            "savedUtc": "2026-10-26T12:29:21.5177334Z",
+            "savedUtc": "2026-10-26T14:18:33.4244114Z",
             "floors": [
                 {
                     "index": 0,
@@ -688,30 +688,6 @@
                                 "x": 3.5,
                                 "y": 0.03963526338338852,
                                 "z": 3.625
-                            },
-                            "rotation": {
-                                "x": 0.0,
-                                "y": 1.0,
-                                "z": 0.0,
-                                "w": -4.371138828673793e-8
-                            },
-                            "scale": {
-                                "x": 1.0,
-                                "y": 1.0,
-                                "z": 1.0
-                            },
-                            "rotationSteps": 2,
-                            "isFloor": false,
-                            "room": ""
-                        },
-                        {
-                            "prefabId": "default.defaultsupercomputer3",
-                            "resource": "default/default_superComputer_3",
-                            "name": "default_superComputer_3",
-                            "position": {
-                                "x": -2.875,
-                                "y": 0.03963526338338852,
-                                "z": 3.5
                             },
                             "rotation": {
                                 "x": 0.0,
