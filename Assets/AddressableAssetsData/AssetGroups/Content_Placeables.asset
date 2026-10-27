@@ -99,6 +99,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 95fa97c2b0434a2a981a6fdf8d074f0a
+    m_Address: default/default_table_conference
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 99eba9f6a26fba948a4767dd6c26c96f
     m_Address: strawberry/default_table_white
     m_ReadOnly: 0
@@ -173,12 +179,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e1baa99316f52f54fab923ec9d06bfad
     m_Address: default/default_table_white
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 95fa97c2b0434a2a981a6fdf8d074f0a
-    m_Address: default/default_table_conference
     m_ReadOnly: 0
     m_SerializedLabels:
     - default

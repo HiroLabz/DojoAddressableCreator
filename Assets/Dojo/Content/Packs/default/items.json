@@ -248,6 +248,19 @@
                 "y": 0
             },
             "data": ""
+        },
+        {
+            "id": "default.defaulttableconference",
+            "category": "tables",
+            "name": "default_table_conference",
+            "address": "default/default_table_conference",
+            "icon": "default/Thumbnails/default_table_conference",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
         }
     ]
 }
