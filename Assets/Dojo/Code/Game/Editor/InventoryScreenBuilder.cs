@@ -102,6 +102,7 @@ namespace Dojo.Game.Editor
             { "AGENTS",     "agents",     "agents" },
             { "AREAS",      "areas",      "areas" },
             { "ROOMS",      "rooms",      "walls" },
+            { "DEPARTMENTS", "departments", "menu" },
             { "FLOOR",      "floors",     "floor" },
             { "WALLS",      "walls",      "walls" },
             { "TABLES",     "tables",     "tables" },
@@ -114,8 +115,11 @@ namespace Dojo.Game.Editor
         // Layout, in canvas reference units (the canvas is authored at 1920x1080).
         const float RailX = 64f;
         const float RailWidth = 96f;
-        const float RailButton = 76f;
-        const float RailGap = 8f;
+        // 66 and 4 rather than 76 and 8: twelve tabs in the height eleven used to take, as the
+        // game's rail has them since it gained DEPARTMENTS. At the old size the last tab ran off
+        // the bottom of the screen.
+        const float RailButton = 66f;
+        const float RailGap = 4f;
         const float RailTop = -88f;
 
         /// <summary>
@@ -126,10 +130,11 @@ namespace Dojo.Game.Editor
         /// Taken from the button as it was arranged in the scene rather than from what this
         /// originally generated. The first pass crowded both against the edges; these are the
         /// values that were dialled in by eye, brought back here so a rebuild reproduces the
-        /// arrangement instead of undoing it.
+        /// arrangement instead of undoing it. Brought in by ten for the shorter button, the icon
+        /// still above the caption.
         /// </remarks>
-        const float RailIconY = -32.3f;
-        const float RailLabelY = 24.3f;
+        const float RailIconY = -26f;
+        const float RailLabelY = 15f;
 
         const float PanelX = 176f;
         const float PanelWidth = 432f;
@@ -178,6 +183,7 @@ namespace Dojo.Game.Editor
             var agentRowPrefab = BuildAgentRowPrefab();
             var areaRowPrefab = BuildAreaRowPrefab();
             var roomCardPrefab = BuildRoomCardPrefab();
+            var departmentRowPrefab = BuildDepartmentRowPrefab();
 
             // The Areas tab's icon is not in the kit yet: a stand-in, under the kit's own name.
             KitStandIns.Get("icon", "areas_flat");
@@ -188,6 +194,7 @@ namespace Dojo.Game.Editor
             var youGo = BuildYou(inventory.transform);
             var areasGo = BuildAreas(inventory.transform, areaRowPrefab);
             var roomsGo = BuildRooms(inventory.transform, roomCardPrefab);
+            var departmentsGo = BuildDepartments(inventory.transform, departmentRowPrefab);
 
             var screen = inventory.AddComponent<InventoryScreen>();
             Wire(screen, "rail", railGo.GetComponent<InventoryRail>());
@@ -196,6 +203,7 @@ namespace Dojo.Game.Editor
             Wire(screen, "youHud", youGo.GetComponent<ManagerDisplayUI>());
             Wire(screen, "areasHud", areasGo.GetComponent<AreasDisplayUI>());
             Wire(screen, "roomsHud", roomsGo.GetComponent<RoomsDisplayUI>());
+            Wire(screen, "departmentsHud", departmentsGo.GetComponent<DepartmentsDisplayUI>());
 
             // The agents panel carries its own close button, and InventoryScreen holds one field
             // for the grid's. Added as a persistent listener rather than a second field, so the two
@@ -204,11 +212,13 @@ namespace Dojo.Game.Editor
             UnityEditor.Events.UnityEventTools.AddPersistentListener(youClose.onClick, screen.Close);
             UnityEditor.Events.UnityEventTools.AddPersistentListener(areasClose.onClick, screen.Close);
             UnityEditor.Events.UnityEventTools.AddPersistentListener(roomsClose.onClick, screen.Close);
+            UnityEditor.Events.UnityEventTools.AddPersistentListener(departmentsClose.onClick, screen.Close);
 
             agentsGo.SetActive(false);
             youGo.SetActive(false);
             areasGo.SetActive(false);
             roomsGo.SetActive(false);
+            departmentsGo.SetActive(false);
 
             RebuildRoomEditorBar(inventory.transform.parent);
             Wire(screen, "closeButton", closeButton);
@@ -231,6 +241,7 @@ namespace Dojo.Game.Editor
         static Button youClose;
         static Button areasClose;
         static Button roomsClose;
+        static Button departmentsClose;
 
         /// <summary>
         /// Adds the Rooms tab to an inventory screen already in the scene, without rebuilding it.
@@ -292,6 +303,96 @@ namespace Dojo.Game.Editor
             AssetDatabase.SaveAssets();
 
             Debug.Log("[InventoryScreenBuilder] Added the Rooms tab to " + InventoryPath + ". Save the scene to keep it.", inventory);
+        }
+
+        /// <summary>
+        /// Adds the Departments tab to an inventory screen already in the scene, without rebuilding
+        /// it: a rail entry after ROOMS, and the Departments panel, rebuilt if an earlier run left
+        /// one. The rail is then respaced so its twelve tabs fit where eleven did. Safe to run again.
+        /// </summary>
+        [MenuItem("Tools/Dojo/Add Departments Tab")]
+        public static void AddDepartmentsTab()
+        {
+            var inventory = GameObject.Find(InventoryPath);
+            var screen = inventory != null ? inventory.GetComponent<InventoryScreen>() : null;
+            var rail = inventory != null ? inventory.GetComponentInChildren<InventoryRail>(true) : null;
+
+            if (screen == null || rail == null)
+            {
+                Debug.LogError("[InventoryScreenBuilder] Could not find the inventory screen and its rail under "
+                    + InventoryPath + ". Open the Runtime scene, or run Tools > Dojo > Build Inventory Screen.");
+                return;
+            }
+
+            font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath);
+            Directory.CreateDirectory(PrefabFolder);
+
+            AddRailEntry(rail, "DEPARTMENTS", "departments", "menu", "rooms");
+            Respace(rail);
+
+            var old = inventory.transform.Find("Departments");
+            if (old != null)
+            {
+                Object.DestroyImmediate(old.gameObject);
+            }
+
+            var departmentsGo = BuildDepartments(inventory.transform, BuildDepartmentRowPrefab());
+
+            // Beside the Rooms panel, so the hierarchy reads in rail order.
+            var rooms = inventory.transform.Find("Rooms");
+            if (rooms != null)
+            {
+                departmentsGo.transform.SetSiblingIndex(rooms.GetSiblingIndex() + 1);
+            }
+
+            Wire(screen, "departmentsHud", departmentsGo.GetComponent<DepartmentsDisplayUI>());
+            UnityEditor.Events.UnityEventTools.AddPersistentListener(departmentsClose.onClick, screen.Close);
+            departmentsGo.SetActive(false);
+
+            EditorUtility.SetDirty(inventory);
+            UnityEditor.SceneManagement.EditorSceneManager.MarkAllScenesDirty();
+            AssetDatabase.SaveAssets();
+
+            Debug.Log("[InventoryScreenBuilder] Added the Departments tab to " + InventoryPath + ". Save the scene to keep it.", inventory);
+        }
+
+        /// <summary>
+        /// Lays the rail's entries out again at <see cref="RailButton"/> and <see cref="RailGap"/>,
+        /// from the top, with the icon and caption where <see cref="BuildRail"/> puts them.
+        /// </summary>
+        static void Respace(InventoryRail rail)
+        {
+            var array = new SerializedObject(rail).FindProperty("entries");
+
+            for (int i = 0; i < array.arraySize; i++)
+            {
+                var button = array.GetArrayElementAtIndex(i).FindPropertyRelative("button").objectReferenceValue as Button;
+                if (button == null)
+                {
+                    continue;
+                }
+
+                var rect = (RectTransform)button.transform;
+                rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, -i * (RailButton + RailGap));
+                rect.sizeDelta = new Vector2(rect.sizeDelta.x, RailButton);
+
+                var icon = button.transform.Find("Icon") as RectTransform;
+                if (icon != null)
+                {
+                    icon.anchoredPosition = new Vector2(icon.anchoredPosition.x, RailIconY);
+                }
+
+                var label = button.transform.Find("Label") as RectTransform;
+                if (label != null)
+                {
+                    label.anchoredPosition = new Vector2(label.anchoredPosition.x, RailLabelY);
+                }
+
+                EditorUtility.SetDirty(button.gameObject);
+            }
+
+            var railRect = (RectTransform)rail.transform;
+            railRect.sizeDelta = new Vector2(railRect.sizeDelta.x, array.arraySize * (RailButton + RailGap));
         }
 
         /// <summary>
@@ -1515,6 +1616,155 @@ namespace Dojo.Game.Editor
             Wire(display, "createRoomButton", createButton);
 
             return root;
+        }
+
+        // --------------------------------------------------------- departments
+
+        /// <summary>
+        /// The Departments tab: one card for every department the building's areas carry, with its
+        /// areas, its floors and the agents assigned to it.
+        /// </summary>
+        /// <remarks>
+        /// The game's Departments panel, built here rather than copied from its scene: the same
+        /// frame as the Rooms panel, and a list of cards one under another rather than a grid.
+        /// </remarks>
+        static GameObject BuildDepartments(Transform parent, DepartmentRow rowPrefab)
+        {
+            var root = Node("Departments", parent);
+            var rect = root.GetComponent<RectTransform>();
+            Anchor(rect, 0f, 1f);
+            rect.pivot = new Vector2(0f, 1f);
+            rect.anchoredPosition = new Vector2(PanelX, PanelTop);
+            rect.sizeDelta = new Vector2(PanelWidth, PanelHeight);
+            Sliced(root, Art.Panel);
+
+            var title = Text(root.transform, "Title", "DEPARTMENTS", 24f, TextAlignmentOptions.Left);
+            Place(title.rectTransform, 0f, 1f, new Vector2(Pad, -Pad), new Vector2(260f, TitleHeight));
+
+            var subtitle = Text(root.transform, "Subtitle", "0 DEPARTMENTS · 0 FLOORS", 12f, TextAlignmentOptions.Left);
+            Place(subtitle.rectTransform, 0f, 1f, new Vector2(Pad, -46f), new Vector2(260f, 18f));
+            subtitle.color = new Color(1f, 1f, 1f, 0.5f);
+
+            var close = Node("Close", root.transform);
+            Place(close.GetComponent<RectTransform>(), 1f, 1f, new Vector2(-Pad, -Pad), new Vector2(30f, 30f));
+            Sliced(close, Art.Ghost);
+            departmentsClose = close.AddComponent<Button>();
+            departmentsClose.targetGraphic = close.GetComponent<Image>();
+            var cross = Text(close.transform, "Glyph", "×", 20f, TextAlignmentOptions.Center);
+            Stretch(cross.rectTransform);
+
+            const float listTop = 80f;
+
+            var scroll = Node("List", root.transform);
+            var scrollRect = scroll.GetComponent<RectTransform>();
+            Anchor(scrollRect, 0f, 1f);
+            scrollRect.pivot = new Vector2(0f, 1f);
+            scrollRect.anchoredPosition = new Vector2(Pad, -listTop);
+            scrollRect.sizeDelta = new Vector2(PanelWidth - Pad * 2f, PanelHeight - listTop - Pad);
+
+            var viewport = Node("Viewport", scroll.transform);
+            Stretch(viewport.GetComponent<RectTransform>());
+            viewport.AddComponent<RectMask2D>();
+
+            var content = Node("Content", viewport.transform);
+            var contentRect = content.GetComponent<RectTransform>();
+            contentRect.anchorMin = new Vector2(0f, 1f);
+            contentRect.anchorMax = new Vector2(1f, 1f);
+            contentRect.pivot = new Vector2(0.5f, 1f);
+            contentRect.anchoredPosition = Vector2.zero;
+            contentRect.sizeDelta = Vector2.zero;
+
+            var column = content.AddComponent<VerticalLayoutGroup>();
+            column.spacing = 8f;
+            column.childControlWidth = true;
+            column.childControlHeight = true;
+            column.childForceExpandWidth = true;
+            column.childForceExpandHeight = false;
+            content.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            var scroller = scroll.AddComponent<ScrollRect>();
+            scroller.viewport = viewport.GetComponent<RectTransform>();
+            scroller.content = contentRect;
+            scroller.horizontal = false;
+            scroller.movementType = ScrollRect.MovementType.Clamped;
+            VerticalScrollbar(scroller);
+
+            var empty = Node("Empty", scroll.transform);
+            Stretch(empty.GetComponent<RectTransform>());
+            var emptyLabel = Text(empty.transform, "Label",
+                "No departments yet.\n\nGive an area a department in the AREAS tab.", 13f, TextAlignmentOptions.Center);
+            Stretch(emptyLabel.rectTransform);
+            emptyLabel.textWrappingMode = TextWrappingModes.Normal;
+            emptyLabel.color = new Color(1f, 1f, 1f, 0.35f);
+            empty.SetActive(false);
+
+            var display = root.AddComponent<DepartmentsDisplayUI>();
+            Wire(display, "subtitleLabel", subtitle);
+            Wire(display, "listContent", content.transform);
+            Wire(display, "rowPrefab", rowPrefab);
+            Wire(display, "emptyState", empty);
+
+            return root;
+        }
+
+        /// <summary>
+        /// One department card: a framed picture of its first agent on the left, then its name, what
+        /// it holds, and who is assigned. Laid out as the game's card is.
+        /// </summary>
+        static DepartmentRow BuildDepartmentRowPrefab()
+        {
+            const float height = 92f;
+
+            var root = Node("DepartmentRow", null);
+            root.GetComponent<RectTransform>().sizeDelta = new Vector2(PanelWidth - Pad * 2f, height);
+            Sliced(root, Art.RowIdle);
+
+            var layout = root.AddComponent<LayoutElement>();
+            layout.minHeight = height;
+            layout.preferredHeight = height;
+
+            // The frame stays when nobody is assigned; the picture inside it is what goes.
+            var frame = Node("Portrait", root.transform);
+            Place(frame.GetComponent<RectTransform>(), 0f, 0.5f, new Vector2(14f, 0f), new Vector2(64f, 64f));
+            Sliced(frame, Art.AvatarPlate).color = new Color(1f, 1f, 1f, 0.08f);
+
+            var picture = Node("Picture", frame.transform);
+            var pictureRect = picture.GetComponent<RectTransform>();
+            Stretch(pictureRect);
+            pictureRect.offsetMin = new Vector2(3f, 3f);
+            pictureRect.offsetMax = new Vector2(-3f, -3f);
+            var pictureImage = picture.AddComponent<Image>();
+            pictureImage.preserveAspect = true;
+            pictureImage.raycastTarget = false;
+            pictureImage.enabled = false;
+
+            var name = Line(root.transform, "Name", "Department", 18f, -12f, 26f);
+            var detail = Line(root.transform, "Detail", "1 AREA · 1F", 13f, -40f, 18f);
+            detail.color = new Color(1f, 1f, 1f, 0.45f);
+            var agents = Line(root.transform, "Agents", "NO AGENT ASSIGNED", 13f, -62f, 18f);
+            agents.color = new Color(1f, 1f, 1f, 0.45f);
+
+            var row = root.AddComponent<DepartmentRow>();
+            Wire(row, "nameLabel", name);
+            Wire(row, "detailLabel", detail);
+            Wire(row, "agentsLabel", agents);
+            Wire(row, "portrait", pictureImage);
+
+            return SavePrefab(root, "DepartmentRow").GetComponent<DepartmentRow>();
+        }
+
+        /// <summary>A line of the department card, right of the picture and across the rest of it.</summary>
+        static TextMeshProUGUI Line(Transform parent, string name, string value, float size, float y, float lineHeight)
+        {
+            var text = Text(parent, name, value, size, TextAlignmentOptions.Left);
+            var rect = text.rectTransform;
+            rect.anchorMin = new Vector2(0f, 1f);
+            rect.anchorMax = new Vector2(1f, 1f);
+            rect.pivot = new Vector2(0f, 1f);
+            rect.anchoredPosition = new Vector2(90f, y);
+            rect.sizeDelta = new Vector2(-104f, lineHeight);
+            text.overflowMode = TextOverflowModes.Ellipsis;
+            return text;
         }
 
         // --------------------------------------------------------- room editor
