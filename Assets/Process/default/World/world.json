@@ -13554,7 +13554,7 @@
                                 }
                             ],
                             "areaCellSize": 0.25,
-                            "department": "",
+                            "department": "Reception",
                             "conferenceRoom": false
                         },
                         {
@@ -25063,7 +25063,7 @@
                                 }
                             ],
                             "areaCellSize": 0.25,
-                            "department": "",
+                            "department": "IT and Security",
                             "conferenceRoom": false
                         },
                         {
@@ -58876,7 +58876,7 @@
                                 }
                             ],
                             "areaCellSize": 0.25,
-                            "department": "",
+                            "department": "Operations",
                             "conferenceRoom": false
                         },
                         {
@@ -70385,7 +70385,7 @@
                                 }
                             ],
                             "areaCellSize": 0.25,
-                            "department": "",
+                            "department": "Product and Development",
                             "conferenceRoom": false
                         },
                         {
@@ -81894,7 +81894,7 @@
                                 }
                             ],
                             "areaCellSize": 0.25,
-                            "department": "",
+                            "department": "Research",
                             "conferenceRoom": false
                         },
                         {
@@ -93403,7 +93403,7 @@
                                 }
                             ],
                             "areaCellSize": 0.25,
-                            "department": "",
+                            "department": "Legal",
                             "conferenceRoom": false
                         }
                     ],
