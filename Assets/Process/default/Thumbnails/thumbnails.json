@@ -1,5 +1,5 @@
 {
-    "generatedUtc": "2026-10-16T16:50:45.6098638Z",
+    "generatedUtc": "2026-10-27T15:14:56.9232923Z",
     "pixelSize": 256,
     "sourceFolder": "Assets/Process/default/Prefabs",
     "pack": "default",
@@ -156,6 +156,17 @@
             "thumbnailFile": "default_superComputer_3.png",
             "thumbnailPath": "Assets/Process/default/Thumbnails/default_superComputer_3.png",
             "thumbnailResource": "default/Thumbnails/default_superComputer_3",
+            "pack": "default"
+        },
+        {
+            "prefabId": "95fa97c2b0434a2a981a6fdf8d074f0a",
+            "prefabName": "default_table_conference",
+            "prefabPath": "Assets/Process/default/Prefabs/default_table_conference.prefab",
+            "prefabResource": "default/default_table_conference",
+            "thumbnailId": "d69b8a5eecf9d58479fc8e8ea77687c5",
+            "thumbnailFile": "default_table_conference.png",
+            "thumbnailPath": "Assets/Process/default/Thumbnails/default_table_conference.png",
+            "thumbnailResource": "default/Thumbnails/default_table_conference",
             "pack": "default"
         },
         {

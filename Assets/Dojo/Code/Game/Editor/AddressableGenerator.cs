@@ -151,7 +151,7 @@ namespace Dojo.Game.Editor
         Vector2 scroll;
         string lastResult = "";
 
-        [MenuItem("Tools/Dojo/Addressable Generator")]
+        [MenuItem("Tools/Dojo/Addressables/2. Addressable Generator", false, 2)]
         static void Open()
         {
             var window = GetWindow<AddressableGenerator>(true, "Addressable Generator", true);

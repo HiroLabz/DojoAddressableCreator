@@ -177,6 +177,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d69b8a5eecf9d58479fc8e8ea77687c5
+    m_Address: default/Thumbnails/default_table_conference
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e3130cd25d8a5e04c8c7bcde44297d0c
     m_Address: default/Thumbnails/default_wall_3
     m_ReadOnly: 0
