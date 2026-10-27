@@ -66,7 +66,7 @@ namespace Dojo.Game.Editor
             AssetDatabase.ImportAsset(PackPath);
 
             Debug.Log("[World] Exported '" + world.name + "' to " + PackPath + ": " + summary.Replace("\n", "; ")
-                + ". Run Tools > Dojo > Addressable Generator and upload the pack for the game to see it.");
+                + ". Run Tools > Dojo > Addressables > 2. Addressable Generator and upload the pack for the game to see it.");
         }
 
         /// <summary>What the world carries that the game needs: areas with departments, and places for people.</summary>

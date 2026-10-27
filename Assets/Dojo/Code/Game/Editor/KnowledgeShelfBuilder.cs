@@ -25,7 +25,7 @@ namespace Dojo.Game.Editor
     /// Built as one mesh asset in <c>Process/default/Meshes</c> - a frame and three colours of books -
     /// with URP materials in <c>Process/default/Materials</c>, so the pack carries everything it draws.
     /// <para>
-    /// Run <c>Tools ▸ Dojo ▸ Addressable Generator</c> on the default pack afterwards: that gives the
+    /// Run <c>Tools ▸ Dojo ▸ Addressables ▸ 2. Addressable Generator</c> on the default pack afterwards: that gives the
     /// prefab its address, thumbnail and catalogue entry, and its name files it under drawers.
     /// </para>
     /// </remarks>
