@@ -12370,7 +12370,9 @@
                                     "z": 5.625
                                 }
                             ],
-                            "areaCellSize": 0.25
+                            "areaCellSize": 0.25,
+                            "department": "Research",
+                            "conferenceRoom": false
                         }
                     ],
                     "openings": [

@@ -261,6 +261,45 @@
                 "y": 0
             },
             "data": ""
+        },
+        {
+            "id": "default.defaultplantoffice",
+            "category": "furnitures",
+            "name": "default_plant_office",
+            "address": "default/default_plant_office",
+            "icon": "default/Thumbnails/default_plant_office",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultplantbox",
+            "category": "furnitures",
+            "name": "default_plant_box",
+            "address": "default/default_plant_box",
+            "icon": "default/Thumbnails/default_plant_box",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultplantdesk",
+            "category": "furnitures",
+            "name": "default_plant_desk",
+            "address": "default/default_plant_desk",
+            "icon": "default/Thumbnails/default_plant_desk",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
         }
     ]
 }

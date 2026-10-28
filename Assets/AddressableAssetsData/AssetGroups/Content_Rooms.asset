@@ -57,6 +57,18 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 28c6d1e7c337a294f9fae5a8ccae9a2f
+    m_Address: default/Rooms/default_room_conference_room
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2e1aa5c4686ef06488b982841a4aebd2
+    m_Address: default/Rooms/Thumbnails/room_managers_room
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2e2802817041bad4b858712c2efb9dd1
     m_Address: default/Rooms/Thumbnails/room_product_and_development
     m_ReadOnly: 0
@@ -105,8 +117,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9305388a2eb48d144aa9ab2229291b3b
+    m_Address: default/Rooms/default_room_managers_room
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9bdf9645462e4b9fa58dd4289059a860
     m_Address: default/Rooms/default_room_marketing
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a55e80d22bfb08f48a1d678ba0096083
+    m_Address: default/Rooms/Thumbnails/room_conference_room
     m_ReadOnly: 0
     m_SerializedLabels:
     - default

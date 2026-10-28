@@ -3,7 +3,7 @@
     "worlds": [
         {
             "name": "Room_Reception",
-            "savedUtc": "2026-10-15T10:59:00.5633979Z",
+            "savedUtc": "2026-10-26T12:39:27.0086496Z",
             "floors": [
                 {
                     "index": 0,
@@ -685,33 +685,9 @@
                             "resource": "default/default_table_orange",
                             "name": "default_table_orange",
                             "position": {
-                                "x": -0.625,
+                                "x": -3.5,
                                 "y": 0.03999999910593033,
-                                "z": 1.0
-                            },
-                            "rotation": {
-                                "x": 0.0,
-                                "y": 1.0,
-                                "z": 0.0,
-                                "w": -4.371138828673793e-8
-                            },
-                            "scale": {
-                                "x": 1.0,
-                                "y": 1.0,
-                                "z": 1.0
-                            },
-                            "rotationSteps": 2,
-                            "isFloor": false,
-                            "room": ""
-                        },
-                        {
-                            "prefabId": "",
-                            "resource": "default/default_monitor_1",
-                            "name": "default_monitor_1",
-                            "position": {
-                                "x": -0.5,
-                                "y": 0.8479999899864197,
-                                "z": 1.0
+                                "z": 1.875
                             },
                             "rotation": {
                                 "x": 0.0,
@@ -733,22 +709,46 @@
                             "resource": "default/default_chair_blue",
                             "name": "default_chair_blue",
                             "position": {
-                                "x": 0.75,
+                                "x": -3.625,
                                 "y": 0.03999999910593033,
-                                "z": 1.125
+                                "z": 3.25
                             },
                             "rotation": {
                                 "x": 0.0,
-                                "y": 0.7071068286895752,
+                                "y": 1.0,
                                 "z": 0.0,
-                                "w": -0.7071068286895752
+                                "w": -4.371138828673793e-8
                             },
                             "scale": {
                                 "x": 1.0,
                                 "y": 1.0,
                                 "z": 1.0
                             },
-                            "rotationSteps": 3,
+                            "rotationSteps": 2,
+                            "isFloor": false,
+                            "room": ""
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_monitor_1",
+                            "name": "default_monitor_1",
+                            "position": {
+                                "x": -3.5,
+                                "y": 0.8479999899864197,
+                                "z": 2.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.000000238418579,
+                                "y": 1.0,
+                                "z": 1.000000238418579
+                            },
+                            "rotationSteps": 0,
                             "isFloor": false,
                             "room": ""
                         }
@@ -12263,7 +12263,9 @@
                                     "z": 5.625
                                 }
                             ],
-                            "areaCellSize": 0.25
+                            "areaCellSize": 0.25,
+                            "department": "Reception",
+                            "conferenceRoom": false
                         }
                     ],
                     "openings": [

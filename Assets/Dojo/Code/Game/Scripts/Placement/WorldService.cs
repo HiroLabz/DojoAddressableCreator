@@ -729,6 +729,8 @@ namespace Dojo.Game.Placement
                     name = area.Name,
                     area = local,
                     areaCellSize = area.CellSize,
+                    department = area.Department ?? string.Empty,
+                    conferenceRoom = area.ConferenceRoom,
                 });
             }
 
@@ -766,7 +768,11 @@ namespace Dojo.Game.Placement
 
                     var name = string.IsNullOrWhiteSpace(saved.name) ? OwnerName(save, saved.id) : saved.name;
                     loaded.Add(new BlockArea(saved.id, name, floor.index,
-                        saved.areaCellSize > 0f ? saved.areaCellSize : grid.CellSize, cells));
+                        saved.areaCellSize > 0f ? saved.areaCellSize : grid.CellSize, cells)
+                    {
+                        Department = saved.department ?? string.Empty,
+                        ConferenceRoom = saved.conferenceRoom,
+                    });
                 }
             }
 
@@ -1612,7 +1618,11 @@ namespace Dojo.Game.Placement
                     }
 
                     var name = string.IsNullOrWhiteSpace(saved.name) ? fallbackName : saved.name;
-                    blockAreas.Add(name, floorIndex, cells, saved.areaCellSize > 0f ? saved.areaCellSize : grid.CellSize);
+                    var placed = blockAreas.Add(name, floorIndex, cells, saved.areaCellSize > 0f ? saved.areaCellSize : grid.CellSize);
+
+                    // A conference room placed from the Rooms tab is still one in the world.
+                    placed.Department = saved.department ?? string.Empty;
+                    placed.ConferenceRoom = saved.conferenceRoom;
                     areas++;
                 }
             }

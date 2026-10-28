@@ -688,6 +688,59 @@ namespace Dojo.Game.Placement
         }
 
         /// <summary>
+        /// Throws a room that has been lifted away for good: its pieces, what stands on its
+        /// furniture, the areas that went with it, and its container. Says the world changed.
+        /// </summary>
+        /// <remarks>
+        /// Only a room already lifted with <see cref="Lift"/>, so its pieces have given up their
+        /// cells; switched off before they are destroyed, because Destroy waits for the end of the
+        /// frame and the floor list is rebuilt from every active piece straight after.
+        /// </remarks>
+        public void Delete(Move move)
+        {
+            if (move == null || move.Room == null)
+            {
+                return;
+            }
+
+            var name = move.Room.RoomName;
+
+            foreach (var pair in move.Areas)
+            {
+                blockAreas.Delete(pair.Key);
+            }
+
+            // Off its floor as well as switched off: Destroy waits for the end of the frame, and a
+            // save in the meantime - the autosave the change below sets off - reads every child of
+            // a floor, switched off or not, and would write the room back.
+            var container = move.Room.gameObject;
+            container.SetActive(false);
+            container.transform.SetParent(null, true);
+            Object.Destroy(container);
+
+            // Riders were carried in the room, so they went with it; any that were not go too.
+            foreach (var pair in move.Riders)
+            {
+                if (pair.Key != null && !pair.Key.transform.IsChildOf(container.transform))
+                {
+                    pair.Key.gameObject.SetActive(false);
+                    pair.Key.transform.SetParent(null, true);
+                    Object.Destroy(pair.Key.gameObject);
+                }
+            }
+
+            Physics.SyncTransforms();
+            placement.RefreshFloors();
+            placement.ResolveSupports();
+            storeys.Refresh();
+
+            if (hub != null)
+            {
+                hub.Publish(new WorldChanged("room '" + name + "' deleted"));
+            }
+        }
+
+        /// <summary>
         /// True when a footprint, already moved to where it would go, overlaps nothing taken.
         /// Otherwise <paramref name="blocker"/> names the first thing in the way.
         /// </summary>
@@ -798,14 +851,39 @@ namespace Dojo.Game.Placement
             return root;
         }
 
-        /// <summary>Builds the room for real and says the world changed.</summary>
+        /// <summary>
+        /// Builds the room for real and says the world changed. Then, as the game does, asks which
+        /// department the room's new areas belong to - only those the room file gave none, so a room
+        /// that already carries its department (or is a conference room) is not asked about.
+        /// </summary>
         public void Build(Plan plan, int floor, Vector2 offset, int steps)
         {
+            var before = new HashSet<int>();
+            foreach (var area in blockAreas.All)
+            {
+                before.Add(area.Id);
+            }
+
             world.AddRoom(plan.Save, floor, new Vector3(offset.x, 0f, offset.y), steps, plan.Entry.name, plan.Entry.address);
 
             if (hub != null)
             {
                 hub.Publish(new WorldChanged("room '" + plan.Entry.name + "' placed"));
+            }
+
+            var unassigned = new List<int>();
+            foreach (var area in blockAreas.All)
+            {
+                if (!before.Contains(area.Id) && string.IsNullOrEmpty(area.Department) && !area.ConferenceRoom)
+                {
+                    unassigned.Add(area.Id);
+                }
+            }
+
+            Dojo.Game.UI.AreaDepartmentPrompt departments;
+            if (unassigned.Count > 0 && resolver != null && resolver.TryResolve(out departments))
+            {
+                departments.Ask("the " + plan.Entry.name, unassigned);
             }
         }
 

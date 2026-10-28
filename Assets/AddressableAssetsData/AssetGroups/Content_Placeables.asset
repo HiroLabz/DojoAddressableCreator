@@ -45,6 +45,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 30e067e205c437948863d9f920280dd3
+    m_Address: default/default_plant_desk
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 32085844b28776545adc1dc21cbc4610
     m_Address: default/default_wall_3
     m_ReadOnly: 0
@@ -129,6 +135,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a4546cd0bea87ca4586d9a15f9d0f0c3
+    m_Address: default/default_plant_box
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a89f100444dabc14691edf441bf5e3a9
     m_Address: default/default_floor_1
     m_ReadOnly: 0
@@ -152,6 +164,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b43caedb848bfb54286b39dc1c85c920
+    m_Address: default/default_plant_office
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bc3efb788555e204f8c3e6ca5bad7365
     m_Address: default/default_dojo_animated_pin

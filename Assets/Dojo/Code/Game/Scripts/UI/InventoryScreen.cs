@@ -55,6 +55,12 @@ namespace Dojo.Game.UI
         [Tooltip("The category that opens the rooms panel instead of the item grid.")]
         [SerializeField] string roomsCategory = "rooms";
 
+        [Tooltip("The building's departments, with the agents assigned to each.")]
+        [SerializeField] DepartmentsDisplayUI departmentsHud;
+
+        [Tooltip("The category that opens the departments panel instead of the item grid.")]
+        [SerializeField] string departmentsCategory = "departments";
+
         [Header("Chrome")]
         [Tooltip("The X in the header. Closes the whole screen.")]
         [SerializeField] Button closeButton;
@@ -104,7 +110,7 @@ namespace Dojo.Game.UI
             if (rail != null)
             {
                 rail.SetAside(editing
-                    ? new[] { areasCategory, roomsCategory, agentsCategory, youCategory }
+                    ? new[] { areasCategory, roomsCategory, departmentsCategory, agentsCategory, youCategory }
                     : null);
             }
 
@@ -323,6 +329,26 @@ namespace Dojo.Game.UI
             bool rooms = !string.IsNullOrEmpty(roomsCategory)
                 && string.Equals(category, roomsCategory, StringComparison.OrdinalIgnoreCase);
 
+            bool departments = !string.IsNullOrEmpty(departmentsCategory)
+                && string.Equals(category, departmentsCategory, StringComparison.OrdinalIgnoreCase);
+
+            if (departmentsHud != null)
+            {
+                if (departments)
+                {
+                    departmentsHud.Show();
+                }
+                else
+                {
+                    departmentsHud.Dismiss();
+                }
+            }
+            else if (departments)
+            {
+                Debug.LogWarning("[InventoryScreen] The Departments tab has no panel behind it. "
+                    + "Run Tools > Dojo > Add Departments Tab.", this);
+            }
+
             if (roomsHud != null)
             {
                 if (rooms)
@@ -399,7 +425,7 @@ namespace Dojo.Game.UI
             }
 
             // The grid answers for every category that is not one of the special tabs.
-            bool grid = !agents && !you && !areas && !rooms;
+            bool grid = !agents && !you && !areas && !rooms && !departments;
 
             if (hud != null)
             {
