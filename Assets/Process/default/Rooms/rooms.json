@@ -95,6 +95,24 @@
             "address": "default/Rooms/default_room_managers_room",
             "icon": "default/Rooms/Thumbnails/room_managers_room",
             "tag": "default"
+        },
+        {
+            "name": "my room",
+            "address": "default/Rooms/default_room_my_room",
+            "icon": "default/Rooms/Thumbnails/room_my_room",
+            "tag": "promoted"
+        },
+        {
+            "name": "my room 2",
+            "address": "default/Rooms/default_room_my_room_2",
+            "icon": "default/Rooms/Thumbnails/room_my_room_2",
+            "tag": "promoted"
+        },
+        {
+            "name": "jacob's office",
+            "address": "default/Rooms/default_room_jacob_s_office",
+            "icon": "default/Rooms/Thumbnails/room_jacob_s_office",
+            "tag": "promoted"
         }
     ]
 }

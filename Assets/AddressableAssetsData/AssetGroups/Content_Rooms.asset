@@ -57,8 +57,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 26532b8cf17ced8459d6d7b9eb8b5d12
+    m_Address: default/Rooms/Thumbnails/room_my_room_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 28c6d1e7c337a294f9fae5a8ccae9a2f
     m_Address: default/Rooms/default_room_conference_room
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 29a6abffa1806c840887839ce8a985c4
+    m_Address: default/Rooms/Thumbnails/room_jacob_s_office
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -77,6 +89,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 38ca233eff32483283eacb96e0d9581a
     m_Address: default/Rooms/rooms_default
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3beaeefaf10d66b4b9816f9cf34e38bb
+    m_Address: default/Rooms/Thumbnails/room_my_room
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -101,6 +119,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 61b9240e47179ea4fb3902c70ff8fea1
     m_Address: default/Rooms/Thumbnails/room_reception
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 66552f4253fbbbb4dae58d81c075984a
+    m_Address: default/Rooms/default_room_my_room
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -201,8 +225,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e45c199f2d3797d46a9a9707d506c7c6
+    m_Address: default/Rooms/default_room_jacob_s_office
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e6cb550edcacaf84588135fc2dec944f
     m_Address: default/Rooms/Thumbnails/room_it_and_security
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e73ebfd7b98dca94d8693c4167a1ba2c
+    m_Address: default/Rooms/default_room_my_room_2
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
