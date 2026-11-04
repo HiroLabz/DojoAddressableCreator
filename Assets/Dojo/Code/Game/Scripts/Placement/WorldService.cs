@@ -421,14 +421,7 @@ namespace Dojo.Game.Placement
                     }
                     else if (room != null)
                     {
-                        save.rooms.Add(new WorldSave.SavedRoom
-                        {
-                            id = room.Id,
-                            name = room.RoomName,
-                            address = room.Address,
-                            floor = storey.Index,
-                            position = storeys.ToFloor(storey.Index, child.position),
-                        });
+                        save.rooms.Add(SavedRoomOf(room, storey.Index, storeys.ToFloor(storey.Index, child.position)));
                     }
                 }
 
@@ -519,12 +512,64 @@ namespace Dojo.Game.Placement
                 }
             }
 
+            save.rooms.Sort((a, b) => a.order.CompareTo(b.order));
+
             SaveBlockAreas(save);
 
             save.connectors = shafts.Describe();
             save.navigation = navigation.Describe();
 
             return save;
+        }
+
+        /// <summary>A placed room as the save holds it, standing at <paramref name="position"/> on its floor.</summary>
+        static WorldSave.SavedRoom SavedRoomOf(RoomContainer room, int floor, Vector3 position)
+        {
+            var saved = new WorldSave.SavedRoom
+            {
+                id = room.Id,
+                name = room.RoomName,
+                address = room.Address,
+                floor = floor,
+                position = position,
+                order = room.Order,
+            };
+
+            saved.areaIds.AddRange(room.AreaIds);
+
+            foreach (var entrance in room.Entrances)
+            {
+                saved.entrances.Add(new WorldSave.SavedOpening
+                {
+                    kind = RoomOpenings.Entrance,
+                    centre = WorldSave.GroundPoint.From(entrance.Centre),
+                    facing = new WorldSave.GroundPoint(entrance.Facing.x, entrance.Facing.y),
+                    width = entrance.Width,
+                });
+            }
+
+            return saved;
+        }
+
+        /// <summary>A saved room's entrances, as its container holds them.</summary>
+        static List<RoomContainer.Entrance> EntrancesOf(WorldSave.SavedRoom saved)
+        {
+            var entrances = new List<RoomContainer.Entrance>();
+
+            foreach (var entrance in saved.entrances ?? new List<WorldSave.SavedOpening>())
+            {
+                if (entrance != null && entrance.width > 0f)
+                {
+                    entrances.Add(new RoomContainer.Entrance
+                    {
+                        Centre = entrance.centre.ToVector2(),
+                        Facing = new Vector2Int(Mathf.RoundToInt(entrance.facing.x), Mathf.RoundToInt(entrance.facing.z)),
+                        Width = entrance.width,
+                    });
+                }
+            }
+
+            return entrances;
         }
 
         /// <summary>
@@ -1229,8 +1274,12 @@ namespace Dojo.Game.Placement
                     continue;
                 }
 
-                rooms[saved.id] = RoomContainer.Create(storeys.Floor(saved.floor), saved.id, saved.name,
-                    saved.address, storeys.FromFloor(saved.floor, saved.position));
+                var made = RoomContainer.Create(storeys.Floor(saved.floor), saved.id, saved.name,
+                    saved.address, saved.order, storeys.FromFloor(saved.floor, saved.position));
+
+                made.SetAreas(saved.areaIds);
+                made.SetEntrances(EntrancesOf(saved));
+                rooms[saved.id] = made;
             }
 
             foreach (var floor in save.floors)
@@ -1545,6 +1594,8 @@ namespace Dojo.Game.Placement
             var added = new List<FurniturePiece>();
             var missing = 0;
             var areas = 0;
+            var areaIds = new List<int>();
+            var entrances = new List<RoomContainer.Entrance>();
 
             foreach (var floor in room.floors)
             {
@@ -1623,9 +1674,32 @@ namespace Dojo.Game.Placement
                     // A conference room placed from the Rooms tab is still one in the world.
                     placed.Department = saved.department ?? string.Empty;
                     placed.ConferenceRoom = saved.conferenceRoom;
+                    areaIds.Add(placed.Id);
                     areas++;
                 }
+
+                // Its entrances, where they now stand: what opens it into what it was put against.
+                foreach (var opening in floor.openings ?? new List<WorldSave.SavedOpening>())
+                {
+                    if (opening == null || opening.kind != RoomOpenings.Entrance || opening.width <= 0f)
+                    {
+                        continue;
+                    }
+
+                    var at = turn * new Vector3(opening.centre.x, 0f, opening.centre.z) + offset;
+                    var facing = turn * new Vector3(opening.facing.x, 0f, opening.facing.z);
+
+                    entrances.Add(new RoomContainer.Entrance
+                    {
+                        Centre = new Vector2(at.x, at.z),
+                        Facing = new Vector2Int(Mathf.RoundToInt(facing.x), Mathf.RoundToInt(facing.z)),
+                        Width = opening.width,
+                    });
+                }
             }
+
+            container.SetAreas(areaIds);
+            container.SetEntrances(entrances);
 
             storeys.Refresh();
 
