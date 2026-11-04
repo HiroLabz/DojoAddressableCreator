@@ -511,33 +511,55 @@ namespace Dojo.Game.Placement
                 return null;
             }
 
-            // The areas inside what the pieces cover. Measured before they are added, so an area
-            // painted across the room's edge is left where it is rather than dragged along.
-            var covered = Rect.MinMaxRect(min.x - Tolerance, min.y - Tolerance, max.x + Tolerance, max.y + Tolerance);
+            // Its areas: the ones it brought, as the room remembers them. A room saved before rooms
+            // remembered their areas has none, and takes the areas inside what its pieces cover -
+            // measured before they are added, so an area painted across the room's edge is left
+            // where it is - and remembers them from then on.
+            var areas = new List<BlockArea>();
 
-            foreach (var area in blockAreas.OnFloor(move.Floor))
+            foreach (var id in room.AreaIds)
             {
-                if (area.Cells == null || area.Cells.Count == 0)
+                var area = blockAreas.Find(id);
+
+                if (area != null && area.Cells != null && area.Cells.Count > 0)
                 {
-                    continue;
+                    areas.Add(area);
                 }
+            }
 
-                var inside = true;
+            if (room.AreaIds.Count == 0)
+            {
+                var covered = Rect.MinMaxRect(min.x - Tolerance, min.y - Tolerance, max.x + Tolerance, max.y + Tolerance);
 
-                foreach (var cell in area.Cells)
+                foreach (var area in blockAreas.OnFloor(move.Floor))
                 {
-                    if (!covered.Contains(new Vector2(cell.x, cell.z)))
+                    if (area.Cells == null || area.Cells.Count == 0)
                     {
-                        inside = false;
-                        break;
+                        continue;
+                    }
+
+                    var inside = true;
+
+                    foreach (var cell in area.Cells)
+                    {
+                        if (!covered.Contains(new Vector2(cell.x, cell.z)))
+                        {
+                            inside = false;
+                            break;
+                        }
+                    }
+
+                    if (inside)
+                    {
+                        areas.Add(area);
                     }
                 }
 
-                if (!inside)
-                {
-                    continue;
-                }
+                room.SetAreas(areas.ConvertAll(area => area.Id));
+            }
 
+            foreach (var area in areas)
+            {
                 move.Areas.Add(new KeyValuePair<int, List<Vector3>>(area.Id, new List<Vector3>(area.Cells)));
 
                 var rect = AreaRect(area);
