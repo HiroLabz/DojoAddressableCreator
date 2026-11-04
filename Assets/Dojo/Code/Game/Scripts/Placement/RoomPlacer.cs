@@ -157,6 +157,9 @@ namespace Dojo.Game.Placement
 
             /// <summary>The named areas lying wholly inside the room, by id, with their cells as they were.</summary>
             public readonly List<KeyValuePair<int, List<Vector3>>> Areas = new List<KeyValuePair<int, List<Vector3>>>();
+
+            /// <summary>The room's entrances as they were, in world x and z: moved and turned with it.</summary>
+            public readonly List<RoomContainer.Entrance> Entrances = new List<RoomContainer.Entrance>();
         }
 
         /// <summary>The room read and measured, or null with <paramref name="problem"/> saying why.</summary>
@@ -617,6 +620,9 @@ namespace Dojo.Game.Placement
                 pair.Key.Lift();
             }
 
+            // Its entrances, moved and turned with it, and cut again where it is put down.
+            move.Entrances.AddRange(room.Entrances);
+
             // What it had turned off around it - a neighbour's shared wall, a wall its entrance
             // opened through - looked at again without it there.
             RoomWalls.Reconsider(WorldOf(room.transform), placement, room.transform);
@@ -775,9 +781,29 @@ namespace Dojo.Game.Placement
                 blockAreas.Repaint(pair.Key, cells);
             }
 
-            // Where it now meets a wall already standing, its own wall there is turned off.
+            // Its entrances where it now stands, turned with it.
+            var entrances = new List<RoomContainer.Entrance>(move.Entrances.Count);
+
+            foreach (var entrance in move.Entrances)
+            {
+                var at = turn * new Vector3(entrance.Centre.x - move.From.x, 0f, entrance.Centre.y - move.From.z);
+                var facing = turn * new Vector3(entrance.Facing.x, 0f, entrance.Facing.y);
+
+                entrances.Add(new RoomContainer.Entrance
+                {
+                    Centre = new Vector2(to.x + at.x, to.z + at.z),
+                    Facing = new Vector2Int(Mathf.RoundToInt(facing.x), Mathf.RoundToInt(facing.z)),
+                    Width = entrance.Width,
+                });
+            }
+
+            move.Room.SetEntrances(entrances);
+
+            // Where it now meets a wall already standing, its own wall there is turned off; and the
+            // walls its entrances open through are turned off, so it opens into what it is beside.
             Physics.SyncTransforms();
             RoomWalls.HideShared(move.Room, null);
+            RoomWalls.CutAt(move.Room, placement);
 
             // As a load does: everything standing before the floor list, then the cells held and
             // what rests on what.

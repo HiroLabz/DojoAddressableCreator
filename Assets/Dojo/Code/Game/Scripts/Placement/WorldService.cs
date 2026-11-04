@@ -561,6 +561,43 @@ namespace Dojo.Game.Placement
             return saved;
         }
 
+        /// <summary>
+        /// A room file's entrances where the room is put: turned by <paramref name="turn"/> about its
+        /// origin and moved by <paramref name="offset"/>, in world x and z.
+        /// </summary>
+        static List<RoomContainer.Entrance> EntrancesOf(WorldSave room, Quaternion turn, Vector3 offset)
+        {
+            var entrances = new List<RoomContainer.Entrance>();
+
+            foreach (var floor in room.floors)
+            {
+                if (floor.index != 0)
+                {
+                    continue;
+                }
+
+                foreach (var opening in floor.openings ?? new List<WorldSave.SavedOpening>())
+                {
+                    if (opening == null || opening.kind != RoomOpenings.Entrance || opening.width <= 0f)
+                    {
+                        continue;
+                    }
+
+                    var at = turn * new Vector3(opening.centre.x, 0f, opening.centre.z) + offset;
+                    var facing = turn * new Vector3(opening.facing.x, 0f, opening.facing.z);
+
+                    entrances.Add(new RoomContainer.Entrance
+                    {
+                        Centre = new Vector2(at.x, at.z),
+                        Facing = new Vector2Int(Mathf.RoundToInt(facing.x), Mathf.RoundToInt(facing.z)),
+                        Width = opening.width,
+                    });
+                }
+            }
+
+            return entrances;
+        }
+
         /// <summary>A saved room's entrances, as its container holds them.</summary>
         static List<RoomContainer.Entrance> EntrancesOf(WorldSave.SavedRoom saved)
         {
@@ -1624,7 +1661,6 @@ namespace Dojo.Game.Placement
             var missing = 0;
             var areas = 0;
             var areaIds = new List<int>();
-            var entrances = new List<RoomContainer.Entrance>();
 
             foreach (var floor in room.floors)
             {
@@ -1663,9 +1699,13 @@ namespace Dojo.Game.Placement
                 }
             }
 
-            // Where it meets a wall already standing, its own wall there is turned off (RoomWalls).
+            // Where it meets a wall already standing, its own wall there is turned off; and the walls
+            // its entrances open through are turned off, so it opens into what it is put against
+            // (RoomWalls). Its entrances are read below with its areas, so they are set first here.
+            container.SetEntrances(EntrancesOf(room, turn, offset));
             Physics.SyncTransforms();
             RoomWalls.HideShared(container, null);
+            RoomWalls.CutAt(container, placement);
 
             // As a load does: everything standing before the floor list, the cells held and what
             // rests on what are worked out.
@@ -1715,29 +1755,9 @@ namespace Dojo.Game.Placement
                     areaIds.Add(placed.Id);
                     areas++;
                 }
-
-                // Its entrances, where they now stand: what opens it into what it was put against.
-                foreach (var opening in floor.openings ?? new List<WorldSave.SavedOpening>())
-                {
-                    if (opening == null || opening.kind != RoomOpenings.Entrance || opening.width <= 0f)
-                    {
-                        continue;
-                    }
-
-                    var at = turn * new Vector3(opening.centre.x, 0f, opening.centre.z) + offset;
-                    var facing = turn * new Vector3(opening.facing.x, 0f, opening.facing.z);
-
-                    entrances.Add(new RoomContainer.Entrance
-                    {
-                        Centre = new Vector2(at.x, at.z),
-                        Facing = new Vector2Int(Mathf.RoundToInt(facing.x), Mathf.RoundToInt(facing.z)),
-                        Width = opening.width,
-                    });
-                }
             }
 
             container.SetAreas(areaIds);
-            container.SetEntrances(entrances);
 
             storeys.Refresh();
 
