@@ -517,6 +517,7 @@ namespace Dojo.Game.Placement
                         rotationSteps = piece.RotationSteps,
                         isFloor = piece.IsFloor,
                         room = inRoom != null ? inRoom.Id : string.Empty,
+                        hidden = RoomWalls.IsHidden(piece),
                     });
                 }
             }
@@ -1274,6 +1275,7 @@ namespace Dojo.Game.Placement
 
             // The rooms' containers first, so each piece can be built straight into its own.
             var rooms = new Dictionary<string, RoomContainer>();
+            var hidden = new List<FurniturePiece>();
 
             foreach (var saved in save.rooms)
             {
@@ -1305,15 +1307,31 @@ namespace Dojo.Game.Placement
                             ? room.transform
                             : floorRoot;
 
-                    if (BuildPiece(saved, floor.index, into, layer) != null)
+                    var piece = BuildPiece(saved, floor.index, into, layer);
+
+                    if (piece != null)
                     {
                         built++;
+
+                        if (saved.hidden)
+                        {
+                            hidden.Add(piece);
+                        }
                     }
                     else
                     {
                         missing++;
                     }
                 }
+            }
+
+            // Walls saved turned off: measured where they stand, then turned off again before
+            // anything claims cells or is baked.
+            Physics.SyncTransforms();
+
+            foreach (var piece in hidden)
+            {
+                RoomWalls.Hide(piece, null);
             }
 
             // The floor list first, so each elevator stop stands on its floor's tiles; then a stop on
@@ -1331,7 +1349,9 @@ namespace Dojo.Game.Placement
             foreach (var child in storeys.Placed())
             {
                 var piece = child.GetComponent<FurniturePiece>();
-                if (piece != null)
+
+                // A turned-off wall holds no cells.
+                if (piece != null && child.gameObject.activeSelf)
                 {
                     piece.SizeTo(grid.CellSize);
                     placement.Register(piece);
@@ -1643,6 +1663,10 @@ namespace Dojo.Game.Placement
                 }
             }
 
+            // Where it meets a wall already standing, its own wall there is turned off (RoomWalls).
+            Physics.SyncTransforms();
+            RoomWalls.HideShared(container, null);
+
             // As a load does: everything standing before the floor list, the cells held and what
             // rests on what are worked out.
             Physics.SyncTransforms();
@@ -1651,7 +1675,12 @@ namespace Dojo.Game.Placement
             foreach (var piece in added)
             {
                 piece.SizeTo(grid.CellSize);
-                placement.Register(piece);
+
+                // A turned-off wall holds no cells.
+                if (!RoomWalls.IsHidden(piece))
+                {
+                    placement.Register(piece);
+                }
             }
 
             placement.ResolveSupports();

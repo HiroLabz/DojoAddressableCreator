@@ -1212,11 +1212,18 @@ namespace Dojo.Game.Placement
             {
                 if (thing != null)
                 {
+                    // Off at once: Destroy lands at the end of the frame, and the walls looked at
+                    // next must see these as gone already.
+                    thing.SetActive(false);
                     Destroy(thing);
                 }
             }
 
             condemned.Clear();
+
+            // A loose wall gone can bring back a room's wall it was standing in for (RoomWalls).
+            RoomWalls.Reconsider(world != null ? world.Root : null, service);
+
             RepathActors();
 
             if (removedGround)

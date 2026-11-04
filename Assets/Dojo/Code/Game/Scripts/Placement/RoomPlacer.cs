@@ -478,6 +478,28 @@ namespace Dojo.Game.Placement
             var max = new Vector2(float.MinValue, float.MinValue);
             var any = false;
 
+            // Refused before anything changes, so a room that cannot be moved is left exactly as it stands.
+            foreach (var piece in room.Pieces(true))
+            {
+                if (!piece.CanLift)
+                {
+                    problem = "'" + room.RoomName + "' can't be moved while " + NameOf(piece.transform) + " is in use.";
+                    return null;
+                }
+            }
+
+            // Its own turned-off walls come back on with it: away from what stood in their place,
+            // they are its walls again. Worked out afresh where it is put down.
+            foreach (var piece in room.Pieces(true))
+            {
+                if (RoomWalls.IsHidden(piece))
+                {
+                    RoomWalls.Unhide(piece);
+                }
+            }
+
+            Physics.SyncTransforms();
+
             foreach (Transform child in room.transform)
             {
                 var piece = child.GetComponent<FurniturePiece>();
@@ -595,7 +617,18 @@ namespace Dojo.Game.Placement
                 pair.Key.Lift();
             }
 
+            // What it had turned off around it - a neighbour's shared wall, a wall its entrance
+            // opened through - looked at again without it there.
+            RoomWalls.Reconsider(WorldOf(room.transform), placement, room.transform);
+
             return move;
+        }
+
+        /// <summary>The world a room stands in: its floor's parent.</summary>
+        static Transform WorldOf(Transform room)
+        {
+            var floor = room != null ? room.parent : null;
+            return floor != null && floor.parent != null ? floor.parent : floor;
         }
 
         /// <summary>
@@ -742,6 +775,10 @@ namespace Dojo.Game.Placement
                 blockAreas.Repaint(pair.Key, cells);
             }
 
+            // Where it now meets a wall already standing, its own wall there is turned off.
+            Physics.SyncTransforms();
+            RoomWalls.HideShared(move.Room, null);
+
             // As a load does: everything standing before the floor list, then the cells held and
             // what rests on what.
             Physics.SyncTransforms();
@@ -749,7 +786,8 @@ namespace Dojo.Game.Placement
 
             foreach (var piece in move.Pieces)
             {
-                if (piece != null)
+                // A turned-off wall holds no cells.
+                if (piece != null && !RoomWalls.IsHidden(piece))
                 {
                     piece.Settle();
                     placement.Register(piece);
@@ -791,6 +829,7 @@ namespace Dojo.Game.Placement
             }
 
             var name = move.Room.RoomName;
+            var world = WorldOf(move.Room.transform);
 
             foreach (var pair in move.Areas)
             {
@@ -815,6 +854,10 @@ namespace Dojo.Game.Placement
                     Object.Destroy(pair.Key.gameObject);
                 }
             }
+
+            // What it had turned off around it was looked at again when it was lifted; looked at
+            // once more, now it is gone for good.
+            RoomWalls.Reconsider(world, placement);
 
             Physics.SyncTransforms();
             placement.RefreshFloors();
