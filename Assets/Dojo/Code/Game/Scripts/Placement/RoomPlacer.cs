@@ -555,13 +555,8 @@ namespace Dojo.Game.Placement
             // the room for the move, and handed back afterwards.
             var own = new HashSet<FurniturePiece>(move.Pieces);
 
-            foreach (var prop in Object.FindObjectsByType<FurniturePiece>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+            foreach (var prop in LooseIn(room, move.Floor, own))
             {
-                if (prop.SupportedBy == null || !own.Contains(prop.SupportedBy) || own.Contains(prop))
-                {
-                    continue;
-                }
-
                 move.Riders.Add(new KeyValuePair<FurniturePiece, Transform>(prop, prop.transform.parent));
                 prop.transform.SetParent(room.transform, true);
             }
@@ -579,6 +574,66 @@ namespace Dojo.Game.Placement
             }
 
             return move;
+        }
+
+        /// <summary>
+        /// What the player put in a placed room, which goes with it but is not part of it: loose
+        /// pieces resting on its furniture, standing over one of its floor tiles, or resting on
+        /// another of these. Ground, walls, people and elevator stops are never among them. Each
+        /// stays the player's own, to move or delete on its own. As in dojo-game-app.
+        /// </summary>
+        static List<FurniturePiece> LooseIn(RoomContainer room, int floor, HashSet<FurniturePiece> own)
+        {
+            var tiles = new List<Rect>();
+
+            foreach (var piece in own)
+            {
+                Bounds bounds;
+
+                if (piece != null && piece.IsFloor && TrySolidBounds(piece.gameObject, out bounds))
+                {
+                    tiles.Add(Rect.MinMaxRect(bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z));
+                }
+            }
+
+            var loose = new List<FurniturePiece>();
+            var all = Object.FindObjectsByType<FurniturePiece>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+
+            foreach (var prop in all)
+            {
+                if (own.Contains(prop) || RoomContainer.Of(prop) != null || prop.IsFloor || prop.IsWalkway
+                    || RoomEditor.IsWall(prop.transform) || Storeys.StoreyOf(prop.transform) != floor
+                    || prop.GetComponent<Dojo.Game.InGame.Agents.PlacedAgent>() != null
+                    || prop.GetComponent<Dojo.Game.InGame.Agents.PlacedManager>() != null
+                    || ElevatorShafts.IsStop(prop.transform))
+                {
+                    continue;
+                }
+
+                var at = new Vector2(prop.transform.position.x, prop.transform.position.z);
+
+                if ((prop.SupportedBy != null && own.Contains(prop.SupportedBy)) || tiles.Exists(tile => tile.Contains(at)))
+                {
+                    loose.Add(prop);
+                }
+            }
+
+            // And what rests on those.
+            for (var added = true; added;)
+            {
+                added = false;
+
+                foreach (var prop in all)
+                {
+                    if (prop.SupportedBy != null && loose.Contains(prop.SupportedBy) && !loose.Contains(prop) && !own.Contains(prop))
+                    {
+                        loose.Add(prop);
+                        added = true;
+                    }
+                }
+            }
+
+            return loose;
         }
 
         /// <summary>
