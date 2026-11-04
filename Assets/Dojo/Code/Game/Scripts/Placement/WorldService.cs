@@ -331,6 +331,15 @@ namespace Dojo.Game.Placement
                 return;
             }
 
+            // A room in the air is turned and moved as it is carried, but its pieces are not given
+            // the turn until it is put down: a save now would write it half moved. It saves once it
+            // is put down, which says the world changed.
+            if (RoomPlacer.MovingAny)
+            {
+                Debug.Log("[World] Not saving '" + name + "' while a room is being moved; it saves once the room is put down.", world);
+                return;
+            }
+
             // Baked before the settings are read, so what is written describes the mesh that now
             // exists rather than the one that did a moment ago. Only for characters: nothing else
             // walks, and this runs on every auto save.

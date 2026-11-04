@@ -144,6 +144,9 @@ namespace Dojo.Game.Placement
                 ? new Vector2(point.x, point.z) - origin
                 : move.Plan.Footprint.center;
 
+            // Nothing saves while it is in the air (WorldService.SaveAs).
+            RoomPlacer.MovingAny = true;
+
             state = State.Room;
             SetRigSuppressed(true);
             SetManagerSuppressed(true);
@@ -158,6 +161,22 @@ namespace Dojo.Game.Placement
 
         void TickRoom(Mouse mouse)
         {
+            // Edit ended with a room in hand: a room out of the world goes back where it stood, one
+            // from the Rooms tab is dropped. Said as a change, so the save on leaving Edit - skipped
+            // while it was in the air - happens once it is down.
+            if (!EditingAllowed)
+            {
+                Log("room put back: the game left Edit");
+
+                if (roomMove != null)
+                {
+                    roomPlacer.PutDown(roomMove, new Vector2(roomMove.From.x, roomMove.From.z), 0, true);
+                }
+
+                EndRoom();
+                return;
+            }
+
             if (dialogs != null && dialogs.IsAnyOpen)
             {
                 return;
@@ -374,6 +393,7 @@ namespace Dojo.Game.Placement
 
             roomGhost = null;
             roomMove = null;
+            RoomPlacer.MovingAny = false;
             roomTiles = null;
             floorTiles = null;
             roomPlan = null;

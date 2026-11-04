@@ -954,6 +954,14 @@ namespace Dojo.Game.Placement
                 return;
             }
 
+            // A room's own pieces are not selected one by one: the room is lifted and deleted whole,
+            // and its floors and walls are edited in the room editor.
+            if (RoomContainer.Of(piece) != null)
+            {
+                Log("ctrl-click on a piece of the room '" + RoomContainer.Of(piece).RoomName + "' - a room is moved and deleted whole");
+                return;
+            }
+
             if (selection.Remove(piece))
             {
                 Log("deselected '" + piece.gameObject.name + "' - " + (selection.Count + 1) + " now selected");
@@ -1243,9 +1251,20 @@ namespace Dojo.Game.Placement
             service.Release(piece);
             service.CollectStandingOn(piece, standingOn);
 
+            var room = RoomContainer.Of(piece);
+
             foreach (var thing in standingOn)
             {
                 var stacked = thing.GetComponent<FurniturePiece>();
+
+                // Only what is really on it, not what stands at its edge: two rooms side by side,
+                // and a room and the office beside it, overlap at their edges, and a floor tile's
+                // probe reaches the walls and furniture along them.
+                if (stacked != null && !Carries(piece, room, stacked))
+                {
+                    continue;
+                }
+
                 if (stacked != null)
                 {
                     service.Release(stacked);
@@ -1261,6 +1280,42 @@ namespace Dojo.Game.Placement
             {
                 condemned.Add(piece.gameObject);
             }
+        }
+
+        /// <summary>
+        /// Whether <paramref name="stacked"/>, found standing on <paramref name="piece"/> (of
+        /// <paramref name="room"/>, or loose), goes with it when it is deleted.
+        /// </summary>
+        /// <remarks>
+        /// What rests on it goes: a mug on a desk. Ground and walls never do; they stand on the
+        /// floor, not on the piece. A piece of another room never does. A loose piece goes only when
+        /// it stands over this one, not when it is merely along its edge. As in dojo-game-app.
+        /// </remarks>
+        static bool Carries(FurniturePiece piece, RoomContainer room, FurniturePiece stacked)
+        {
+            if (stacked.SupportedBy == piece)
+            {
+                return true;
+            }
+
+            if (stacked.IsFloor || stacked.IsWalkway || RoomEditor.IsWall(stacked.transform))
+            {
+                return false;
+            }
+
+            var theirs = RoomContainer.Of(stacked);
+            if (theirs != null)
+            {
+                return theirs == room;
+            }
+
+            if (!FurniturePlacementService.TryColliderBounds(piece.gameObject, out var under))
+            {
+                return false;
+            }
+
+            var at = stacked.transform.position;
+            return at.x > under.min.x && at.x < under.max.x && at.z > under.min.z && at.z < under.max.z;
         }
 
         /// <summary>

@@ -107,9 +107,19 @@ namespace Dojo.Game.Placement
         readonly IObjectResolver resolver;
         readonly IEventHub hub;
 
+        /// <summary>
+        /// True while a placed room is lifted and being moved. Nothing is saved then: the room is
+        /// carried turned, and its pieces only take the turn when it is put down. Set by
+        /// <see cref="PlacementController"/>, which carries it.
+        /// </summary>
+        public static bool MovingAny { get; set; }
+
         public RoomPlacer(RoomCatalog catalog, WorldService world, Storeys storeys, BlockAreas blockAreas,
             PlacementGrid grid, FurniturePlacementService placement, IObjectResolver resolver, IEventHub hub)
         {
+            // A new world's placer starts with nothing in the air, whatever a last one left.
+            MovingAny = false;
+
             this.catalog = catalog;
             this.world = world;
             this.storeys = storeys;
