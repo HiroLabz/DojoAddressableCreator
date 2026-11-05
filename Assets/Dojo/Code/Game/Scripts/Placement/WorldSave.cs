@@ -309,6 +309,16 @@ namespace Dojo.Game.Placement
                 rooms = new List<SavedRoom>();
             }
 
+            rooms.RemoveAll(room => room == null || string.IsNullOrEmpty(room.id));
+            rooms.Sort((a, b) => a.order.CompareTo(b.order));
+
+            foreach (var room in rooms)
+            {
+                room.areaIds ??= new List<int>();
+                room.entrances ??= new List<SavedOpening>();
+                room.entrances.RemoveAll(entrance => entrance == null);
+            }
+
             if (navigation == null)
             {
                 navigation = new List<SavedSurface>();
@@ -715,6 +725,12 @@ namespace Dojo.Game.Placement
             /// piece placed on its own.
             /// </summary>
             public string room;
+
+            /// <summary>
+            /// A wall turned off because another stands in its place or an entrance runs through it
+            /// (<see cref="RoomWalls"/>). Built, then turned off again. The same field as the game's.
+            /// </summary>
+            public bool hidden;
         }
 
         /// <summary>One placed room: the container its pieces are grouped under.</summary>
@@ -734,6 +750,18 @@ namespace Dojo.Game.Placement
 
             /// <summary>Where its container stands, relative to its floor.</summary>
             public Vector3 position;
+
+            /// <summary>When it was placed among the world's rooms, from 0.</summary>
+            public int order;
+
+            /// <summary>The block areas it brought, moved and deleted with it. Empty in a world saved before this.</summary>
+            public List<int> areaIds = new List<int>();
+
+            /// <summary>
+            /// Where it opens through what it was placed against: its entrances, in the room file's
+            /// opening shape but in world x and z. The same fields as the game's.
+            /// </summary>
+            public List<SavedOpening> entrances = new List<SavedOpening>();
         }
 
         /// <summary>One agent standing in the world, and where.</summary>

@@ -331,6 +331,17 @@ namespace Dojo.Game.Placement
                 return;
             }
 
+            // A room in the air is turned and moved as it is carried, but its pieces are not given
+            // the turn until it is put down: a save now would write it half moved. It saves once it
+            // is put down, which says the world changed.
+            if (RoomPlacer.MovingAny)
+            {
+                // Remembered, so the save is asked for again once the room is down.
+                RoomPlacer.SaveHeld = true;
+                Debug.Log("[World] Not saving '" + name + "' while a room is being moved; it saves once the room is put down.", world);
+                return;
+            }
+
             // Baked before the settings are read, so what is written describes the mesh that now
             // exists rather than the one that did a moment ago. Only for characters: nothing else
             // walks, and this runs on every auto save.
@@ -421,14 +432,7 @@ namespace Dojo.Game.Placement
                     }
                     else if (room != null)
                     {
-                        save.rooms.Add(new WorldSave.SavedRoom
-                        {
-                            id = room.Id,
-                            name = room.RoomName,
-                            address = room.Address,
-                            floor = storey.Index,
-                            position = storeys.ToFloor(storey.Index, child.position),
-                        });
+                        save.rooms.Add(SavedRoomOf(room, storey.Index, storeys.ToFloor(storey.Index, child.position)));
                     }
                 }
 
@@ -515,9 +519,12 @@ namespace Dojo.Game.Placement
                         rotationSteps = piece.RotationSteps,
                         isFloor = piece.IsFloor,
                         room = inRoom != null ? inRoom.Id : string.Empty,
+                        hidden = RoomWalls.IsHidden(piece),
                     });
                 }
             }
+
+            save.rooms.Sort((a, b) => a.order.CompareTo(b.order));
 
             SaveBlockAreas(save);
 
@@ -525,6 +532,93 @@ namespace Dojo.Game.Placement
             save.navigation = navigation.Describe();
 
             return save;
+        }
+
+        /// <summary>A placed room as the save holds it, standing at <paramref name="position"/> on its floor.</summary>
+        static WorldSave.SavedRoom SavedRoomOf(RoomContainer room, int floor, Vector3 position)
+        {
+            var saved = new WorldSave.SavedRoom
+            {
+                id = room.Id,
+                name = room.RoomName,
+                address = room.Address,
+                floor = floor,
+                position = position,
+                order = room.Order,
+            };
+
+            saved.areaIds.AddRange(room.AreaIds);
+
+            foreach (var entrance in room.Entrances)
+            {
+                saved.entrances.Add(new WorldSave.SavedOpening
+                {
+                    kind = RoomOpenings.Entrance,
+                    centre = WorldSave.GroundPoint.From(entrance.Centre),
+                    facing = new WorldSave.GroundPoint(entrance.Facing.x, entrance.Facing.y),
+                    width = entrance.Width,
+                });
+            }
+
+            return saved;
+        }
+
+        /// <summary>
+        /// A room file's entrances where the room is put: turned by <paramref name="turn"/> about its
+        /// origin and moved by <paramref name="offset"/>, in world x and z.
+        /// </summary>
+        static List<RoomContainer.Entrance> EntrancesOf(WorldSave room, Quaternion turn, Vector3 offset)
+        {
+            var entrances = new List<RoomContainer.Entrance>();
+
+            foreach (var floor in room.floors)
+            {
+                if (floor.index != 0)
+                {
+                    continue;
+                }
+
+                foreach (var opening in floor.openings ?? new List<WorldSave.SavedOpening>())
+                {
+                    if (opening == null || opening.kind != RoomOpenings.Entrance || opening.width <= 0f)
+                    {
+                        continue;
+                    }
+
+                    var at = turn * new Vector3(opening.centre.x, 0f, opening.centre.z) + offset;
+                    var facing = turn * new Vector3(opening.facing.x, 0f, opening.facing.z);
+
+                    entrances.Add(new RoomContainer.Entrance
+                    {
+                        Centre = new Vector2(at.x, at.z),
+                        Facing = new Vector2Int(Mathf.RoundToInt(facing.x), Mathf.RoundToInt(facing.z)),
+                        Width = opening.width,
+                    });
+                }
+            }
+
+            return entrances;
+        }
+
+        /// <summary>A saved room's entrances, as its container holds them.</summary>
+        static List<RoomContainer.Entrance> EntrancesOf(WorldSave.SavedRoom saved)
+        {
+            var entrances = new List<RoomContainer.Entrance>();
+
+            foreach (var entrance in saved.entrances ?? new List<WorldSave.SavedOpening>())
+            {
+                if (entrance != null && entrance.width > 0f)
+                {
+                    entrances.Add(new RoomContainer.Entrance
+                    {
+                        Centre = entrance.centre.ToVector2(),
+                        Facing = new Vector2Int(Mathf.RoundToInt(entrance.facing.x), Mathf.RoundToInt(entrance.facing.z)),
+                        Width = entrance.width,
+                    });
+                }
+            }
+
+            return entrances;
         }
 
         /// <summary>
@@ -1220,6 +1314,7 @@ namespace Dojo.Game.Placement
 
             // The rooms' containers first, so each piece can be built straight into its own.
             var rooms = new Dictionary<string, RoomContainer>();
+            var hidden = new List<FurniturePiece>();
 
             foreach (var saved in save.rooms)
             {
@@ -1229,8 +1324,12 @@ namespace Dojo.Game.Placement
                     continue;
                 }
 
-                rooms[saved.id] = RoomContainer.Create(storeys.Floor(saved.floor), saved.id, saved.name,
-                    saved.address, storeys.FromFloor(saved.floor, saved.position));
+                var made = RoomContainer.Create(storeys.Floor(saved.floor), saved.id, saved.name,
+                    saved.address, saved.order, storeys.FromFloor(saved.floor, saved.position));
+
+                made.SetAreas(saved.areaIds);
+                made.SetEntrances(EntrancesOf(saved));
+                rooms[saved.id] = made;
             }
 
             foreach (var floor in save.floors)
@@ -1247,15 +1346,31 @@ namespace Dojo.Game.Placement
                             ? room.transform
                             : floorRoot;
 
-                    if (BuildPiece(saved, floor.index, into, layer) != null)
+                    var piece = BuildPiece(saved, floor.index, into, layer);
+
+                    if (piece != null)
                     {
                         built++;
+
+                        if (saved.hidden)
+                        {
+                            hidden.Add(piece);
+                        }
                     }
                     else
                     {
                         missing++;
                     }
                 }
+            }
+
+            // Walls saved turned off: measured where they stand, then turned off again before
+            // anything claims cells or is baked.
+            Physics.SyncTransforms();
+
+            foreach (var piece in hidden)
+            {
+                RoomWalls.Hide(piece, null);
             }
 
             // The floor list first, so each elevator stop stands on its floor's tiles; then a stop on
@@ -1273,7 +1388,9 @@ namespace Dojo.Game.Placement
             foreach (var child in storeys.Placed())
             {
                 var piece = child.GetComponent<FurniturePiece>();
-                if (piece != null)
+
+                // A turned-off wall holds no cells.
+                if (piece != null && child.gameObject.activeSelf)
                 {
                     piece.SizeTo(grid.CellSize);
                     placement.Register(piece);
@@ -1281,6 +1398,10 @@ namespace Dojo.Game.Placement
             }
 
             placement.ResolveSupports();
+
+            // Walls saved turned off under the older "half covered" rule come back on where nothing
+            // covers them: no gaps on load.
+            RoomWalls.Reconsider(storeys.Count > 0 && storeys.Floor(0) != null ? storeys.Floor(0).parent : null, placement);
 
             // Navigation is for the characters alone, so without them there is nothing to bake -
             // and baking every surface was most of the time a load took.
@@ -1545,6 +1666,7 @@ namespace Dojo.Game.Placement
             var added = new List<FurniturePiece>();
             var missing = 0;
             var areas = 0;
+            var areaIds = new List<int>();
 
             foreach (var floor in room.floors)
             {
@@ -1583,6 +1705,22 @@ namespace Dojo.Game.Placement
                 }
             }
 
+            // Where it meets a wall already standing, its own wall there is turned off; and the walls
+            // its entrances open through are turned off, so it opens into what it is put against
+            // (RoomWalls). Its entrances are read below with its areas, so they are set first here.
+            container.SetEntrances(EntrancesOf(room, turn, offset));
+            Physics.SyncTransforms();
+            RoomWalls.HideShared(container, null);
+            RoomWalls.CutAt(container, placement);
+
+            // Its own walls across a neighbour's entrance turned off, and any of its walls left with
+            // nothing in their place back on: no closed doorway next door, no gap beside its own.
+            var worldRoot = storeys.Floor(floorIndex) != null ? storeys.Floor(floorIndex).parent : null;
+            Physics.SyncTransforms();
+            RoomWalls.CutByNeighbours(container, worldRoot, null);
+            Physics.SyncTransforms();
+            RoomWalls.Reconsider(worldRoot, placement);
+
             // As a load does: everything standing before the floor list, the cells held and what
             // rests on what are worked out.
             Physics.SyncTransforms();
@@ -1591,7 +1729,12 @@ namespace Dojo.Game.Placement
             foreach (var piece in added)
             {
                 piece.SizeTo(grid.CellSize);
-                placement.Register(piece);
+
+                // A turned-off wall holds no cells.
+                if (!RoomWalls.IsHidden(piece))
+                {
+                    placement.Register(piece);
+                }
             }
 
             placement.ResolveSupports();
@@ -1623,9 +1766,12 @@ namespace Dojo.Game.Placement
                     // A conference room placed from the Rooms tab is still one in the world.
                     placed.Department = saved.department ?? string.Empty;
                     placed.ConferenceRoom = saved.conferenceRoom;
+                    areaIds.Add(placed.Id);
                     areas++;
                 }
             }
+
+            container.SetAreas(areaIds);
 
             storeys.Refresh();
 

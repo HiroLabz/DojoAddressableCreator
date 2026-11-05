@@ -107,9 +107,26 @@ namespace Dojo.Game.Placement
         readonly IObjectResolver resolver;
         readonly IEventHub hub;
 
+        /// <summary>
+        /// True while a placed room is lifted and being moved. Nothing is saved then: the room is
+        /// carried turned, and its pieces only take the turn when it is put down. Set by
+        /// <see cref="PlacementController"/>, which carries it.
+        /// </summary>
+        public static bool MovingAny { get; set; }
+
+        /// <summary>
+        /// Set when a save was skipped because a room was in the air (<see cref="MovingAny"/>). Once
+        /// the room is down, the world is said to have changed, so the save happens after all.
+        /// </summary>
+        public static bool SaveHeld { get; set; }
+
         public RoomPlacer(RoomCatalog catalog, WorldService world, Storeys storeys, BlockAreas blockAreas,
             PlacementGrid grid, FurniturePlacementService placement, IObjectResolver resolver, IEventHub hub)
         {
+            // A new world's placer starts with nothing in the air, whatever a last one left.
+            MovingAny = false;
+            SaveHeld = false;
+
             this.catalog = catalog;
             this.world = world;
             this.storeys = storeys;
@@ -147,6 +164,9 @@ namespace Dojo.Game.Placement
 
             /// <summary>The named areas lying wholly inside the room, by id, with their cells as they were.</summary>
             public readonly List<KeyValuePair<int, List<Vector3>>> Areas = new List<KeyValuePair<int, List<Vector3>>>();
+
+            /// <summary>The room's entrances as they were, in world x and z: moved and turned with it.</summary>
+            public readonly List<RoomContainer.Entrance> Entrances = new List<RoomContainer.Entrance>();
         }
 
         /// <summary>The room read and measured, or null with <paramref name="problem"/> saying why.</summary>
@@ -468,6 +488,28 @@ namespace Dojo.Game.Placement
             var max = new Vector2(float.MinValue, float.MinValue);
             var any = false;
 
+            // Refused before anything changes, so a room that cannot be moved is left exactly as it stands.
+            foreach (var piece in room.Pieces(true))
+            {
+                if (!piece.CanLift)
+                {
+                    problem = "'" + room.RoomName + "' can't be moved while " + NameOf(piece.transform) + " is in use.";
+                    return null;
+                }
+            }
+
+            // Its own turned-off walls come back on with it: away from what stood in their place,
+            // they are its walls again. Worked out afresh where it is put down.
+            foreach (var piece in room.Pieces(true))
+            {
+                if (RoomWalls.IsHidden(piece))
+                {
+                    RoomWalls.Unhide(piece);
+                }
+            }
+
+            Physics.SyncTransforms();
+
             foreach (Transform child in room.transform)
             {
                 var piece = child.GetComponent<FurniturePiece>();
@@ -501,33 +543,55 @@ namespace Dojo.Game.Placement
                 return null;
             }
 
-            // The areas inside what the pieces cover. Measured before they are added, so an area
-            // painted across the room's edge is left where it is rather than dragged along.
-            var covered = Rect.MinMaxRect(min.x - Tolerance, min.y - Tolerance, max.x + Tolerance, max.y + Tolerance);
+            // Its areas: the ones it brought, as the room remembers them. A room saved before rooms
+            // remembered their areas has none, and takes the areas inside what its pieces cover -
+            // measured before they are added, so an area painted across the room's edge is left
+            // where it is - and remembers them from then on.
+            var areas = new List<BlockArea>();
 
-            foreach (var area in blockAreas.OnFloor(move.Floor))
+            foreach (var id in room.AreaIds)
             {
-                if (area.Cells == null || area.Cells.Count == 0)
+                var area = blockAreas.Find(id);
+
+                if (area != null && area.Cells != null && area.Cells.Count > 0)
                 {
-                    continue;
+                    areas.Add(area);
                 }
+            }
 
-                var inside = true;
+            if (room.AreaIds.Count == 0)
+            {
+                var covered = Rect.MinMaxRect(min.x - Tolerance, min.y - Tolerance, max.x + Tolerance, max.y + Tolerance);
 
-                foreach (var cell in area.Cells)
+                foreach (var area in blockAreas.OnFloor(move.Floor))
                 {
-                    if (!covered.Contains(new Vector2(cell.x, cell.z)))
+                    if (area.Cells == null || area.Cells.Count == 0)
                     {
-                        inside = false;
-                        break;
+                        continue;
+                    }
+
+                    var inside = true;
+
+                    foreach (var cell in area.Cells)
+                    {
+                        if (!covered.Contains(new Vector2(cell.x, cell.z)))
+                        {
+                            inside = false;
+                            break;
+                        }
+                    }
+
+                    if (inside)
+                    {
+                        areas.Add(area);
                     }
                 }
 
-                if (!inside)
-                {
-                    continue;
-                }
+                room.SetAreas(areas.ConvertAll(area => area.Id));
+            }
 
+            foreach (var area in areas)
+            {
                 move.Areas.Add(new KeyValuePair<int, List<Vector3>>(area.Id, new List<Vector3>(area.Cells)));
 
                 var rect = AreaRect(area);
@@ -545,13 +609,8 @@ namespace Dojo.Game.Placement
             // the room for the move, and handed back afterwards.
             var own = new HashSet<FurniturePiece>(move.Pieces);
 
-            foreach (var prop in Object.FindObjectsByType<FurniturePiece>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+            foreach (var prop in LooseIn(room, move.Floor, own))
             {
-                if (prop.SupportedBy == null || !own.Contains(prop.SupportedBy) || own.Contains(prop))
-                {
-                    continue;
-                }
-
                 move.Riders.Add(new KeyValuePair<FurniturePiece, Transform>(prop, prop.transform.parent));
                 prop.transform.SetParent(room.transform, true);
             }
@@ -568,7 +627,81 @@ namespace Dojo.Game.Placement
                 pair.Key.Lift();
             }
 
+            // Its entrances, moved and turned with it, and cut again where it is put down.
+            move.Entrances.AddRange(room.Entrances);
+
+            // What it had turned off around it - a neighbour's shared wall, a wall its entrance
+            // opened through - looked at again without it there.
+            RoomWalls.Reconsider(WorldOf(room.transform), placement, room.transform);
+
             return move;
+        }
+
+        /// <summary>The world a room stands in: its floor's parent.</summary>
+        static Transform WorldOf(Transform room)
+        {
+            var floor = room != null ? room.parent : null;
+            return floor != null && floor.parent != null ? floor.parent : floor;
+        }
+
+        /// <summary>
+        /// What the player put in a placed room, which goes with it but is not part of it: loose
+        /// pieces resting on its furniture, standing over one of its floor tiles, or resting on
+        /// another of these. Ground, walls, people and elevator stops are never among them. Each
+        /// stays the player's own, to move or delete on its own. As in dojo-game-app.
+        /// </summary>
+        static List<FurniturePiece> LooseIn(RoomContainer room, int floor, HashSet<FurniturePiece> own)
+        {
+            var tiles = new List<Rect>();
+
+            foreach (var piece in own)
+            {
+                Bounds bounds;
+
+                if (piece != null && piece.IsFloor && TrySolidBounds(piece.gameObject, out bounds))
+                {
+                    tiles.Add(Rect.MinMaxRect(bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z));
+                }
+            }
+
+            var loose = new List<FurniturePiece>();
+            var all = Object.FindObjectsByType<FurniturePiece>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+
+            foreach (var prop in all)
+            {
+                if (own.Contains(prop) || RoomContainer.Of(prop) != null || prop.IsFloor || prop.IsWalkway
+                    || RoomEditor.IsWall(prop.transform) || Storeys.StoreyOf(prop.transform) != floor
+                    || prop.GetComponent<Dojo.Game.InGame.Agents.PlacedAgent>() != null
+                    || prop.GetComponent<Dojo.Game.InGame.Agents.PlacedManager>() != null
+                    || ElevatorShafts.IsStop(prop.transform))
+                {
+                    continue;
+                }
+
+                var at = new Vector2(prop.transform.position.x, prop.transform.position.z);
+
+                if ((prop.SupportedBy != null && own.Contains(prop.SupportedBy)) || tiles.Exists(tile => tile.Contains(at)))
+                {
+                    loose.Add(prop);
+                }
+            }
+
+            // And what rests on those.
+            for (var added = true; added;)
+            {
+                added = false;
+
+                foreach (var prop in all)
+                {
+                    if (prop.SupportedBy != null && loose.Contains(prop.SupportedBy) && !loose.Contains(prop) && !own.Contains(prop))
+                    {
+                        loose.Add(prop);
+                        added = true;
+                    }
+                }
+            }
+
+            return loose;
         }
 
         /// <summary>
@@ -655,6 +788,38 @@ namespace Dojo.Game.Placement
                 blockAreas.Repaint(pair.Key, cells);
             }
 
+            // Its entrances where it now stands, turned with it.
+            var entrances = new List<RoomContainer.Entrance>(move.Entrances.Count);
+
+            foreach (var entrance in move.Entrances)
+            {
+                var at = turn * new Vector3(entrance.Centre.x - move.From.x, 0f, entrance.Centre.y - move.From.z);
+                var facing = turn * new Vector3(entrance.Facing.x, 0f, entrance.Facing.y);
+
+                entrances.Add(new RoomContainer.Entrance
+                {
+                    Centre = new Vector2(to.x + at.x, to.z + at.z),
+                    Facing = new Vector2Int(Mathf.RoundToInt(facing.x), Mathf.RoundToInt(facing.z)),
+                    Width = entrance.Width,
+                });
+            }
+
+            move.Room.SetEntrances(entrances);
+
+            // Where it now meets a wall already standing, its own wall there is turned off; and the
+            // walls its entrances open through are turned off, so it opens into what it is beside.
+            Physics.SyncTransforms();
+            RoomWalls.HideShared(move.Room, null);
+            RoomWalls.CutAt(move.Room, placement);
+
+            // Its own walls across a neighbour's entrance turned off, so the doorway next door stays
+            // open; then any of its walls left with nothing in their place come back on (a wall its
+            // entrance just cut was standing in for one of them).
+            Physics.SyncTransforms();
+            RoomWalls.CutByNeighbours(move.Room, WorldOf(move.Room.transform), null);
+            Physics.SyncTransforms();
+            RoomWalls.Reconsider(WorldOf(move.Room.transform), placement);
+
             // As a load does: everything standing before the floor list, then the cells held and
             // what rests on what.
             Physics.SyncTransforms();
@@ -662,7 +827,8 @@ namespace Dojo.Game.Placement
 
             foreach (var piece in move.Pieces)
             {
-                if (piece != null)
+                // A turned-off wall holds no cells.
+                if (piece != null && !RoomWalls.IsHidden(piece))
                 {
                     piece.Settle();
                     placement.Register(piece);
@@ -704,6 +870,7 @@ namespace Dojo.Game.Placement
             }
 
             var name = move.Room.RoomName;
+            var world = WorldOf(move.Room.transform);
 
             foreach (var pair in move.Areas)
             {
@@ -728,6 +895,10 @@ namespace Dojo.Game.Placement
                     Object.Destroy(pair.Key.gameObject);
                 }
             }
+
+            // What it had turned off around it was looked at again when it was lifted; looked at
+            // once more, now it is gone for good.
+            RoomWalls.Reconsider(world, placement);
 
             Physics.SyncTransforms();
             placement.RefreshFloors();

@@ -359,6 +359,13 @@ namespace Dojo.Game.Placement
             return index;
         }
 
+        /// <summary>
+        /// While true, the floor being looked at stays put: <see cref="View"/> does nothing. Set while
+        /// a room is in hand, so it is never put down, or back, while another floor is shown. As in
+        /// dojo-game-app.
+        /// </summary>
+        public bool ViewHeld { get; set; }
+
         /// <summary>Looks at another floor: hides the ones above it and shows the rest, at once.</summary>
         public void View(int index)
         {
@@ -368,6 +375,12 @@ namespace Dojo.Game.Placement
 
             if (clamped == Viewed)
             {
+                return;
+            }
+
+            if (ViewHeld)
+            {
+                Debug.Log("[Storeys] Staying on " + LabelFor(Viewed) + ": a room is in hand. Put it down or back first.");
                 return;
             }
 

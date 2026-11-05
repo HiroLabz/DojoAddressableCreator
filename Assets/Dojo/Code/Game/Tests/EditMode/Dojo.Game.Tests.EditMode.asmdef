@@ -1,0 +1,25 @@
+{
+    "name": "Dojo.Game.Tests.EditMode",
+    "rootNamespace": "Dojo.Game.Tests.EditMode",
+    "references": [
+        "Dojo.Game",
+        "Dojo.Framework",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
