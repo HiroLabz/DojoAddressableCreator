@@ -114,11 +114,18 @@ namespace Dojo.Game.Placement
         /// </summary>
         public static bool MovingAny { get; set; }
 
+        /// <summary>
+        /// Set when a save was skipped because a room was in the air (<see cref="MovingAny"/>). Once
+        /// the room is down, the world is said to have changed, so the save happens after all.
+        /// </summary>
+        public static bool SaveHeld { get; set; }
+
         public RoomPlacer(RoomCatalog catalog, WorldService world, Storeys storeys, BlockAreas blockAreas,
             PlacementGrid grid, FurniturePlacementService placement, IObjectResolver resolver, IEventHub hub)
         {
             // A new world's placer starts with nothing in the air, whatever a last one left.
             MovingAny = false;
+            SaveHeld = false;
 
             this.catalog = catalog;
             this.world = world;
@@ -804,6 +811,14 @@ namespace Dojo.Game.Placement
             Physics.SyncTransforms();
             RoomWalls.HideShared(move.Room, null);
             RoomWalls.CutAt(move.Room, placement);
+
+            // Its own walls across a neighbour's entrance turned off, so the doorway next door stays
+            // open; then any of its walls left with nothing in their place come back on (a wall its
+            // entrance just cut was standing in for one of them).
+            Physics.SyncTransforms();
+            RoomWalls.CutByNeighbours(move.Room, WorldOf(move.Room.transform), null);
+            Physics.SyncTransforms();
+            RoomWalls.Reconsider(WorldOf(move.Room.transform), placement);
 
             // As a load does: everything standing before the floor list, then the cells held and
             // what rests on what.

@@ -630,18 +630,64 @@ namespace Dojo.Game.Placement
                 return;
             }
 
-            foreach (var prop in FindObjectsByType<FurniturePiece>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+            var all = FindObjectsByType<FurniturePiece>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+
+            foreach (var prop in all)
             {
                 if (prop.SupportedBy != piece)
                 {
                     continue;
                 }
 
-                riders.Add(prop);
-                service.Release(prop);
-                prop.Lift();
-                prop.transform.SetParent(piece.transform, true);
+                Ride(prop, piece);
             }
+
+            // A loose floor tile carries what stands inside its edges on its floor - loose walls and
+            // objects, and what rests on those - so moving the floor moves what was built on it.
+            // Never ground, a room's pieces, people or elevator stops. As in dojo-game-app.
+            if (piece.IsFloor && RoomContainer.Of(piece) == null && RoomWalls.TryBoundsOf(piece, out var tile))
+            {
+                const float edge = 0.1f;
+                var floor = Storeys.StoreyOf(piece.transform);
+
+                foreach (var prop in all)
+                {
+                    if (prop == piece || riders.Contains(prop) || prop.IsFloor || prop.IsWalkway
+                        || RoomContainer.Of(prop) != null || Storeys.StoreyOf(prop.transform) != floor
+                        || prop.GetComponent<PlacedAgent>() != null || prop.GetComponent<PlacedManager>() != null
+                        || ElevatorShafts.IsStop(prop.transform) || !prop.CanLift)
+                    {
+                        continue;
+                    }
+
+                    var at = prop.transform.position;
+                    if (at.x >= tile.min.x - edge && at.x <= tile.max.x + edge && at.z >= tile.min.z - edge && at.z <= tile.max.z + edge)
+                    {
+                        Ride(prop, piece);
+                    }
+                }
+
+                // And what rests on those.
+                for (var i = 0; i < riders.Count; i++)
+                {
+                    foreach (var prop in all)
+                    {
+                        if (prop.SupportedBy == riders[i] && !riders.Contains(prop) && prop.CanLift)
+                        {
+                            Ride(prop, piece);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>One piece carried on <paramref name="carrier"/> for the length of the drag.</summary>
+        void Ride(FurniturePiece prop, FurniturePiece carrier)
+        {
+            riders.Add(prop);
+            service.Release(prop);
+            prop.Lift();
+            prop.transform.SetParent(carrier.transform, true);
         }
 
         /// <summary>
@@ -1294,9 +1340,10 @@ namespace Dojo.Game.Placement
         /// <paramref name="room"/>, or loose), goes with it when it is deleted.
         /// </summary>
         /// <remarks>
-        /// What rests on it goes: a mug on a desk. Ground and walls never do; they stand on the
-        /// floor, not on the piece. A piece of another room never does. A loose piece goes only when
-        /// it stands over this one, not when it is merely along its edge. As in dojo-game-app.
+        /// What rests on it goes: a mug on a desk. Ground never does. A piece of another room never
+        /// does. A loose piece - a loose wall too - goes only when it stands over this one, not when
+        /// it is merely along its edge: a loose wall on a deleted loose floor tile goes with it rather
+        /// than being left in the air. As in dojo-game-app.
         /// </remarks>
         static bool Carries(FurniturePiece piece, RoomContainer room, FurniturePiece stacked)
         {
@@ -1305,7 +1352,7 @@ namespace Dojo.Game.Placement
                 return true;
             }
 
-            if (stacked.IsFloor || stacked.IsWalkway || RoomEditor.IsWall(stacked.transform))
+            if (stacked.IsFloor || stacked.IsWalkway)
             {
                 return false;
             }
@@ -1609,6 +1656,11 @@ namespace Dojo.Game.Placement
             held.Settle();
             SettleRiders();
             Finish();
+
+            // A loose wall moved away - on its own or carried on a floor tile - brings back a room's
+            // wall it was standing in for.
+            Physics.SyncTransforms();
+            RoomWalls.Reconsider(world != null ? world.Root : null, service);
 
             // Ground last, once the piece has settled where it belongs: the rebuild reads the scene
             // as it now stands, and the floor list decides where furniture may be put down next.

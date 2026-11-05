@@ -92,8 +92,9 @@ namespace Dojo.Game.Placement
             floorTiles = placer.FloorTilesOn(roomFloor, null);
 
             // Straight to the carried state, as a piece from the drawer is: the room arrives from a
-            // click, so there is no press to release.
+            // click, so there is no press to release. The floor being looked at stays put meanwhile.
             state = State.Room;
+            HoldView(true);
             SetRigSuppressed(true);
             SetManagerSuppressed(true);
 
@@ -117,6 +118,13 @@ namespace Dojo.Game.Placement
             {
                 Log("room press ignored: no RoomPlacer in this scene");
                 return false;
+            }
+
+            // A Ctrl+click selection made before is let go: the room may take those pieces with it,
+            // or delete them, and the selection must not hold on to them.
+            if (selection.Count > 0)
+            {
+                ClearSelection();
             }
 
             string problem;
@@ -148,6 +156,7 @@ namespace Dojo.Game.Placement
             RoomPlacer.MovingAny = true;
 
             state = State.Room;
+            HoldView(true);
             SetRigSuppressed(true);
             SetManagerSuppressed(true);
 
@@ -394,6 +403,15 @@ namespace Dojo.Game.Placement
             roomGhost = null;
             roomMove = null;
             RoomPlacer.MovingAny = false;
+            HoldView(false);
+
+            // A save asked for while the room was in the air was skipped: asked for again now.
+            if (RoomPlacer.SaveHeld)
+            {
+                RoomPlacer.SaveHeld = false;
+                Announce("a save held while a room was moved");
+            }
+
             roomTiles = null;
             floorTiles = null;
             roomPlan = null;
@@ -407,6 +425,15 @@ namespace Dojo.Game.Placement
 
             SetRigSuppressed(false);
             SetManagerSuppressed(false);
+        }
+
+        /// <summary>Keeps the floor being looked at where it is while a room is in hand.</summary>
+        void HoldView(bool held)
+        {
+            if (storeys != null)
+            {
+                storeys.ViewHeld = held;
+            }
         }
 
         void OnDestroy()

@@ -42,6 +42,19 @@ Kept as the creator had it: the grab point when lifting a room, lining a room up
 - **`RoomAsOneUnitTests`, 12 EditMode tests:** the container and its order, a piece's room, areas and entrances, the shared-wall and entrance rules (another floor, a wall across a doorway), the save with order, areas, entrances and turned-off walls, a world saved before this, and the order rooms are kept in. Pass (Jacob, 5 Nov).
 - **Checked in Play (5 Nov):** shared walls, entrance cuts, walls coming back when a room moves or is deleted, things on the floor going with a room, leaving Edit mid-move, save and reload. Pass.
 
+## After Bob's review of the game (PR #101, 5 Nov)
+
+The same fixes, brought over:
+- **No closed doorway next door:** a room put down, or put back, turns off its own walls across a neighbour's entrance (`RoomWalls.CutByNeighbours`).
+- **No gap at a shared wall:** a wall is turned off only when the walls on its line cover its whole length (`RoomWalls.Covered`), not half of it. Walls are looked at again after a room is placed or put down, after any piece is put down, and once on load, which heals gaps saved under the old rule.
+- **The floor being looked at stays put** while a room is in hand (`Storeys.ViewHeld`).
+- **A loose floor tile** carries the loose walls and objects standing on it when moved, put back or deleted; deleting a loose tile takes the loose walls standing on it.
+- **A Ctrl+click selection** is let go when a room is lifted.
+- **A save skipped** while a room was in the air happens once it is down (`RoomPlacer.SaveHeld`).
+- Not needed here: refusing a room with a seated agent (`Lift` already checks `CanLift`), and the game's fit-check slack (the creator's fit check already lets a room overhang one cell).
+
+`RoomAsOneUnitTests`: 13 (one new, the whole-length cover rule).
+
 ## Known issues and follow-ups
 
-- Moving a single loose wall does not bring back a room wall turned off behind it; only deleting it, or moving the whole room, does. As in the game.
+- Two walls on one line that only partly cover each other both stay on, slightly overlapping, rather than leaving a gap. As in the game.

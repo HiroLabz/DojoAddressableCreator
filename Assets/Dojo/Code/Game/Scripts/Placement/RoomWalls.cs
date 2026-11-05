@@ -94,6 +94,83 @@ namespace Dojo.Game.Placement
             return Mathf.Min(to, doorAlong + half) - Mathf.Max(from, doorAlong - half) > 0.01f;
         }
 
+        /// <summary>
+        /// Whether the walls in <paramref name="standing"/> on the same line as <paramref name="wall"/>
+        /// cover the whole of its length, together, bar the slack wall pieces have at their ends.
+        /// </summary>
+        /// <remarks>
+        /// What decides that a wall can be turned off. "Overlaps at least half its length" turned a
+        /// wall off where another only partly covered it, and left a gap for the rest. A wall only
+        /// partly covered stays on: a slight overlap, never a hole. As in dojo-game-app.
+        /// </remarks>
+        public static bool Covered(Bounds wall, IEnumerable<Bounds> standing)
+        {
+            const float endSlack = 0.15f;
+            const float join = 0.05f;
+
+            var alongZ = wall.size.z > wall.size.x;
+            var from = (alongZ ? wall.min.z : wall.min.x) + endSlack;
+            var to = (alongZ ? wall.max.z : wall.max.x) - endSlack;
+
+            var spans = new List<Vector2>();
+
+            foreach (var other in standing)
+            {
+                if (OnSameLine(wall, other))
+                {
+                    spans.Add(alongZ ? new Vector2(other.min.z, other.max.z) : new Vector2(other.min.x, other.max.x));
+                }
+            }
+
+            if (spans.Count == 0)
+            {
+                return false;
+            }
+
+            spans.Sort((a, b) => a.x.CompareTo(b.x));
+
+            // Walk along the wall from its start, through every span that reaches it.
+            var reached = from;
+
+            foreach (var span in spans)
+            {
+                if (span.x > reached + join)
+                {
+                    break;
+                }
+
+                reached = Mathf.Max(reached, span.y);
+
+                if (reached >= to)
+                {
+                    return true;
+                }
+            }
+
+            return reached >= to;
+        }
+
+        /// <summary>Two walls running the same way, on the same level, overlapping or a few centimetres apart across their thickness.</summary>
+        static bool OnSameLine(Bounds a, Bounds b)
+        {
+            if (a.min.y >= b.max.y - 0.05f || b.min.y >= a.max.y - 0.05f)
+            {
+                return false;
+            }
+
+            var aAlongZ = a.size.z > a.size.x;
+            if (aAlongZ != (b.size.z > b.size.x))
+            {
+                return false;
+            }
+
+            var across = aAlongZ
+                ? Mathf.Min(a.max.x, b.max.x) - Mathf.Max(a.min.x, b.min.x)
+                : Mathf.Min(a.max.z, b.max.z) - Mathf.Max(a.min.z, b.min.z);
+
+            return across > -0.06f;
+        }
+
         /// <summary>One room's entrance on a floor.</summary>
         public struct Opening
         {
@@ -107,12 +184,9 @@ namespace Dojo.Game.Placement
         /// </summary>
         public static bool StaysHidden(Bounds wall, int floor, IEnumerable<Bounds> standing, IEnumerable<Opening> openings)
         {
-            foreach (var other in standing)
+            if (Covered(wall, standing))
             {
-                if (Duplicates(wall, other))
-                {
-                    return true;
-                }
+                return true;
             }
 
             foreach (var opening in openings)
@@ -242,14 +316,11 @@ namespace Dojo.Game.Placement
                     continue;
                 }
 
-                foreach (var other in standing)
+                // Only where the walls already standing cover it along its whole length.
+                if (Covered(wall, standing))
                 {
-                    if (Duplicates(wall, other))
-                    {
-                        Hide(piece, service);
-                        hidden++;
-                        break;
-                    }
+                    Hide(piece, service);
+                    hidden++;
                 }
             }
 
@@ -297,6 +368,66 @@ namespace Dojo.Game.Placement
             if (cut > 0)
             {
                 Debug.Log("[Rooms] '" + room.RoomName + "' opens into what it was placed against: " + cut + " wall piece(s) turned off at its entrance.");
+            }
+
+            return cut;
+        }
+
+        /// <summary>
+        /// Turns off <paramref name="room"/>'s own walls that stand across another room's entrance
+        /// on its floor, so that room still opens through. How many.
+        /// </summary>
+        /// <remarks>
+        /// For a room put down - or put back - where a neighbour's entrance runs through its wall.
+        /// Lifting it switched its own walls back on, and its own entrance cuts only ever reach
+        /// other rooms' walls, so without this a neighbour's doorway closed again. As in dojo-game-app.
+        /// </remarks>
+        public static int CutByNeighbours(RoomContainer room, Transform world, FurniturePlacementService service)
+        {
+            if (room == null || world == null)
+            {
+                return 0;
+            }
+
+            var floor = Storeys.StoreyOf(room.transform);
+            var entrances = new List<RoomContainer.Entrance>();
+
+            foreach (var other in world.GetComponentsInChildren<RoomContainer>(false))
+            {
+                if (other != room && Storeys.StoreyOf(other.transform) == floor)
+                {
+                    entrances.AddRange(other.Entrances);
+                }
+            }
+
+            if (entrances.Count == 0)
+            {
+                return 0;
+            }
+
+            var cut = 0;
+
+            foreach (var piece in room.Pieces(false))
+            {
+                if (!IsWall(piece) || !TryBoundsOf(piece, out var wall))
+                {
+                    continue;
+                }
+
+                foreach (var entrance in entrances)
+                {
+                    if (Across(wall, entrance))
+                    {
+                        Hide(piece, service);
+                        cut++;
+                        break;
+                    }
+                }
+            }
+
+            if (cut > 0)
+            {
+                Debug.Log("[Rooms] '" + room.RoomName + "': " + cut + " wall piece(s) turned off where a neighbour's entrance opens through.");
             }
 
             return cut;

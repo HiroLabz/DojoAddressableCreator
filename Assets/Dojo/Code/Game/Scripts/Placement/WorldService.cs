@@ -336,6 +336,8 @@ namespace Dojo.Game.Placement
             // is put down, which says the world changed.
             if (RoomPlacer.MovingAny)
             {
+                // Remembered, so the save is asked for again once the room is down.
+                RoomPlacer.SaveHeld = true;
                 Debug.Log("[World] Not saving '" + name + "' while a room is being moved; it saves once the room is put down.", world);
                 return;
             }
@@ -1397,6 +1399,10 @@ namespace Dojo.Game.Placement
 
             placement.ResolveSupports();
 
+            // Walls saved turned off under the older "half covered" rule come back on where nothing
+            // covers them: no gaps on load.
+            RoomWalls.Reconsider(storeys.Count > 0 && storeys.Floor(0) != null ? storeys.Floor(0).parent : null, placement);
+
             // Navigation is for the characters alone, so without them there is nothing to bake -
             // and baking every surface was most of the time a load took.
             var baked = settings.AnyCharacters ? navigation.Bake(save.navigation) : 0;
@@ -1706,6 +1712,14 @@ namespace Dojo.Game.Placement
             Physics.SyncTransforms();
             RoomWalls.HideShared(container, null);
             RoomWalls.CutAt(container, placement);
+
+            // Its own walls across a neighbour's entrance turned off, and any of its walls left with
+            // nothing in their place back on: no closed doorway next door, no gap beside its own.
+            var worldRoot = storeys.Floor(floorIndex) != null ? storeys.Floor(floorIndex).parent : null;
+            Physics.SyncTransforms();
+            RoomWalls.CutByNeighbours(container, worldRoot, null);
+            Physics.SyncTransforms();
+            RoomWalls.Reconsider(worldRoot, placement);
 
             // As a load does: everything standing before the floor list, the cells held and what
             // rests on what are worked out.

@@ -133,6 +133,21 @@ namespace Dojo.Game.Tests.EditMode
         }
 
         [Test]
+        public void AWallIsOnlyCovered_WhenItsWholeLengthIs_NeverHalfOfIt()
+        {
+            var mine = WallAlongX(0f, 5f);
+
+            Assert.IsTrue(RoomWalls.Covered(mine, new[] { WallAlongX(0.1f, 5.05f) }), "one wall in its place");
+            Assert.IsFalse(RoomWalls.Covered(mine, new[] { WallAlongX(1.25f, 5f) }),
+                "half covered: turned off, the other half would be a gap");
+            Assert.IsTrue(RoomWalls.Covered(mine, new[] { WallAlongX(-1.25f, 5f), WallAlongX(1.25f, 5f) }),
+                "two walls cover it between them");
+            Assert.IsFalse(RoomWalls.Covered(mine, new[] { WallAlongX(-2.5f, 5f), WallAlongX(2.5f, 5f) }),
+                "two walls leaving a hole in the middle");
+            Assert.IsFalse(RoomWalls.Covered(mine, new[] { WallAlongX(0f, 5f, 3.5f) }), "a wall on the floor above");
+        }
+
+        [Test]
         public void ATurnedOffWall_StaysOff_WhileAnotherStandsInItsPlace()
         {
             var mine = WallAlongX(0f, 5f);
