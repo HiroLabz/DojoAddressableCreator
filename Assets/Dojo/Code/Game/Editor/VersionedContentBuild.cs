@@ -73,9 +73,10 @@ namespace Dojo.Game.Editor
             var next = current.HasValue ? current.Value + 1 : 0;
             var catalog = CatalogFileName(next);
 
-            if (File.Exists(Path.Combine(folder, catalog)))
+            var release = Path.Combine(folder, ReleaseFolderName(next));
+            if (Directory.Exists(release))
             {
-                Fail("Version " + next + " has already been built: " + Path.Combine(folder, catalog)
+                Fail("Version " + next + " has already been built: " + release
                     + " exists. Check version.json in that folder.");
                 return;
             }
@@ -86,7 +87,8 @@ namespace Dojo.Game.Editor
 
             if (!EditorUtility.DisplayDialog("Build content version " + next,
                     from + "\n\nBuild the content as version " + next + " into:\n" + folder
-                    + "\n\nIts catalogue will be " + catalog + ".",
+                    + "\n\nIts catalogue will be " + catalog + ", and its files will go into "
+                    + ReleaseFolderName(next) + "/.",
                     "Build version " + next, "Cancel"))
             {
                 return;
@@ -127,6 +129,22 @@ namespace Dojo.Game.Editor
                 return;
             }
 
+            // Every file of this release goes into its own folder, v<version>, which is where the
+            // game fetches it from. A bundle can keep its name while its bytes change (a Unity
+            // upgrade changes only the version in its header), and the CDN caches bundles for a
+            // year, so a path must never be reused by a later release.
+            var release = Path.Combine(folder, ReleaseFolderName(version));
+            int copied;
+            try
+            {
+                copied = CopyRelease(result, folder, release, catalog);
+            }
+            catch (Exception exception)
+            {
+                Fail("The build finished but its files could not be copied into " + release + ": " + exception.Message);
+                return;
+            }
+
             var json = "{\n"
                 + "  \"version\": " + version.ToString(CultureInfo.InvariantCulture) + ",\n"
                 + "  \"catalog\": \"" + catalog + "\",\n"
@@ -134,13 +152,64 @@ namespace Dojo.Game.Editor
                 + "}\n";
             File.WriteAllText(Path.Combine(folder, VersionFileName), json);
 
-            Debug.Log(Log + " content version " + version + " built: " + catalog + " and " + VersionFileName
-                + " in " + folder + ". Copy the folder into DojoAddressables' development/ to publish it.");
+            Debug.Log(Log + " content version " + version + " built: " + catalog + " and " + copied
+                + " bundle(s) in " + release + ", " + VersionFileName + " in " + folder
+                + ". Copy " + ReleaseFolderName(version) + "/ and " + VersionFileName
+                + " into DojoAddressables' development/ to publish it.");
             EditorUtility.DisplayDialog("Content version " + version + " built",
-                "Built " + catalog + " and " + VersionFileName + " in:\n" + folder
-                + "\n\nCopy this folder into DojoAddressables' development/ folder and push to publish it.",
+                "Built " + catalog + " and " + copied + " bundle(s) into:\n" + release
+                + "\n\nCopy the " + ReleaseFolderName(version) + " folder and " + VersionFileName
+                + " into DojoAddressables' development/ folder and push to publish it.",
                 "OK");
         }
+
+        /// <summary>
+        /// Copies the catalogue, its hash and every bundle this build wrote into the release
+        /// folder, which must not exist yet.
+        /// </summary>
+        /// <returns>How many bundles were copied.</returns>
+        static int CopyRelease(AddressablesPlayerBuildResult result, string folder, string release, string catalog)
+        {
+            if (Directory.Exists(release))
+            {
+                throw new IOException(release + " already exists");
+            }
+
+            if (result.AssetBundleBuildResults == null || result.AssetBundleBuildResults.Count == 0)
+            {
+                throw new InvalidOperationException("the build reported no bundles");
+            }
+
+            Directory.CreateDirectory(release);
+
+            var bundles = 0;
+            foreach (var bundle in result.AssetBundleBuildResults)
+            {
+                var source = Path.GetFullPath(bundle.FilePath);
+                if (!File.Exists(source))
+                {
+                    throw new FileNotFoundException("the build reported " + bundle.FilePath + " but it is not on disk");
+                }
+
+                File.Copy(source, Path.Combine(release, Path.GetFileName(source)));
+                bundles++;
+            }
+
+            File.Copy(Path.Combine(folder, catalog), Path.Combine(release, catalog));
+
+            var hash = Path.ChangeExtension(catalog, ".hash");
+            if (!File.Exists(Path.Combine(folder, hash)))
+            {
+                throw new FileNotFoundException(hash + " is not in " + folder);
+            }
+
+            File.Copy(Path.Combine(folder, hash), Path.Combine(release, hash));
+            return bundles;
+        }
+
+        /// <summary>The folder a release is served from, next to version.json. Matches the game's <c>ReleaseRootFor</c>.</summary>
+        internal static string ReleaseFolderName(int version)
+            => "v" + version.ToString(CultureInfo.InvariantCulture);
 
         /// <summary>Where the build writes its remote catalogue, which is where version.json goes too.</summary>
         static string CatalogFolder(AddressableAssetSettings settings)
