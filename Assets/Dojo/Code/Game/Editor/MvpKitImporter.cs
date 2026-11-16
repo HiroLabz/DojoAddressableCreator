@@ -228,14 +228,13 @@ namespace Dojo.Game.Editor
 
         /// <summary>
         /// Pieces of the first kit the MVP scene offers for now, until the kit has its own (Jacob, 16
-        /// Nov): the elevator and stairs, for floors; the knowledge shelf, for the knowledge base;
-        /// the supercomputers, which the integration terminals stand on. Take one off and run Set Up
-        /// MVP Scene.
+        /// Nov): the elevator, for floors; the knowledge shelf, for the knowledge base; the
+        /// supercomputers, which the integration terminals stand on. Stairs are dropped (Bob, 16 Nov).
+        /// Take one off and run Set Up MVP Scene.
         /// </summary>
         static readonly string[] Borrowed =
         {
             "default/default_elevator",
-            "default/default_stairs",
             "default/default_knowledge_shelf",
             "default/default_superComputer",
             "default/default_superComputer_2",

@@ -26018,7 +26018,6 @@ MonoBehaviour:
     - default/Rooms/default_room_mvp_reception
     - default/Rooms/default_room_mvp_research
     - default/default_elevator
-    - default/default_stairs
     - default/default_knowledge_shelf
     - default/default_superComputer
     - default/default_superComputer_2
