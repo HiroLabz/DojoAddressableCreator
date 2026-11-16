@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Dojo.Game.Editor
 {
     /// <summary>
-    /// <c>Tools ▸ Dojo ▸ Clear Addressables…</c>: removes Addressables entries - one pack's, or all
+    /// <c>Tools ▸ Dojo ▸ Addressables ▸ 1. Clear Addressables…</c>: removes Addressables entries - one pack's, or all
     /// of them - so the Addressable Generator can make a clean set.
     /// </summary>
     /// <remarks>
@@ -34,7 +34,7 @@ namespace Dojo.Game.Editor
         int unlabelled;
         Vector2 scroll;
 
-        [MenuItem("Tools/Dojo/Clear Addressables...")]
+        [MenuItem("Tools/Dojo/Addressables/1. Clear Addressables...", false, 1)]
         static void Open()
         {
             var window = GetWindow<ClearAddressablesWindow>(true, "Clear Addressables", true);

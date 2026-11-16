@@ -1,0 +1,4096 @@
+{
+    "version": 2,
+    "worlds": [
+        {
+            "name": "Room_MVP_Product_and_Development",
+            "savedUtc": "2026-11-13T00:00:00.0000000Z",
+            "floors": [
+                {
+                    "index": 0,
+                    "pieces": [
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -3.0,
+                                "y": 0.0,
+                                "z": -3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -3.0,
+                                "y": 0.0,
+                                "z": -1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -3.0,
+                                "y": 0.0,
+                                "z": -0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -3.0,
+                                "y": 0.0,
+                                "z": 0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -3.0,
+                                "y": 0.0,
+                                "z": 1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -3.0,
+                                "y": 0.0,
+                                "z": 3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.0,
+                                "z": -3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.0,
+                                "z": -1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.0,
+                                "z": -0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.0,
+                                "z": 0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.0,
+                                "z": 1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.0,
+                                "z": 3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -0.6,
+                                "y": 0.0,
+                                "z": -3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -0.6,
+                                "y": 0.0,
+                                "z": -1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -0.6,
+                                "y": 0.0,
+                                "z": -0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -0.6,
+                                "y": 0.0,
+                                "z": 0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -0.6,
+                                "y": 0.0,
+                                "z": 1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -0.6,
+                                "y": 0.0,
+                                "z": 3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 0.6,
+                                "y": 0.0,
+                                "z": -3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 0.6,
+                                "y": 0.0,
+                                "z": -1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 0.6,
+                                "y": 0.0,
+                                "z": -0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 0.6,
+                                "y": 0.0,
+                                "z": 0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 0.6,
+                                "y": 0.0,
+                                "z": 1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 0.6,
+                                "y": 0.0,
+                                "z": 3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.0,
+                                "z": -3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.0,
+                                "z": -1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.0,
+                                "z": -0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.0,
+                                "z": 0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.0,
+                                "z": 1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.0,
+                                "z": 3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 3.0,
+                                "y": 0.0,
+                                "z": -3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 3.0,
+                                "y": 0.0,
+                                "z": -1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 3.0,
+                                "y": 0.0,
+                                "z": -0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 3.0,
+                                "y": 0.0,
+                                "z": 0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 3.0,
+                                "y": 0.0,
+                                "z": 1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 3.0,
+                                "y": 0.0,
+                                "z": 3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": -3.0,
+                                "y": 0.05,
+                                "z": -3.45
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.05,
+                                "z": -3.45
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.05,
+                                "z": -3.45
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": 3.0,
+                                "y": 0.05,
+                                "z": -3.45
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": -3.0,
+                                "y": 0.05,
+                                "z": 3.45
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 1.0,
+                                "z": 0.0,
+                                "w": 0.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 2,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.05,
+                                "z": 3.45
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 1.0,
+                                "z": 0.0,
+                                "w": 0.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 2,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": -0.6,
+                                "y": 0.05,
+                                "z": 3.45
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 1.0,
+                                "z": 0.0,
+                                "w": 0.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 2,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": 0.6,
+                                "y": 0.05,
+                                "z": 3.45
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 1.0,
+                                "z": 0.0,
+                                "w": 0.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 2,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.05,
+                                "z": 3.45
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 1.0,
+                                "z": 0.0,
+                                "w": 0.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 2,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": 3.0,
+                                "y": 0.05,
+                                "z": 3.45
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 1.0,
+                                "z": 0.0,
+                                "w": 0.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 2,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": -3.45,
+                                "y": 0.05,
+                                "z": -2.7
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.7071068,
+                                "z": 0.0,
+                                "w": 0.7071068
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 1,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": -3.45,
+                                "y": 0.05,
+                                "z": -1.5
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.7071068,
+                                "z": 0.0,
+                                "w": 0.7071068
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 1,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": -3.45,
+                                "y": 0.05,
+                                "z": -0.3
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.7071068,
+                                "z": 0.0,
+                                "w": 0.7071068
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 1,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": -3.45,
+                                "y": 0.05,
+                                "z": 0.9
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.7071068,
+                                "z": 0.0,
+                                "w": 0.7071068
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 1,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": -3.45,
+                                "y": 0.05,
+                                "z": 2.1
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.7071068,
+                                "z": 0.0,
+                                "w": 0.7071068
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 1,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_medium",
+                            "name": "default/default_divider_wall_medium",
+                            "position": {
+                                "x": -3.45,
+                                "y": 0.05,
+                                "z": 3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.7071068,
+                                "z": 0.0,
+                                "w": 0.7071068
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 1,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": 3.45,
+                                "y": 0.05,
+                                "z": -2.7
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.7071068,
+                                "z": 0.0,
+                                "w": -0.7071068
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 3,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": 3.45,
+                                "y": 0.05,
+                                "z": -1.5
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.7071068,
+                                "z": 0.0,
+                                "w": -0.7071068
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 3,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": 3.45,
+                                "y": 0.05,
+                                "z": -0.3
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.7071068,
+                                "z": 0.0,
+                                "w": -0.7071068
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 3,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": 3.45,
+                                "y": 0.05,
+                                "z": 0.9
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.7071068,
+                                "z": 0.0,
+                                "w": -0.7071068
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 3,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": 3.45,
+                                "y": 0.05,
+                                "z": 2.1
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.7071068,
+                                "z": 0.0,
+                                "w": -0.7071068
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 3,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_medium",
+                            "name": "default/default_divider_wall_medium",
+                            "position": {
+                                "x": 3.45,
+                                "y": 0.05,
+                                "z": 3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.7071068,
+                                "z": 0.0,
+                                "w": -0.7071068
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 3,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_dual_workstation_desk",
+                            "name": "default/default_dual_workstation_desk",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.05,
+                                "z": 0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_dual_monitor",
+                            "name": "default/default_dual_monitor",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.55,
+                                "z": 0.75
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_ergonomic_office_chair",
+                            "name": "default/default_ergonomic_office_chair",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.05,
+                                "z": 1.2
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 1.0,
+                                "z": 0.0,
+                                "w": 0.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 2,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_dual_workstation_desk",
+                            "name": "default/default_dual_workstation_desk",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.05,
+                                "z": 0.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 1.0,
+                                "z": 0.0,
+                                "w": 0.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 2,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_dual_monitor",
+                            "name": "default/default_dual_monitor",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.55,
+                                "z": 0.15
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 1.0,
+                                "z": 0.0,
+                                "w": 0.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 2,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_ergonomic_office_chair",
+                            "name": "default/default_ergonomic_office_chair",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.05,
+                                "z": -0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_dual_workstation_desk",
+                            "name": "default/default_dual_workstation_desk",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.05,
+                                "z": 0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_dual_monitor",
+                            "name": "default/default_dual_monitor",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.55,
+                                "z": 0.75
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_ergonomic_office_chair",
+                            "name": "default/default_ergonomic_office_chair",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.05,
+                                "z": 1.2
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 1.0,
+                                "z": 0.0,
+                                "w": 0.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 2,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_dual_workstation_desk",
+                            "name": "default/default_dual_workstation_desk",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.05,
+                                "z": 0.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 1.0,
+                                "z": 0.0,
+                                "w": 0.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 2,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_dual_monitor",
+                            "name": "default/default_dual_monitor",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.55,
+                                "z": 0.15
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 1.0,
+                                "z": 0.0,
+                                "w": 0.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 2,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_ergonomic_office_chair",
+                            "name": "default/default_ergonomic_office_chair",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.05,
+                                "z": -0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": false
+                        }
+                    ],
+                    "agents": [],
+                    "agentAreas": [],
+                    "managers": [],
+                    "managerAreas": [],
+                    "blockAreas": [
+                        {
+                            "id": 124172962,
+                            "name": "Product and Development",
+                            "area": [
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": -3.15,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": -2.85,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": -2.55,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": -2.25,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": -1.95,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": -1.65,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": -1.35,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": -1.05,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": -0.75,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": -0.45,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": -0.15,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": 0.15,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": 0.45,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": 0.75,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": 1.05,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": 1.35,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": 1.65,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": 1.95,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": 2.25,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": 2.55,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": 2.85,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": -3.15
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": -2.85
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": -2.55
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": -2.25
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": -1.95
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": -1.65
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": -1.35
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": -1.05
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": -0.75
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": -0.45
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": -0.15
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": 0.15
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": 0.45
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": 0.75
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": 1.05
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": 1.35
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": 1.65
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": 1.95
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": 2.25
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": 2.55
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": 2.85
+                                },
+                                {
+                                    "x": 3.15,
+                                    "y": 0.05,
+                                    "z": 3.15
+                                }
+                            ],
+                            "areaCellSize": 0.3,
+                            "department": "Product and Development",
+                            "conferenceRoom": false
+                        }
+                    ],
+                    "openings": [
+                        {
+                            "kind": "entrance",
+                            "centre": {
+                                "x": 0.0,
+                                "z": -3.5999999999999996
+                            },
+                            "facing": {
+                                "x": 0.0,
+                                "z": -1.0
+                            },
+                            "width": 2.4
+                        },
+                        {
+                            "kind": "exit",
+                            "centre": {
+                                "x": 0.0,
+                                "z": -3.5999999999999996
+                            },
+                            "facing": {
+                                "x": 0.0,
+                                "z": -1.0
+                            },
+                            "width": 2.4
+                        }
+                    ]
+                }
+            ],
+            "connectors": [],
+            "navigation": [],
+            "assignments": [],
+            "pieces": [],
+            "agents": [],
+            "agentAreas": [],
+            "managers": [],
+            "managerAreas": []
+        }
+    ],
+    "current": "Room_MVP_Product_and_Development"
+}

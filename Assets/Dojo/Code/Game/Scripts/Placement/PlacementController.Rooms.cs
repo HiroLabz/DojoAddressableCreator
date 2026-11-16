@@ -92,8 +92,9 @@ namespace Dojo.Game.Placement
             floorTiles = placer.FloorTilesOn(roomFloor, null);
 
             // Straight to the carried state, as a piece from the drawer is: the room arrives from a
-            // click, so there is no press to release.
+            // click, so there is no press to release. The floor being looked at stays put meanwhile.
             state = State.Room;
+            HoldView(true);
             SetRigSuppressed(true);
             SetManagerSuppressed(true);
 
@@ -117,6 +118,13 @@ namespace Dojo.Game.Placement
             {
                 Log("room press ignored: no RoomPlacer in this scene");
                 return false;
+            }
+
+            // A Ctrl+click selection made before is let go: the room may take those pieces with it,
+            // or delete them, and the selection must not hold on to them.
+            if (selection.Count > 0)
+            {
+                ClearSelection();
             }
 
             string problem;
@@ -144,7 +152,11 @@ namespace Dojo.Game.Placement
                 ? new Vector2(point.x, point.z) - origin
                 : move.Plan.Footprint.center;
 
+            // Nothing saves while it is in the air (WorldService.SaveAs).
+            RoomPlacer.MovingAny = true;
+
             state = State.Room;
+            HoldView(true);
             SetRigSuppressed(true);
             SetManagerSuppressed(true);
 
@@ -158,6 +170,22 @@ namespace Dojo.Game.Placement
 
         void TickRoom(Mouse mouse)
         {
+            // Edit ended with a room in hand: a room out of the world goes back where it stood, one
+            // from the Rooms tab is dropped. Said as a change, so the save on leaving Edit - skipped
+            // while it was in the air - happens once it is down.
+            if (!EditingAllowed)
+            {
+                Log("room put back: the game left Edit");
+
+                if (roomMove != null)
+                {
+                    roomPlacer.PutDown(roomMove, new Vector2(roomMove.From.x, roomMove.From.z), 0, true);
+                }
+
+                EndRoom();
+                return;
+            }
+
             if (dialogs != null && dialogs.IsAnyOpen)
             {
                 return;
@@ -191,6 +219,14 @@ namespace Dojo.Game.Placement
                 }
 
                 EndRoom();
+                return;
+            }
+
+            // Delete, as for a piece in hand: a room out of the Rooms tab is simply dropped, a room
+            // lifted out of the world is thrown away whole, after asking.
+            if (keyboard != null && keyboard.deleteKey.wasPressedThisFrame)
+            {
+                AskToDeleteRoom();
                 return;
             }
 
@@ -233,6 +269,62 @@ namespace Dojo.Game.Placement
             placer.Build(plan, floor, offset, steps);
 
             Log("COMMITTED room '" + plan.Entry.name + "' at " + offset + ", turned " + steps * 90 + " degrees");
+
+            if (BakesNavigation)
+            {
+                RebuildNavigation();
+            }
+        }
+
+        void AskToDeleteRoom()
+        {
+            if (!EditingAllowed)
+            {
+                Log("room delete ignored: the game is in Play phase");
+                return;
+            }
+
+            if (roomMove == null)
+            {
+                // Never part of the world: nothing to ask about.
+                Log("room dropped: " + (roomPlan != null ? roomPlan.Entry.name : "?"));
+                EndRoom();
+                return;
+            }
+
+            var dialog = Dialogs();
+
+            if (dialog == null)
+            {
+                return;   // already said why; deleting a whole room silently would be worse
+            }
+
+            var name = roomMove.Room != null ? roomMove.Room.RoomName : "this room";
+            var pieces = roomMove.Pieces.Count + roomMove.Riders.Count;
+
+            dialog.Confirm(
+                "Delete '" + name + "'? Its " + pieces + " piece(s)" + (roomMove.Areas.Count > 0 ? " and its area" : "")
+                    + " are removed from the world.",
+                DeleteHeldRoom);
+        }
+
+        /// <summary>The room in hand, lifted out of the world, thrown away whole.</summary>
+        void DeleteHeldRoom()
+        {
+            if (roomMove == null || roomPlacer == null)
+            {
+                return;
+            }
+
+            var move = roomMove;
+            var placer = roomPlacer;
+
+            // The gesture ends first, so nothing is left carrying a room that is gone.
+            roomMove = null;
+            EndRoom();
+            placer.Delete(move);
+
+            Log("DELETED room '" + (move.Room != null ? move.Room.RoomName : "?") + "'");
 
             if (BakesNavigation)
             {
@@ -310,6 +402,16 @@ namespace Dojo.Game.Placement
 
             roomGhost = null;
             roomMove = null;
+            RoomPlacer.MovingAny = false;
+            HoldView(false);
+
+            // A save asked for while the room was in the air was skipped: asked for again now.
+            if (RoomPlacer.SaveHeld)
+            {
+                RoomPlacer.SaveHeld = false;
+                Announce("a save held while a room was moved");
+            }
+
             roomTiles = null;
             floorTiles = null;
             roomPlan = null;
@@ -323,6 +425,15 @@ namespace Dojo.Game.Placement
 
             SetRigSuppressed(false);
             SetManagerSuppressed(false);
+        }
+
+        /// <summary>Keeps the floor being looked at where it is while a room is in hand.</summary>
+        void HoldView(bool held)
+        {
+            if (storeys != null)
+            {
+                storeys.ViewHeld = held;
+            }
         }
 
         void OnDestroy()

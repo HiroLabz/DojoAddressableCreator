@@ -72,7 +72,7 @@ namespace Dojo.Game.Systems
             catch (ContentException exception)
             {
                 Debug.LogError("[Runtime] The content could not be loaded, so the game is not started: "
-                    + exception.Message + " Build the packs with Tools > Dojo > Addressable Generator.");
+                    + exception.Message + " Build the packs with Tools > Dojo > Addressables > 2. Addressable Generator.");
                 return;
             }
             catch (Exception exception)

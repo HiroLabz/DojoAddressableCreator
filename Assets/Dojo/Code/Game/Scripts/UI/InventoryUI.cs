@@ -456,6 +456,12 @@ namespace Dojo.Game.UI
 
             foreach (var item in catalog.InCategory(CategoryKeyOf(Selected)))
             {
+                // Only what the scene's kit offers.
+                if (!Placement.WorldSettings.ActiveOffers(item.address))
+                {
+                    continue;
+                }
+
                 var tile = Build(itemPrefab, containerRenderer);
                 tile.name = "Item_" + item.name;
                 tile.Bind(

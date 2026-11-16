@@ -69,6 +69,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 15afaf39f7ccbcc4da18328eecd934fa
+    m_Address: default/Materials/mvp_DesktopScreen
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1613bd808e7c699458abf374ab12be0f
     m_Address: strawberry/Textures/default_floor_1_albedo
     m_ReadOnly: 0
@@ -77,6 +83,18 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 16b3469a351864949a3b182bdff0c672
     m_Address: default/Textures/default_floor_1_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 17a9fd9bce774b340a5f6db0b559b92c
+    m_Address: default/Materials/mvp_WoodFloorTile
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1bb323de6cac89540b7a619fd023c164
+    m_Address: default/Materials/default_knowledge_shelf_books_1
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -124,6 +142,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2e87a3dde688ed047a2981f0e44085e4
     m_Address: default/World/default_world_picture
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2fac1ab7d529bef48be28e4fcbd3fa9b
+    m_Address: default/Materials/mvp_PresentationScreen
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -176,6 +200,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 453311632a88061468ca670060bd29f5
+    m_Address: default/Textures/mvp/mvp_Glass_base
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 465b8781db2bba2408d72e5071b883c4
     m_Address: default/Materials/Pin_OrbRing_Navy
     m_ReadOnly: 0
@@ -218,8 +248,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 56a6ad6f4b5be1a419a81a5bba298c39
+    m_Address: default/Materials/mvp_LightGrayFloorTile
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5873fe2284913a240a4ad63c3ac7e015
     m_Address: default/Materials/default_superComputer_3_body
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5a0e0744dee960d4d9cc39834205a24e
+    m_Address: default/Textures/mvp/mvp_LightGrayFloorTile_metallicSmoothness
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5bc31bd3329722b46bdfde255745e8ed
+    m_Address: default/Materials/default_knowledge_shelf_frame
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -230,6 +278,18 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5e8b1b6d0d160e640adb17878a99d024
+    m_Address: default/Materials/mvp_Tree
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6148133a4c072f14d8266c545e88db0f
+    m_Address: default/Textures/mvp/mvp_Chair_metallicSmoothness
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6619c5fce8425a846a4825737adcea45
     m_Address: default/Textures/default_superComputer_2_normal
     m_ReadOnly: 0
@@ -238,6 +298,18 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 68ca4ac834511d24c830e4625910ae39
     m_Address: default/Materials/elevator_lamp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 697c92355b2f9f54490498351c7c0d36
+    m_Address: default/Meshes/default_knowledge_shelf
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6a98116701fcec64ca59d1fd3b81766e
+    m_Address: default/Materials/mvp_Plant
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -331,6 +403,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8e71f2c319e2cfe42bd00c7954c62545
+    m_Address: default/Materials/mvp_DeskAccessories
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9126b2947cab3c143a5b7270c3e25b5a
     m_Address: default/Textures/default_superComputer_metallicSmoothness
     m_ReadOnly: 0
@@ -351,6 +429,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 94ce381f1e7f6f642b8c040747afa54d
     m_Address: default/Materials/default_superComputer_body
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 96448d2e0888ad34fac65324b0232e5f
+    m_Address: default/Materials/mvp_ScreenPreview
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -385,6 +469,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a00acc397e3c4344da8f64e5d23d4352
+    m_Address: default/Textures/mvp/mvp_WoodFloorTile_metallicSmoothness
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a4dbdb0e48ffcb744b5f4fd23c535bf8
     m_Address: strawberry/Textures/default_monitor_1_albedo
     m_ReadOnly: 0
@@ -396,8 +486,20 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a809b99d9132bca4bb1392390a457d70
+    m_Address: default/Textures/mvp/mvp_Plant_metallicSmoothness
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ae01241501acf7f458df1c072656c7d4
     m_Address: default/Textures/default_wall_1_normal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b0c69b0ab96102446ad7fbc54a1856d4
+    m_Address: default/Materials/default_knowledge_shelf_books_2
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -468,6 +570,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d0409218479efe047ab716f35fe7370d
+    m_Address: default/Materials/mvp_Base
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d0bcd1e8beb3fbe449740007c2304516
     m_Address: default/Materials/default_superComputer_face
     m_ReadOnly: 0
@@ -480,8 +588,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d11ddaffe17b7a54bbf5f466162bb577
+    m_Address: default/Materials/default_knowledge_shelf_books_3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d2a464ae325e23f428ee3a1f15fc5956
+    m_Address: default/Textures/mvp/mvp_Tree_metallicSmoothness
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d4a11eac345b49cd88498e76ff2f750f
     m_Address: default/Textures/grayFloor_albedo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d982e78d728bfe14e858e9db0c6723d9
+    m_Address: default/Materials/mvp_Chair
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -512,6 +638,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: df3aefb32828b894eaf3fb27b01643d9
     m_Address: default/Materials/elevator_doors
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e494e0ebb4cd5f74eb869bbe5ac24259
+    m_Address: default/Materials/mvp_Glass
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -578,6 +710,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fae3737cbd2ace743a6b7b6868fa2607
     m_Address: default/Materials/Material_0.002
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fbc57cf50d807c54b9df1a306888813d
+    m_Address: default/World/world_mvp
     m_ReadOnly: 0
     m_SerializedLabels:
     - default

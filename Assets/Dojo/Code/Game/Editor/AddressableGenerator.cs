@@ -75,12 +75,6 @@ namespace Dojo.Game.Editor
         const string SharedAssetsFolder = "Assets/Dojo/Shaders";
 
         /// <summary>
-        /// Background used when a transparent icon is wanted, then keyed out to alpha. Magenta
-        /// because nothing in an office set is this colour, so nothing real gets punched out.
-        /// </summary>
-        static readonly Color KeyColour = new Color(1f, 0f, 1f, 1f);
-
-        /// <summary>
         /// The pack folder. Everything else — the pack's name, where the prefabs are read from and
         /// where the PNGs go — is derived from it.
         /// </summary>
@@ -151,7 +145,7 @@ namespace Dojo.Game.Editor
         Vector2 scroll;
         string lastResult = "";
 
-        [MenuItem("Tools/Dojo/Addressable Generator")]
+        [MenuItem("Tools/Dojo/Addressables/2. Addressable Generator", false, 2)]
         static void Open()
         {
             var window = GetWindow<AddressableGenerator>(true, "Addressable Generator", true);
@@ -1922,46 +1916,36 @@ namespace Dojo.Game.Editor
                 }
 
                 preview.AddSingleGO(instance);
-                preview.BeginStaticPreview(new Rect(0f, 0f, size, size));
 
-                var camera = preview.camera;
-                var direction = Quaternion.Euler(pitch, yaw, 0f) * Vector3.forward;
-                var extent = Mathf.Max(bounds.extents.x, Mathf.Max(bounds.extents.y, bounds.extents.z));
-
-                // Orthographic so every icon shares one scale-independent look, and so a long sofa
-                // and a small chair are framed the same way rather than by perspective distance.
-                camera.transform.position = bounds.center - direction * (extent * 4f);
-                camera.transform.rotation = Quaternion.LookRotation(direction);
-                camera.orthographic = true;
-                camera.orthographicSize = extent * padding;
-                camera.nearClipPlane = 0.01f;
-                camera.farClipPlane = extent * 20f;
-                camera.clearFlags = CameraClearFlags.SolidColor;
-                camera.backgroundColor = transparentBackground ? KeyColour : background;
-
-                preview.lights[0].intensity = 1.1f;
-                preview.lights[0].transform.rotation = Quaternion.Euler(35f, yaw + 40f, 0f);
-                preview.lights[1].intensity = 0.55f;
-                preview.lights[1].transform.rotation = Quaternion.Euler(15f, yaw - 130f, 0f);
-
-                camera.Render();
-
-                // EndStaticPreview is the only supported way to read a PreviewRenderUtility back.
-                // Rendering its camera into a render texture of our own draws nothing: the preview
-                // scene is only current between Begin and End, so every image comes out blank.
-                var rendered = preview.EndStaticPreview();
-                if (rendered == null)
+                if (!transparentBackground)
                 {
-                    return null;
+                    var shot = Shoot(preview, bounds, background);
+                    if (shot == null)
+                    {
+                        return null;
+                    }
+
+                    try
+                    {
+                        return shot.EncodeToPNG();
+                    }
+                    finally
+                    {
+                        DestroyImmediate(shot);
+                    }
                 }
+
+                var onBlack = Shoot(preview, bounds, Color.black);
+                var onWhite = Shoot(preview, bounds, Color.white);
 
                 try
                 {
-                    return Encode(rendered);
+                    return onBlack != null && onWhite != null ? Matte(onBlack, onWhite) : null;
                 }
                 finally
                 {
-                    DestroyImmediate(rendered);
+                    if (onBlack != null) DestroyImmediate(onBlack);
+                    if (onWhite != null) DestroyImmediate(onWhite);
                 }
             }
             finally
@@ -1970,33 +1954,73 @@ namespace Dojo.Game.Editor
             }
         }
 
+        /// <summary>One picture of what the preview scene holds, framed to <paramref name="bounds"/>, on a plain colour.</summary>
+        Texture2D Shoot(PreviewRenderUtility preview, Bounds bounds, Color backdrop)
+        {
+            preview.BeginStaticPreview(new Rect(0f, 0f, size, size));
+
+            var camera = preview.camera;
+            var direction = Quaternion.Euler(pitch, yaw, 0f) * Vector3.forward;
+            var extent = Mathf.Max(bounds.extents.x, Mathf.Max(bounds.extents.y, bounds.extents.z));
+
+            // Orthographic so every icon shares one scale-independent look, and so a long sofa
+            // and a small chair are framed the same way rather than by perspective distance.
+            camera.transform.position = bounds.center - direction * (extent * 4f);
+            camera.transform.rotation = Quaternion.LookRotation(direction);
+            camera.orthographic = true;
+            camera.orthographicSize = extent * padding;
+            camera.nearClipPlane = 0.01f;
+            camera.farClipPlane = extent * 20f;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = backdrop;
+
+            preview.lights[0].intensity = 1.1f;
+            preview.lights[0].transform.rotation = Quaternion.Euler(35f, yaw + 40f, 0f);
+            preview.lights[1].intensity = 0.55f;
+            preview.lights[1].transform.rotation = Quaternion.Euler(15f, yaw - 130f, 0f);
+
+            camera.Render();
+
+            // EndStaticPreview is the only supported way to read a PreviewRenderUtility back.
+            // Rendering its camera into a render texture of our own draws nothing: the preview
+            // scene is only current between Begin and End, so every image comes out blank.
+            return preview.EndStaticPreview();
+        }
+
         /// <summary>
-        /// Encodes the rendered preview, restoring transparency if it was asked for.
+        /// A transparent icon from the same picture taken on black and on white.
         /// </summary>
         /// <remarks>
-        /// The static preview comes back opaque, filled with the camera's background colour. When
-        /// a transparent icon is wanted, that background is rendered as pure magenta — a colour no
-        /// furniture uses — and swapped back out for alpha here. Keying on an unused colour is
-        /// cruder than a real alpha channel but it is the only route the preview API leaves open.
+        /// The static preview comes back opaque, filled with the camera's background colour, so
+        /// the alpha has to be worked out. Where the two pictures agree the piece is solid; where
+        /// they differ by the full black-to-white step it is background; in between - glass, a
+        /// screen's glow over a dark frame - the difference is exactly how much shows through, and
+        /// the black picture divided by what is left is the piece's own colour. Keying on one
+        /// unused colour, as this did before, left any see-through piece tinted with the key.
         /// </remarks>
-        byte[] Encode(Texture2D rendered)
+        static byte[] Matte(Texture2D onBlack, Texture2D onWhite)
         {
-            if (!transparentBackground)
-            {
-                return rendered.EncodeToPNG();
-            }
+            var black = onBlack.GetPixels32();
+            var white = onWhite.GetPixels32();
+            var pixels = new Color32[black.Length];
 
-            var pixels = rendered.GetPixels32();
             for (var i = 0; i < pixels.Length; i++)
             {
-                var p = pixels[i];
-                if (p.r > 200 && p.g < 60 && p.b > 200)
-                {
-                    pixels[i] = new Color32(0, 0, 0, 0);
-                }
+                var b = black[i];
+                var w = white[i];
+                var through = ((w.r - b.r) + (w.g - b.g) + (w.b - b.b)) / (3f * 255f);
+                var alpha = Mathf.Clamp01(1f - through);
+
+                pixels[i] = alpha <= 0.004f
+                    ? new Color32(0, 0, 0, 0)
+                    : new Color32(
+                        (byte)Mathf.Min(255f, b.r / alpha),
+                        (byte)Mathf.Min(255f, b.g / alpha),
+                        (byte)Mathf.Min(255f, b.b / alpha),
+                        (byte)Mathf.RoundToInt(alpha * 255f));
             }
 
-            var output = new Texture2D(rendered.width, rendered.height, TextureFormat.RGBA32, false);
+            var output = new Texture2D(onBlack.width, onBlack.height, TextureFormat.RGBA32, false);
             try
             {
                 output.SetPixels32(pixels);

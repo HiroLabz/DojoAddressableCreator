@@ -53,10 +53,28 @@ namespace Dojo.Game.Placement
 
         Grid grid;
 
+        /// <summary>The cell size a world uses when no grid has said otherwise.</summary>
+        public const float DefaultStep = 0.25f;
+
+        /// <summary>
+        /// The open scene's cell size, for the room code that has no grid of its own to ask: rooms
+        /// move, cut doorways and lay areas in whole cells of it.
+        /// </summary>
+        /// <remarks>
+        /// One grid per scene, and every kit is built to its scene's: the first kit to 0.25 m, the
+        /// MVP kit to 0.3 m. Set as the grid wakes, so it is the scene's before any room is placed.
+        /// </remarks>
+        public static float Step { get; private set; } = DefaultStep;
+
         void Awake()
         {
             grid = GetComponent<Grid>();
+            Step = CellSize > 0.01f ? CellSize : DefaultStep;
         }
+
+        // Back to the default with the scene gone, so nothing after it - an editor tool, a test -
+        // works on a grid that is no longer there.
+        void OnDestroy() => Step = DefaultStep;
 
         /// <summary>Width of one cell in world units. Cells are square.</summary>
         public float CellSize => Resolved().cellSize.x;

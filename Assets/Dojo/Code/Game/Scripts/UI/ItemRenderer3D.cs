@@ -12,7 +12,7 @@ namespace Dojo.Game.UI
     /// </summary>
     /// <remarks>
     /// The fields mirror <c>thumbnails.json</c>, written by
-    /// <c>Tools ▸ Dojo ▸ Addressable Generator</c>, so a tile can be filled straight from a
+    /// <c>Tools ▸ Dojo ▸ Addressables ▸ 2. Addressable Generator</c>, so a tile can be filled straight from a
     /// manifest entry: <see cref="Id"/> is its <c>prefabId</c>, <see cref="DisplayName"/> its
     /// <c>prefabName</c>, and <see cref="ThumbnailId"/> its <c>thumbnailId</c>.
     /// <para>

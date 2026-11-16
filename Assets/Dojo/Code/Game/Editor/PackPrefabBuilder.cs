@@ -20,7 +20,7 @@ namespace Dojo.Game.Editor
     /// cannot read, so a converted copy is written beside it: metal in red, smoothness in alpha.
     /// </para>
     /// <para>
-    /// Run <c>Tools ▸ Dojo ▸ Addressable Generator</c> on the default pack afterwards: that is what
+    /// Run <c>Tools ▸ Dojo ▸ Addressables ▸ 2. Addressable Generator</c> on the default pack afterwards: that is what
     /// gives the prefab its address, its thumbnail and its place in the inventory.
     /// </para>
     /// </remarks>
@@ -169,7 +169,7 @@ namespace Dojo.Game.Editor
                 Debug.Log("[PackPrefab] Built " + prefabPath + " - " + root.transform.childCount + " part(s), "
                     + materials.Count + " material(s), " + bounds.size.x.ToString("0.00") + " x "
                     + bounds.size.y.ToString("0.00") + " x " + bounds.size.z.ToString("0.00")
-                    + " m. Run Tools > Dojo > Addressable Generator on the default pack to give it an "
+                    + " m. Run Tools > Dojo > Addressables > 2. Addressable Generator on the default pack to give it an "
                     + "address, a thumbnail and an inventory entry.", AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath));
 
                 return prefabPath;

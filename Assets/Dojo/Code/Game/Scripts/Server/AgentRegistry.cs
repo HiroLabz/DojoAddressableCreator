@@ -47,9 +47,24 @@ namespace Dojo.Game.Server
         }
 
         /// <summary>
-        /// The agents the platform returned, or an empty list before it has answered.
+        /// The agents the platform returned, or an empty list before it has answered. With no
+        /// platform at all - the offline directory, which only the content creator runs on - the
+        /// sample roster shipped in the content, so a world built there has an agent to see.
         /// </summary>
-        public IReadOnlyList<AgentCredential> Agents => roster != null ? roster.agents : None;
+        public IReadOnlyList<AgentCredential> Agents
+            => roster != null ? roster.agents : directory is OfflineAgentDirectory ? Shipped() : None;
+
+        AgentRoster shipped;
+
+        IReadOnlyList<AgentCredential> Shipped()
+        {
+            if (shipped == null && file != null)
+            {
+                shipped = file.ReadCatalogue();
+            }
+
+            return shipped != null && shipped.agents != null ? shipped.agents : None;
+        }
 
         public AgentCredential Find(int id)
         {

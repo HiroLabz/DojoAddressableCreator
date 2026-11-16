@@ -24,7 +24,10 @@ namespace Dojo.Game.Placement
     public static class DefaultWorld
     {
         /// <summary>Content address of the default world.</summary>
-        public const string Address = "default/World/world";
+        /// <remarks>The open scene's choice (<see cref="WorldSettings.DefaultWorld"/>): each kit has its own.</remarks>
+        public static string Address => WorldSettings.Active != null
+            ? WorldSettings.Active.DefaultWorld
+            : WorldSettings.StandardDefaultWorld;
 
         /// <summary>The default world, or null when the content has none or it cannot be read.</summary>
         public static WorldSave Read(IContentService content)
@@ -81,6 +84,10 @@ namespace Dojo.Game.Placement
                 savedUtc = template.savedUtc,
                 connectors = template.connectors ?? new List<WorldSave.SavedConnector>(),
                 navigation = template.navigation ?? new List<WorldSave.SavedSurface>(),
+
+                // The rooms placed in it, so their pieces come back grouped - one room each, moved
+                // and deleted whole - rather than loose on their floors.
+                rooms = template.rooms ?? new List<WorldSave.SavedRoom>(),
             };
 
             var people = new List<AgentCredential>();

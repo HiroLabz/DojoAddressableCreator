@@ -18,7 +18,7 @@ namespace Dojo.Game.Placement
     /// the drop lands as scenery: unpickable, and walked straight through.
     /// <para>
     /// <b>Adding new models.</b> Drop the prefab under <c>Resources/Furniture</c> and re-run
-    /// <c>Tools ▸ Dojo ▸ Addressable Generator</c>; nothing here knows anything about the
+    /// <c>Tools ▸ Dojo ▸ Addressables ▸ 2. Addressable Generator</c>; nothing here knows anything about the
     /// office pack, so a new model is measured and fitted out like any other: its footprint comes
     /// from its own bounds, and whether it may stand on a given piece of furniture is settled at
     /// the moment of the drop by comparing the two footprints. There is no threshold to tune and

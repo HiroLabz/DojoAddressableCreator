@@ -41,5 +41,12 @@ namespace Dojo.Game.Managers
 
         /// <summary>Asks for a name: read it back from <see cref="MessagePopup.Answer"/>.</summary>
         public MessagePopup Prompt => prompt;
+
+        [Tooltip("Blue, a department dropdown, a box for a new one and a No department checkbox: " +
+                 "asks which department an area belongs to. Built by Tools > Dojo > Build Department Popup.")]
+        [SerializeField] MessagePopup department;
+
+        /// <summary>Asks for an area's department: see <c>DepartmentPicker</c> on it.</summary>
+        public MessagePopup Department => department;
     }
 }

@@ -22,6 +22,9 @@ namespace Dojo.Game.UI
 
         [SerializeField] Button repaintButton;
         [SerializeField] Button renameButton;
+
+        [Tooltip("Opens the Department popup for the area.")]
+        [SerializeField] Button departmentButton;
         [SerializeField] Button deleteButton;
 
         /// <summary>The area this row stands for.</summary>
@@ -29,12 +32,14 @@ namespace Dojo.Game.UI
 
         public event Action<int> RepaintPressed;
         public event Action<int> RenamePressed;
+        public event Action<int> DepartmentPressed;
         public event Action<int> DeletePressed;
 
         void Awake()
         {
             if (repaintButton != null) repaintButton.onClick.AddListener(() => RepaintPressed?.Invoke(AreaId));
             if (renameButton != null) renameButton.onClick.AddListener(() => RenamePressed?.Invoke(AreaId));
+            if (departmentButton != null) departmentButton.onClick.AddListener(() => DepartmentPressed?.Invoke(AreaId));
             if (deleteButton != null) deleteButton.onClick.AddListener(() => DeletePressed?.Invoke(AreaId));
         }
 
@@ -58,6 +63,7 @@ namespace Dojo.Game.UI
         {
             if (repaintButton != null) repaintButton.interactable = on;
             if (renameButton != null) renameButton.interactable = on;
+            if (departmentButton != null) departmentButton.interactable = on;
             if (deleteButton != null) deleteButton.interactable = on;
         }
     }

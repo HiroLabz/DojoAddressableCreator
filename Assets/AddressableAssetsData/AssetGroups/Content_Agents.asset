@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Content_Agents
   m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
   m_GroupName: Content_Agents
-  m_GUID: 168b0a6b8b25c0f44ba55cf5446ec6e8
+  m_GUID: 1805f7267befeac479b0894290ec07d5
   m_SerializeEntries:
   - m_GUID: 30297947e169eee46915a2e53b8621ec
     m_Address: Agents/agents
@@ -31,5 +31,5 @@ MonoBehaviour:
   m_Settings: {fileID: 11400000, guid: 878d66ff5773b60499b24cccd4ffc09c, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: f98092e5088565c4e975145998e6009e, type: 2}
-    - {fileID: 11400000, guid: b96bc2588fd431e4a85fed72f8e278df, type: 2}
+    - {fileID: 11400000, guid: 5b62544e93dcf514ca6990c9a73b8ecf, type: 2}
+    - {fileID: 11400000, guid: cc227f7ec99e50642921fda614fc3cdb, type: 2}
