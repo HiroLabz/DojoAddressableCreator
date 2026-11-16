@@ -27,6 +27,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0f186b4291cd8af4886721952da9e171
+    m_Address: default/default_elevator_mvp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 18df6f1e968954b4d933a40dfa25a74b
     m_Address: default/default_dual_workstation_desk
     m_ReadOnly: 0

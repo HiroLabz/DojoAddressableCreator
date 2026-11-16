@@ -35,8 +35,17 @@ namespace Dojo.Game.Editor
         const string PackFolder = "Assets/Process/default";
         const string MadeTextures = PackFolder + "/Textures/mvp";
 
-        /// <summary>Models that are not one piece. The elevator file holds the whole kit.</summary>
-        static readonly HashSet<string> Skipped = new HashSet<string> { "Elevator" };
+        /// <summary>
+        /// Models that are not one piece. Empty since Harold's 16 Nov Elevator.fbx (3dDump 36b872c):
+        /// it used to hold the whole kit, and is now the elevator alone.
+        /// </summary>
+        static readonly HashSet<string> Skipped = new HashSet<string>();
+
+        /// <summary>
+        /// Models that are an elevator stop, so they get an <see cref="ElevatorPiece"/>: the game then
+        /// shows one per floor and lets the manager ride between them.
+        /// </summary>
+        static readonly HashSet<string> Elevators = new HashSet<string> { "Elevator" };
 
         static readonly HashSet<string> Floors = new HashSet<string> { "LightGrayFloorTile", "WoodFloorTile", "BasePlatform" };
 
@@ -50,6 +59,9 @@ namespace Dojo.Game.Editor
             { "WallDashboardScreen", "default_dashboard_screen" },
             { "LargePresentationWallDisplay", "default_large_presentation_display" },
             { "PlanterWallBox", "default_planter_box" },
+            // Not default_elevator: that address is the first kit's elevator, which saved worlds
+            // and the inventory use, and building over it would replace that prefab.
+            { "Elevator", "default_elevator_mvp" },
         };
 
         sealed class Look
@@ -228,13 +240,12 @@ namespace Dojo.Game.Editor
 
         /// <summary>
         /// Pieces of the first kit the MVP scene offers for now, until the kit has its own (Jacob, 16
-        /// Nov): the elevator, for floors; the knowledge shelf, for the knowledge base; the
-        /// supercomputers, which the integration terminals stand on. Stairs are dropped (Bob, 16 Nov).
-        /// Take one off and run Set Up MVP Scene.
+        /// Nov): the knowledge shelf, for the knowledge base; the supercomputers, which the
+        /// integration terminals stand on. Stairs are dropped, and the elevator is the kit's own
+        /// now, default_elevator_mvp (Bob, 16 Nov). Take one off and run Set Up MVP Scene.
         /// </summary>
         static readonly string[] Borrowed =
         {
-            "default/default_elevator",
             "default/default_knowledge_shelf",
             "default/default_superComputer",
             "default/default_superComputer_2",
@@ -408,13 +419,32 @@ namespace Dojo.Game.Editor
                     part.AddComponent<MeshRenderer>().sharedMaterials = to;
                 }
 
+                var size = bounds.size;
+
+                if (Elevators.Contains(model))
+                {
+                    // Harold's elevator has its doors on +Z; the game's elevators open on -X
+                    // (ElevatorPiece), where the manager stands to ride. A quarter turn about Y.
+                    foreach (Transform part in root.transform)
+                    {
+                        part.RotateAround(Vector3.zero, Vector3.up, -90f);
+                    }
+
+                    size = new Vector3(size.z, size.y, size.x);
+                }
+
                 var box = root.AddComponent<BoxCollider>();
-                box.center = new Vector3(0f, bounds.size.y * 0.5f, 0f);
-                box.size = bounds.size;
+                box.center = new Vector3(0f, size.y * 0.5f, 0f);
+                box.size = size;
 
                 if (Floors.Contains(model))
                 {
                     root.AddComponent<FloorPiece>();
+                }
+
+                if (Elevators.Contains(model))
+                {
+                    root.AddComponent<ElevatorPiece>();
                 }
 
                 string seat = null;

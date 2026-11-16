@@ -872,6 +872,19 @@
                 "y": 0
             },
             "data": ""
+        },
+        {
+            "id": "default.defaultelevatormvp",
+            "category": "others",
+            "name": "default_elevator_mvp",
+            "address": "default/default_elevator_mvp",
+            "icon": "default/Thumbnails/default_elevator_mvp",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
         }
     ]
 }

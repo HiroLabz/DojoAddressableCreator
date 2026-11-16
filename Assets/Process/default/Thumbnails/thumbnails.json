@@ -1,5 +1,5 @@
 {
-    "generatedUtc": "2026-11-13T14:12:46.6173975Z",
+    "generatedUtc": "2026-11-16T15:47:58.4050560Z",
     "pixelSize": 256,
     "sourceFolder": "Assets/Process/default/Prefabs",
     "pack": "default",
@@ -211,6 +211,17 @@
             "thumbnailFile": "default_elevator.png",
             "thumbnailPath": "Assets/Process/default/Thumbnails/default_elevator.png",
             "thumbnailResource": "default/Thumbnails/default_elevator",
+            "pack": "default"
+        },
+        {
+            "prefabId": "0f186b4291cd8af4886721952da9e171",
+            "prefabName": "default_elevator_mvp",
+            "prefabPath": "Assets/Process/default/Prefabs/default_elevator_mvp.prefab",
+            "prefabResource": "default/default_elevator_mvp",
+            "thumbnailId": "768db1eb9e448484ea58daa14bed3ca2",
+            "thumbnailFile": "default_elevator_mvp.png",
+            "thumbnailPath": "Assets/Process/default/Thumbnails/default_elevator_mvp.png",
+            "thumbnailResource": "default/Thumbnails/default_elevator_mvp",
             "pack": "default"
         },
         {

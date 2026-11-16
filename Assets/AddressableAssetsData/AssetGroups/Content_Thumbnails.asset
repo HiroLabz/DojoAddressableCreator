@@ -207,6 +207,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 768db1eb9e448484ea58daa14bed3ca2
+    m_Address: default/Thumbnails/default_elevator_mvp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7a779d7af9b3e7d4eaef0a4c84e670d2
     m_Address: default/Thumbnails/default_storage_cabinet
     m_ReadOnly: 0
