@@ -630,18 +630,64 @@ namespace Dojo.Game.Placement
                 return;
             }
 
-            foreach (var prop in FindObjectsByType<FurniturePiece>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+            var all = FindObjectsByType<FurniturePiece>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+
+            foreach (var prop in all)
             {
                 if (prop.SupportedBy != piece)
                 {
                     continue;
                 }
 
-                riders.Add(prop);
-                service.Release(prop);
-                prop.Lift();
-                prop.transform.SetParent(piece.transform, true);
+                Ride(prop, piece);
             }
+
+            // A loose floor tile carries what stands inside its edges on its floor - loose walls and
+            // objects, and what rests on those - so moving the floor moves what was built on it.
+            // Never ground, a room's pieces, people or elevator stops. As in dojo-game-app.
+            if (piece.IsFloor && RoomContainer.Of(piece) == null && RoomWalls.TryBoundsOf(piece, out var tile))
+            {
+                const float edge = 0.1f;
+                var floor = Storeys.StoreyOf(piece.transform);
+
+                foreach (var prop in all)
+                {
+                    if (prop == piece || riders.Contains(prop) || prop.IsFloor || prop.IsWalkway
+                        || RoomContainer.Of(prop) != null || Storeys.StoreyOf(prop.transform) != floor
+                        || prop.GetComponent<PlacedAgent>() != null || prop.GetComponent<PlacedManager>() != null
+                        || ElevatorShafts.IsStop(prop.transform) || !prop.CanLift)
+                    {
+                        continue;
+                    }
+
+                    var at = prop.transform.position;
+                    if (at.x >= tile.min.x - edge && at.x <= tile.max.x + edge && at.z >= tile.min.z - edge && at.z <= tile.max.z + edge)
+                    {
+                        Ride(prop, piece);
+                    }
+                }
+
+                // And what rests on those.
+                for (var i = 0; i < riders.Count; i++)
+                {
+                    foreach (var prop in all)
+                    {
+                        if (prop.SupportedBy == riders[i] && !riders.Contains(prop) && prop.CanLift)
+                        {
+                            Ride(prop, piece);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>One piece carried on <paramref name="carrier"/> for the length of the drag.</summary>
+        void Ride(FurniturePiece prop, FurniturePiece carrier)
+        {
+            riders.Add(prop);
+            service.Release(prop);
+            prop.Lift();
+            prop.transform.SetParent(carrier.transform, true);
         }
 
         /// <summary>
@@ -954,6 +1000,14 @@ namespace Dojo.Game.Placement
                 return;
             }
 
+            // A room's own pieces are not selected one by one: the room is lifted and deleted whole,
+            // and its floors and walls are edited in the room editor.
+            if (RoomContainer.Of(piece) != null)
+            {
+                Log("ctrl-click on a piece of the room '" + RoomContainer.Of(piece).RoomName + "' - a room is moved and deleted whole");
+                return;
+            }
+
             if (selection.Remove(piece))
             {
                 Log("deselected '" + piece.gameObject.name + "' - " + (selection.Count + 1) + " now selected");
@@ -1204,11 +1258,18 @@ namespace Dojo.Game.Placement
             {
                 if (thing != null)
                 {
+                    // Off at once: Destroy lands at the end of the frame, and the walls looked at
+                    // next must see these as gone already.
+                    thing.SetActive(false);
                     Destroy(thing);
                 }
             }
 
             condemned.Clear();
+
+            // A loose wall gone can bring back a room's wall it was standing in for (RoomWalls).
+            RoomWalls.Reconsider(world != null ? world.Root : null, service);
+
             RepathActors();
 
             if (removedGround)
@@ -1243,9 +1304,20 @@ namespace Dojo.Game.Placement
             service.Release(piece);
             service.CollectStandingOn(piece, standingOn);
 
+            var room = RoomContainer.Of(piece);
+
             foreach (var thing in standingOn)
             {
                 var stacked = thing.GetComponent<FurniturePiece>();
+
+                // Only what is really on it, not what stands at its edge: two rooms side by side,
+                // and a room and the office beside it, overlap at their edges, and a floor tile's
+                // probe reaches the walls and furniture along them.
+                if (stacked != null && !Carries(piece, room, stacked))
+                {
+                    continue;
+                }
+
                 if (stacked != null)
                 {
                     service.Release(stacked);
@@ -1261,6 +1333,43 @@ namespace Dojo.Game.Placement
             {
                 condemned.Add(piece.gameObject);
             }
+        }
+
+        /// <summary>
+        /// Whether <paramref name="stacked"/>, found standing on <paramref name="piece"/> (of
+        /// <paramref name="room"/>, or loose), goes with it when it is deleted.
+        /// </summary>
+        /// <remarks>
+        /// What rests on it goes: a mug on a desk. Ground never does. A piece of another room never
+        /// does. A loose piece - a loose wall too - goes only when it stands over this one, not when
+        /// it is merely along its edge: a loose wall on a deleted loose floor tile goes with it rather
+        /// than being left in the air. As in dojo-game-app.
+        /// </remarks>
+        static bool Carries(FurniturePiece piece, RoomContainer room, FurniturePiece stacked)
+        {
+            if (stacked.SupportedBy == piece)
+            {
+                return true;
+            }
+
+            if (stacked.IsFloor || stacked.IsWalkway)
+            {
+                return false;
+            }
+
+            var theirs = RoomContainer.Of(stacked);
+            if (theirs != null)
+            {
+                return theirs == room;
+            }
+
+            if (!FurniturePlacementService.TryColliderBounds(piece.gameObject, out var under))
+            {
+                return false;
+            }
+
+            var at = stacked.transform.position;
+            return at.x > under.min.x && at.x < under.max.x && at.z > under.min.z && at.z < under.max.z;
         }
 
         /// <summary>
@@ -1547,6 +1656,11 @@ namespace Dojo.Game.Placement
             held.Settle();
             SettleRiders();
             Finish();
+
+            // A loose wall moved away - on its own or carried on a floor tile - brings back a room's
+            // wall it was standing in for.
+            Physics.SyncTransforms();
+            RoomWalls.Reconsider(world != null ? world.Root : null, service);
 
             // Ground last, once the piece has settled where it belongs: the rebuild reads the scene
             // as it now stands, and the floor list decides where furniture may be put down next.

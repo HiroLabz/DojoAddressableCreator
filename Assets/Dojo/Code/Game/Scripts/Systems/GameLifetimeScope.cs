@@ -248,6 +248,10 @@ namespace Dojo.Game.Systems
             builder.Register<BlockAreas>(Lifetime.Singleton);
             builder.Register<AgentAreaBinding>(Lifetime.Singleton);
 
+            // The Department popup's question, as the game asks it: after an area is named, from
+            // its row's Department button, and after a room is placed.
+            builder.Register<Dojo.Game.UI.AreaDepartmentPrompt>(Lifetime.Singleton);
+
             builder.Register<WorldLibraryFile>(Lifetime.Singleton);
             builder.Register<NavigationBaker>(Lifetime.Singleton);
             builder.Register<WorldService>(Lifetime.Singleton);
@@ -286,6 +290,9 @@ namespace Dojo.Game.Systems
             // Registered beside the world services rather than left on the panel, because a load
             // has to assemble agents too and the loader has no inspector to have been wired in.
             builder.Register<AgentAssembler>(Lifetime.Singleton);
+
+            // A picture of an agent, from the model it wears: the Departments tab shows it.
+            builder.Register<AgentPortraits>(Lifetime.Singleton);
 
             // Gives every character a walkable floor built for the size of its model. Beside the
             // assemblers because they are what brings a character to life, and that is when it is
@@ -416,6 +423,12 @@ namespace Dojo.Game.Systems
                     foreach (var rooms in FindObjectsByType<RoomsDisplayUI>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                     {
                         container.Inject(rooms);
+                    }
+
+                    // The Departments tab, down whenever its tab is not up, like the Rooms tab.
+                    foreach (var departments in FindObjectsByType<DepartmentsDisplayUI>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                    {
+                        container.Inject(departments);
                     }
 
                     // The bar shown while a room is being made. Inactive included: it is down

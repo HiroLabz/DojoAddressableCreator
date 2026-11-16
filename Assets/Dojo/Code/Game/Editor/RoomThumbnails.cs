@@ -48,7 +48,21 @@ namespace Dojo.Game.Editor
 
             try
             {
-                foreach (var guid in AssetDatabase.FindAssets("t:Prefab", new[] { PrefabFolder }))
+                var guids = AssetDatabase.FindAssets("t:Prefab", new[] { PrefabFolder });
+
+                // One render thrown away first. The preview renderer's first image can come back
+                // empty - every Accounting thumbnail, first in the folder, was transparent.
+                if (guids.Length > 0)
+                {
+                    var first = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(guids[0]));
+
+                    if (first != null)
+                    {
+                        Render(preview, first);
+                    }
+                }
+
+                foreach (var guid in guids)
                 {
                     var path = AssetDatabase.GUIDToAssetPath(guid);
                     var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
