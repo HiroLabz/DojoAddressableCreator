@@ -15,7 +15,8 @@ namespace Dojo.Game.Placement
     public sealed class WorldLibraryFile
     {
         /// <summary>What the library of saved worlds is called on disk.</summary>
-        const string FileName = "world.json";
+        /// <remarks>The open scene's choice (<see cref="WorldSettings.SaveFile"/>), so a scene building with another kit keeps its own worlds.</remarks>
+        static string FileName => WorldSettings.Active != null ? WorldSettings.Active.SaveFile : WorldSettings.StandardSaveFile;
 
         readonly bool prettyPrint;
 

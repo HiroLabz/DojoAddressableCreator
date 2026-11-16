@@ -276,10 +276,26 @@ namespace Dojo.Game.UI
             {
                 var both = new List<ItemDefinition>(catalog.InCategory(ItemCategories.Others));
                 both.AddRange(catalog.InCategory(ItemCategories.Plants));
-                return both;
+                return Offered(both);
             }
 
-            return catalog.InCategory(category);
+            return Offered(catalog.InCategory(category));
+        }
+
+        /// <summary>Only what the scene's kit offers (<see cref="Placement.WorldSettings.InventoryOnly"/>).</summary>
+        static IReadOnlyList<ItemDefinition> Offered(IReadOnlyList<ItemDefinition> items)
+        {
+            var kept = new List<ItemDefinition>(items.Count);
+
+            foreach (var item in items)
+            {
+                if (item != null && Placement.WorldSettings.ActiveOffers(item.address))
+                {
+                    kept.Add(item);
+                }
+            }
+
+            return kept;
         }
 
         static bool Matches(ItemDefinition item, string text)

@@ -95,6 +95,60 @@
             "address": "default/Rooms/default_room_managers_room",
             "icon": "default/Rooms/Thumbnails/room_managers_room",
             "tag": "default"
+        },
+        {
+            "name": "Reception",
+            "address": "default/Rooms/default_room_mvp_reception",
+            "icon": "default/Rooms/Thumbnails/room_mvp_reception",
+            "tag": "default"
+        },
+        {
+            "name": "IT and Security",
+            "address": "default/Rooms/default_room_mvp_it_and_security",
+            "icon": "default/Rooms/Thumbnails/room_mvp_it_and_security",
+            "tag": "default"
+        },
+        {
+            "name": "my room 2",
+            "address": "default/Rooms/default_room_mvp_my_room_2",
+            "icon": "default/Rooms/Thumbnails/room_mvp_my_room_2",
+            "tag": "default"
+        },
+        {
+            "name": "Conference Room",
+            "address": "default/Rooms/default_room_mvp_conference_room",
+            "icon": "default/Rooms/Thumbnails/room_mvp_conference_room",
+            "tag": "default"
+        },
+        {
+            "name": "Operations",
+            "address": "default/Rooms/default_room_mvp_operations",
+            "icon": "default/Rooms/Thumbnails/room_mvp_operations",
+            "tag": "default"
+        },
+        {
+            "name": "Product and Development",
+            "address": "default/Rooms/default_room_mvp_product_and_development",
+            "icon": "default/Rooms/Thumbnails/room_mvp_product_and_development",
+            "tag": "default"
+        },
+        {
+            "name": "Research",
+            "address": "default/Rooms/default_room_mvp_research",
+            "icon": "default/Rooms/Thumbnails/room_mvp_research",
+            "tag": "default"
+        },
+        {
+            "name": "Legal",
+            "address": "default/Rooms/default_room_mvp_legal",
+            "icon": "default/Rooms/Thumbnails/room_mvp_legal",
+            "tag": "default"
+        },
+        {
+            "name": "Dev Lab",
+            "address": "default/Rooms/default_room_mvp_dev_lab",
+            "icon": "default/Rooms/Thumbnails/room_mvp_dev_lab",
+            "tag": "default"
         }
     ]
 }

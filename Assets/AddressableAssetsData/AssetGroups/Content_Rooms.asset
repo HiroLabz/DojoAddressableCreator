@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Content_Rooms
   m_GUID: b849e8bc07c240a448895582b46103ac
   m_SerializeEntries:
+  - m_GUID: 0323c54ce3f064f47a9fdf43b7434f40
+    m_Address: default/Rooms/Thumbnails/room_mvp_legal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 054b6b9d2f00424e95a4479590892fed
     m_Address: default/Rooms/default_room_product_and_development
     m_ReadOnly: 0
@@ -29,6 +35,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1328ef1c5edeead488092fab01c1a1bc
     m_Address: default/Rooms/Thumbnails/room_customer_support
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1953ef7a69195e64dbdcb4698107e953
+    m_Address: default/Rooms/default_room_mvp_conference_room
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -59,6 +71,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 26532b8cf17ced8459d6d7b9eb8b5d12
     m_Address: default/Rooms/Thumbnails/room_my_room_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2686e8641403abb4385a3becf3bd323e
+    m_Address: default/Rooms/default_room_mvp_research
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -105,6 +123,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4489b4535d3ba6c419814629187c9e3d
+    m_Address: default/Rooms/Thumbnails/room_mvp_reception
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4915ac027c5d4254a10f5912a5820990
     m_Address: default/Rooms/default_room_sales
     m_ReadOnly: 0
@@ -129,14 +153,44 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 67dda819169c4e1429ce39e7683ed19d
+    m_Address: default/Rooms/default_room_mvp_reception
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6c072d080ef8ede4dbec97061e2ed2f8
+    m_Address: default/Rooms/default_room_mvp_dev_lab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6ec1ab3ff5b18574b8d454c46bd4fbfc
     m_Address: default/Rooms/Thumbnails/room_finance
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 705bdf35e09881441912a19b6b7b7efc
+    m_Address: default/Rooms/Thumbnails/room_mvp_operations
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8557bb8f07eb07c4f898ecb48522a521
     m_Address: default/Rooms/Thumbnails/room_operations
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8c966529adb4ff34aaf66eea15f5915e
+    m_Address: default/Rooms/default_room_mvp_operations
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 92c135fbb582b5f44b3b1129c25b5781
+    m_Address: default/Rooms/Thumbnails/room_mvp_it_and_security
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -177,14 +231,32 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ab1003ff7c8607a468f20ae8389496bf
+    m_Address: default/Rooms/Thumbnails/room_mvp_dev_lab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b0f3e670a6ea4a8c8cfc9f78a51d3259
     m_Address: default/Rooms/default_room_hr
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b177029bcd25c0f4fac75de84bd06c79
+    m_Address: default/Rooms/default_room_mvp_my_room_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b195aeef59d542d8aecc03c678f7d604
     m_Address: default/Rooms/default_room_operations
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b916b8f3000ffe74d8b01417c4e7f196
+    m_Address: default/Rooms/Thumbnails/room_mvp_my_room_2
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -197,6 +269,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c794fb627c42c93498bd3f808faab8fa
     m_Address: default/Rooms/Thumbnails/room_recruitment
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cdfcb7578dae8c043b0c45e351051fbd
+    m_Address: default/Rooms/default_room_mvp_legal
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -237,14 +315,44 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e71184c84f2970644a63a7ae4b7cc67f
+    m_Address: default/Rooms/Thumbnails/room_mvp_research
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e73ebfd7b98dca94d8693c4167a1ba2c
     m_Address: default/Rooms/default_room_my_room_2
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e9429ddf1e85ecd449eac8429d898c07
+    m_Address: default/Rooms/default_room_mvp_it_and_security
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ebb624e7b96030b408b6a6e005276c6d
     m_Address: default/Rooms/Thumbnails/room_sales
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f32e0800317fdbf448a62ba747911bba
+    m_Address: default/Rooms/default_room_mvp_product_and_development
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f949337cfb2bf734cabd48942649b016
+    m_Address: default/Rooms/Thumbnails/room_mvp_product_and_development
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fa018833167f5ac4991af6832e58cf73
+    m_Address: default/Rooms/Thumbnails/room_mvp_conference_room
     m_ReadOnly: 0
     m_SerializedLabels:
     - default

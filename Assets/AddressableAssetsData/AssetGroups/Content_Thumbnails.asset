@@ -33,6 +33,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 126fcf1467de4464b942d6484411016f
+    m_Address: default/Thumbnails/default_small_potted_plant
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 136d1c0a934a5b7428907c60a9bc0808
     m_Address: strawberry/Thumbnails/default_wall_2
     m_ReadOnly: 0
@@ -45,8 +51,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 18c6c8bcc9ce87e42909da10b16aa227
+    m_Address: default/Thumbnails/default_triple_monitor
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1a7e95b1566b60a4ba5b27c3994533c7
     m_Address: default/Thumbnails/default_grayFloor
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2160122716b73c04aa73f3d564306b9c
+    m_Address: default/Thumbnails/default_display_shelf
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -63,6 +81,60 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2fb9ab22bdb0a23428122728580156e3
+    m_Address: default/Thumbnails/default_divider_wall_large
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3523a49b014b26f4aa0d6eb3042ad6a9
+    m_Address: default/Thumbnails/default_dashboard_screen
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 378e7dda91912e5409c46e1b74837556
+    m_Address: default/Thumbnails/default_dev_lab_desk_bench
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 38a4dd59ba7140e4281122d6468b3acb
+    m_Address: default/Thumbnails/default_table_hologram_effect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 39ac8b3318cd27b499eac1607015bea5
+    m_Address: default/Thumbnails/default_server_rack_tower
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3e8186c83bcb58c4faaf07bcfdaef5d9
+    m_Address: default/Thumbnails/default_long_planter
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3ebff1fe89f497b4c92e3255407c5b36
+    m_Address: default/Thumbnails/default_desk_plant
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 47ea9f5455b049649b0de4da6357fb1e
+    m_Address: default/Thumbnails/default_curved_wall_facade
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4a100fe725db1eb41b9887a2988f6f45
+    m_Address: default/Thumbnails/default_low_lounge_table
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4cd0e71315a704e47b6cbe31154c6bb7
     m_Address: default/Thumbnails/default_elevator
     m_ReadOnly: 0
@@ -75,8 +147,38 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 56535f8e5bb0d1941a01e6a9af490068
+    m_Address: default/Thumbnails/default_glass_partition
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 59521291b5df64e4abb47e19d42c9343
+    m_Address: default/Thumbnails/default_wood_floor_tile
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 59524046dba7aa148b96b57cb081a820
+    m_Address: default/Thumbnails/default_work_station_return_table
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5c429e2af864d04418e72547a50956d2
     m_Address: default/Thumbnails/default_superComputer
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5e603276b5131c249a69e973cf9dd738
+    m_Address: default/Thumbnails/default_base_platform
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f5eed5be87e981478b6a63001522e7c
+    m_Address: default/Thumbnails/default_medium_planter
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -93,17 +195,71 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6a6c2289ae3b6ce4bbfcf7e4bdf778c4
+    m_Address: default/Thumbnails/default_single_workstation_desk
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6ebd6aaac19647b48ab611e8acda3a0b
+    m_Address: default/Thumbnails/default_meeting_chair
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7a779d7af9b3e7d4eaef0a4c84e670d2
+    m_Address: default/Thumbnails/default_storage_cabinet
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7c370c34c02a4d849b9fdb9ab14e600e
     m_Address: strawberry/Thumbnails/default_chair_blue
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 81632845519279a4497c95fc789b341e
+    m_Address: default/Thumbnails/default_straight_wall_panel
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8165e0db457b7684392e3c36980fd1db
+    m_Address: default/Thumbnails/default_light_gray_floor_tile
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 822594e7c4a5f234ab86911a8416bea1
     m_Address: strawberry/Thumbnails/default_wall_1
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 83c7d1234dd1ff44b84c7d4f9de597b7
+    m_Address: default/Thumbnails/default_led_trim_light
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 896ad8f12c5518646993aa4548ba6dcb
+    m_Address: default/Thumbnails/default_printer_storage_module
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8a18a7dade9f5f94194950ef0370d609
+    m_Address: default/Thumbnails/default_planter_box
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8c5671256a3721e4594dea4feeb5d809
+    m_Address: default/Thumbnails/default_entry_portal_wall
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8cc75f3ff35657142b3e968e33191f68
     m_Address: default/Thumbnails/default_chair_blue
@@ -113,6 +269,24 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8d5c0568371a84a42b2ef4a460e640e5
     m_Address: default/Thumbnails/default_superComputer_3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8e7d604ffca54e340ba7fda846b6d6e6
+    m_Address: default/Thumbnails/default_front_counter
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8f86dfafbc14fde40aa181e37bc626b6
+    m_Address: default/Thumbnails/default_meeting_table
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 98243c021721a8b4b943aa15822788a3
+    m_Address: default/Thumbnails/default_lounge_pod_chair
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -129,11 +303,23 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9fc4db9c2cd943944a671ca4cc04c9ad
+    m_Address: default/Thumbnails/default_hologram_projector
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a2ab92374394704468dbfbcd7a30fcae
     m_Address: strawberry/Thumbnails/default_table_white
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ab0201f0da7964548929b9cf0efadfec
+    m_Address: default/Thumbnails/default_desk_beacon
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: afddf46138b313e4cbf10035c170ba91
     m_Address: strawberry/Thumbnails/default_wall_3
@@ -153,6 +339,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b94489043efd287408615d249c46b8bd
+    m_Address: default/Thumbnails/default_divider_wall_medium
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bd3301e6d684a784b865f588d7955c75
     m_Address: default/Thumbnails/default_plant_box
     m_ReadOnly: 0
@@ -161,6 +353,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c944a203cbfed9e47b8c199b7629969c
     m_Address: default/Thumbnails/default_wall_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c969cab2862fd31478c718d84309cea2
+    m_Address: default/Thumbnails/default_large_presentation_display
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -177,8 +375,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cc2e7930836cdd842b9323a8a6da8a4b
+    m_Address: default/Thumbnails/default_accent_side_table
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cf2878169ea8b3d4cbbd1f73cb675241
     m_Address: default/Thumbnails/default_location_pin_red
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cfaf79186d5dc7c4e8f7fc0602b9082f
+    m_Address: default/Thumbnails/default_glass_perimeter_railing
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -201,14 +411,68 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e2b91f06a9b573342b29086c88ac39e1
+    m_Address: default/Thumbnails/default_tall_potted_plant
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e3130cd25d8a5e04c8c7bcde44297d0c
     m_Address: default/Thumbnails/default_wall_3
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e3f35557155c4cb43a65edf8d8443d7e
+    m_Address: default/Thumbnails/default_single_monitor
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e7d2afc59f89b8742b966f17f430446a
+    m_Address: default/Thumbnails/default_dual_workstation_desk
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e817d511753713447aca01a8d6afecf1
+    m_Address: default/Thumbnails/default_partition_end_cap
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ead6c16b481aafe4388db609a756923d
+    m_Address: default/Thumbnails/default_dual_monitor
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f039d02daa7192b4ebc3e6fdd4235e07
+    m_Address: default/Thumbnails/default_control_console
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f0922af5b27ed3e44b33894412c68d95
     m_Address: default/Thumbnails/default_knowledge_shelf
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f2048f532cfcd5b47ae3f9666a6b6e56
+    m_Address: default/Thumbnails/default_divider_wall_small
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f362719358d33e347a6778670149c99a
+    m_Address: default/Thumbnails/default_ergonomic_office_chair
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f5235d94154756247be5844321d479c3
+    m_Address: default/Thumbnails/default_server_wall_module
     m_ReadOnly: 0
     m_SerializedLabels:
     - default

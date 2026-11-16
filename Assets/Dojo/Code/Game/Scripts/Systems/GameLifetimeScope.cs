@@ -235,7 +235,9 @@ namespace Dojo.Game.Systems
         /// </remarks>
         void RegisterWorld(IContainerBuilder builder)
         {
-            builder.RegisterInstance(worldSettings ?? new WorldSettings());
+            worldSettings = worldSettings ?? new WorldSettings();
+            WorldSettings.Active = worldSettings;
+            builder.RegisterInstance(worldSettings);
 
             // The world's floors and which one is being looked at. Beside the world services
             // because every one of them builds into, saves from or places onto a floor.

@@ -150,9 +150,26 @@ namespace Dojo.Game.UI
             finally
             {
                 RenderTexture.ReleaseTemporary(target);
-                Object.Destroy(cameraObject);
-                Object.Destroy(lightObject);
-                Object.Destroy(holder);
+                Discard(cameraObject);
+                Discard(lightObject);
+                Discard(holder);
+            }
+        }
+
+        /// <summary>Destroys <paramref name="thing"/> now outside Play mode, where Destroy does nothing.</summary>
+        /// <remarks>
+        /// A picture made from the editor would otherwise leave its studio, camera and light in the open
+        /// scene, and the light, a directional one, then lights the whole world from then on.
+        /// </remarks>
+        static void Discard(Object thing)
+        {
+            if (Application.isPlaying)
+            {
+                Object.Destroy(thing);
+            }
+            else
+            {
+                Object.DestroyImmediate(thing);
             }
         }
 

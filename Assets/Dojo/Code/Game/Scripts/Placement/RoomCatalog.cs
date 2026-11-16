@@ -138,8 +138,10 @@ namespace Dojo.Game.Placement
                     // A room made here is on the list too once saved, but read from its own file
                     // - which is current the moment it is saved, and can be deleted - rather than
                     // from the pack, which only has it after the generator's next run.
+                    // And only the rooms the scene's kit offers.
                     if (room != null && !string.IsNullOrWhiteSpace(room.address)
-                        && !made.Contains(CustomRooms.SlugOf(room.address)))
+                        && !made.Contains(CustomRooms.SlugOf(room.address))
+                        && WorldSettings.ActiveOffers(room.address))
                     {
                         found.Add(room);
                     }
