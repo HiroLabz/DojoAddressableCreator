@@ -65,6 +65,12 @@ namespace Dojo.Game.InGame.Agents
         [Tooltip("Peak height of the hop, above the straight line between the floor and the seat.")]
         [SerializeField] float jumpHeight = 0.8f;
 
+        [Tooltip("For a model that sits with an animation: how far above its feet its thighs rest " +
+                 "in the seated pose, in metres. The agent is placed that far below the cushion, so it " +
+                 "sits on top of it. Below zero for a model with no sitting pose, which is lifted onto " +
+                 "the seat by half its height, as the capsule was.")]
+        [SerializeField] float seatedThighHeight = -1f;
+
         [Tooltip("Give up walking to a chair in its own area after this long.")]
         [SerializeField] float approachTimeout = 15f;
 
@@ -1079,8 +1085,11 @@ namespace Dojo.Game.InGame.Agents
             standPoint = transform.position;
             agent.enabled = false;
 
+            var seat = target.SeatPosition;
             BeginGlide(
-                target.SeatPosition + Vector3.up * halfHeight,
+                seatedThighHeight >= 0f
+                    ? seat - Vector3.up * seatedThighHeight
+                    : seat + Vector3.up * halfHeight,
                 target.SeatRotation,
                 State.SittingDown);
         }

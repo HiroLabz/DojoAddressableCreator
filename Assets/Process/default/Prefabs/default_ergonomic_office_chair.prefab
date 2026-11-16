@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6732975597412926160}
   - component: {fileID: 5723818936061408929}
+  - component: {fileID: 3781694190123223258}
   m_Layer: 0
   m_Name: default_ergonomic_office_chair
   m_TagString: Untagged
@@ -31,6 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3574711296232126807}
+  - {fileID: 837852289205095745}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &5723818936061408929
@@ -54,6 +56,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.39999968, y: 0.5999999, z: 0.39999992}
   m_Center: {x: 0, y: 0.29999995, z: 0}
+--- !u!114 &3781694190123223258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 457286721632979896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b90ca24cd30242345b9ec23884b8f498, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Dojo.Game::Dojo.Game.Components.Chair
+  seatAnchor: {fileID: 837852289205095745}
+  seatOffset: {x: 0.091, y: 0.587, z: 0.028}
 --- !u!1 &6168435146630679092
 GameObject:
   m_ObjectHideFlags: 0
@@ -144,3 +160,34 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &8472524150769123765
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 837852289205095745}
+  m_Layer: 0
+  m_Name: SeatAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &837852289205095745
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8472524150769123765}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.025008516, z: -0, w: 0.99968725}
+  m_LocalPosition: {x: 0, y: 0.2672597, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6732975597412926160}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

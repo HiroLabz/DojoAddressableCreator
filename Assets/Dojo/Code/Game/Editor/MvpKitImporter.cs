@@ -411,16 +411,93 @@ namespace Dojo.Game.Editor
                     root.AddComponent<FloorPiece>();
                 }
 
+                string seat = null;
+                if (model.EndsWith("Chair", StringComparison.Ordinal))
+                {
+                    seat = AddSeat(root, bounds.size);
+                }
+
                 var prefabPath = PackFolder + "/Prefabs/" + name + ".prefab";
                 PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
 
-                return name + " " + bounds.size.x.ToString("0.00") + "x" + bounds.size.y.ToString("0.00") + "x" + bounds.size.z.ToString("0.00");
+                return name + " " + bounds.size.x.ToString("0.00") + "x" + bounds.size.y.ToString("0.00") + "x" + bounds.size.z.ToString("0.00")
+                    + (seat != null ? " " + seat : string.Empty);
             }
             finally
             {
                 Object.DestroyImmediate(instance);
                 Object.DestroyImmediate(root);
             }
+        }
+
+        /// <summary>
+        /// Makes a chair sittable: a <see cref="Components.Chair"/> with a seat anchor on the cushion,
+        /// facing away from the backrest. Without one, agents and the manager never sit on the kit's
+        /// chairs.
+        /// </summary>
+        /// <remarks>
+        /// Measured from the mesh rather than typed in, since every chair model is shaped differently:
+        /// the backrest is what rises above the top third, so the seat faces away from it; the cushion
+        /// is the highest point in the front half that is still below the top third.
+        /// </remarks>
+        static string AddSeat(GameObject root, Vector3 size)
+        {
+            var points = new List<Vector3>();
+            foreach (var filter in root.GetComponentsInChildren<MeshFilter>())
+            {
+                foreach (var vertex in filter.sharedMesh.vertices)
+                {
+                    points.Add(root.transform.InverseTransformPoint(filter.transform.TransformPoint(vertex)));
+                }
+            }
+
+            var high = size.y * 0.66f;
+            var back = Vector3.zero;
+            var count = 0;
+            foreach (var p in points)
+            {
+                if (p.y > high)
+                {
+                    back += new Vector3(p.x, 0f, p.z);
+                    count++;
+                }
+            }
+
+            var forward = count > 0 && back.sqrMagnitude / (count * count) > 0.0004f
+                ? -(back / count).normalized
+                : Vector3.forward;
+
+            // The middle strip only, so armrests at the sides are not taken for the cushion.
+            var cushion = 0f;
+            var right = Vector3.Cross(Vector3.up, forward);
+            var reach = Mathf.Max(size.x, size.z) * 0.35f;
+            var strip = Mathf.Min(size.x, size.z) * 0.15f;
+            foreach (var p in points)
+            {
+                var flat = new Vector3(p.x, 0f, p.z);
+                var ahead = Vector3.Dot(flat, forward);
+                if (p.y < high && ahead >= 0f && ahead < reach && Mathf.Abs(Vector3.Dot(flat, right)) < strip && p.y > cushion)
+                {
+                    cushion = p.y;
+                }
+            }
+
+            if (cushion <= 0f)
+            {
+                cushion = size.y * 0.42f;
+            }
+
+            var anchor = new GameObject("SeatAnchor").transform;
+            anchor.SetParent(root.transform, false);
+            anchor.localPosition = new Vector3(0f, cushion, 0f);
+            anchor.localRotation = Quaternion.LookRotation(forward, Vector3.up);
+
+            var chair = root.AddComponent<Components.Chair>();
+            var serialized = new SerializedObject(chair);
+            serialized.FindProperty("seatAnchor").objectReferenceValue = anchor;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+
+            return "seat " + cushion.ToString("0.00") + "m facing " + forward.ToString("F2");
         }
 
         static Material MakeMaterial(Look look)
