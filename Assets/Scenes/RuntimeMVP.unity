@@ -25953,7 +25953,7 @@ MonoBehaviour:
   worldSettings:
     prettyPrint: 1
     placedLayerName: Furniture
-    agentPrefab: {fileID: 814541217921645802, guid: 8231f8d75b5761d4a8571e7f3e5a1179, type: 3}
+    agentPrefab: {fileID: 814541217921645802, guid: 52b6992de8f588447bf866f6f0719099, type: 3}
     managerPrefab: {fileID: 3520603674932339380, guid: 8486410d807da8848984101067b55772, type: 3}
     agents: 1
     manager: 1
@@ -26013,12 +26013,16 @@ MonoBehaviour:
     - default/Rooms/default_room_mvp_dev_lab
     - default/Rooms/default_room_mvp_it_and_security
     - default/Rooms/default_room_mvp_legal
-    - default/Rooms/default_room_mvp_my_room_2
     - default/Rooms/default_room_mvp_operations
     - default/Rooms/default_room_mvp_product_and_development
     - default/Rooms/default_room_mvp_reception
     - default/Rooms/default_room_mvp_research
     - default/default_elevator
+    - default/default_stairs
+    - default/default_knowledge_shelf
+    - default/default_superComputer
+    - default/default_superComputer_2
+    - default/default_superComputer_3
 --- !u!4 &1510082292
 Transform:
   m_ObjectHideFlags: 0

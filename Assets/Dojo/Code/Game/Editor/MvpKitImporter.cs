@@ -227,12 +227,19 @@ namespace Dojo.Game.Editor
         }
 
         /// <summary>
-        /// Pieces of the first kit the MVP scene offers for now, until the kit has its own: the
-        /// elevator, for trying out floors while building. Take one off and run Set Up MVP Scene.
+        /// Pieces of the first kit the MVP scene offers for now, until the kit has its own (Jacob, 16
+        /// Nov): the elevator and stairs, for floors; the knowledge shelf, for the knowledge base;
+        /// the supercomputers, which the integration terminals stand on. Take one off and run Set Up
+        /// MVP Scene.
         /// </summary>
         static readonly string[] Borrowed =
         {
             "default/default_elevator",
+            "default/default_stairs",
+            "default/default_knowledge_shelf",
+            "default/default_superComputer",
+            "default/default_superComputer_2",
+            "default/default_superComputer_3",
         };
 
         /// <summary>The prefab name for a model: default_ and the model name in snake case.</summary>

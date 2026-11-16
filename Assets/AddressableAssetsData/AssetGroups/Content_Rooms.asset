@@ -243,20 +243,8 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b177029bcd25c0f4fac75de84bd06c79
-    m_Address: default/Rooms/default_room_mvp_my_room_2
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b195aeef59d542d8aecc03c678f7d604
     m_Address: default/Rooms/default_room_operations
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b916b8f3000ffe74d8b01417c4e7f196
-    m_Address: default/Rooms/Thumbnails/room_mvp_my_room_2
     m_ReadOnly: 0
     m_SerializedLabels:
     - default

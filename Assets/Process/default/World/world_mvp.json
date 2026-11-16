@@ -9155,6 +9155,57 @@
                                 "w": 1.0
                             },
                             "rotationSteps": 0
+                        },
+                        {
+                            "credentialId": 2,
+                            "name": "",
+                            "workId": "",
+                            "position": {
+                                "x": -8.7,
+                                "y": 0.05,
+                                "z": -4.7
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "rotationSteps": 0
+                        },
+                        {
+                            "credentialId": 3,
+                            "name": "",
+                            "workId": "",
+                            "position": {
+                                "x": 6.0,
+                                "y": 0.05,
+                                "z": 2.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "rotationSteps": 0
+                        },
+                        {
+                            "credentialId": 4,
+                            "name": "",
+                            "workId": "",
+                            "position": {
+                                "x": 6.6,
+                                "y": 0.05,
+                                "z": -1.7
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "rotationSteps": 0
                         }
                     ],
                     "agentAreas": [],

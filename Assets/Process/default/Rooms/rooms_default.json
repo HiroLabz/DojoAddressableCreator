@@ -109,12 +109,6 @@
             "tag": "default"
         },
         {
-            "name": "my room 2",
-            "address": "default/Rooms/default_room_mvp_my_room_2",
-            "icon": "default/Rooms/Thumbnails/room_mvp_my_room_2",
-            "tag": "default"
-        },
-        {
             "name": "Conference Room",
             "address": "default/Rooms/default_room_mvp_conference_room",
             "icon": "default/Rooms/Thumbnails/room_mvp_conference_room",
