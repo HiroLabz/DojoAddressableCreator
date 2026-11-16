@@ -95,6 +95,14 @@ namespace Dojo.Game.InGame.Agents
                 ? Mathf.Clamp01(worldSpeed / agent.speed)
                 : 0f;
 
+            // Walking off a chair after standing up: the routine moves it with the NavMeshAgent off,
+            // so the pace comes from the routine, and the walk plays instead of a slide.
+            if (routine != null && routine.IsSteppingOff)
+            {
+                worldSpeed = routine.SteppingOffSpeed;
+                speed = agent.speed > 0f ? Mathf.Clamp01(worldSpeed / agent.speed) : 0.5f;
+            }
+
             animator.SetFloat(speedHash, speed, damping, Time.deltaTime);
 
             // The walk clip has no forward stride to plant a foot with — it is a waddle in place —
