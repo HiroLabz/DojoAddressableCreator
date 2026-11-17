@@ -3,6 +3,7 @@
     "rootNamespace": "Dojo.Game.Tests.EditMode",
     "references": [
         "Dojo.Game",
+        "Dojo.Game.Editor",
         "Dojo.Framework",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
