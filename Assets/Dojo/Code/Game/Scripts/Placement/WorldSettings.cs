@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Dojo.Game.Placement
@@ -74,6 +75,59 @@ namespace Dojo.Game.Placement
         [Tooltip("The most floors a world may have. 0 means no limit. The save, the database and " +
                  "the code assume no maximum, so raising this is the whole change.")]
         [SerializeField] int maxFloors = 5;
+
+        [Header("Kit")]
+        [Tooltip("Content address of the world a player starts in before they have saved one. Each " +
+                 "kit has its own: the first kit's at default/World/world, the MVP kit's at " +
+                 "default/World/world_mvp.")]
+        [SerializeField] string defaultWorld = StandardDefaultWorld;
+
+        [Tooltip("The file the saved worlds are kept in, in the game's own data folder. A scene " +
+                 "building with another kit keeps its worlds apart, so neither opens the other's.")]
+        [SerializeField] string saveFile = StandardSaveFile;
+
+        [Tooltip("The only pieces and rooms the inventory offers, by content address. Empty offers " +
+                 "everything in the content. Filled by Tools > Dojo > MVP Kit for the MVP scene.")]
+        [SerializeField] string[] inventoryOnly = Array.Empty<string>();
+
+        public const string StandardDefaultWorld = "default/World/world";
+        public const string StandardSaveFile = "world.json";
+
+        /// <summary>
+        /// The open scene's settings, for the few readers with no container to be given them by:
+        /// the lobby's world card and the world file. Set as the scene's game scope is built.
+        /// </summary>
+        public static WorldSettings Active { get; set; }
+
+        /// <summary>Content address of the world a new player starts in.</summary>
+        public string DefaultWorld => string.IsNullOrWhiteSpace(defaultWorld) ? StandardDefaultWorld : defaultWorld.Trim();
+
+        /// <summary>Name of the file the saved worlds are kept in.</summary>
+        public string SaveFile => string.IsNullOrWhiteSpace(saveFile) ? StandardSaveFile : saveFile.Trim();
+
+        /// <summary>The addresses the inventory is limited to; empty when it offers everything.</summary>
+        public IReadOnlyList<string> InventoryOnly => inventoryOnly ?? Array.Empty<string>();
+
+        HashSet<string> offered;
+
+        /// <summary>Whether the inventory offers the piece or room at <paramref name="address"/>.</summary>
+        public bool Offers(string address)
+        {
+            if (inventoryOnly == null || inventoryOnly.Length == 0)
+            {
+                return true;
+            }
+
+            if (offered == null || offered.Count != inventoryOnly.Length)
+            {
+                offered = new HashSet<string>(inventoryOnly, StringComparer.OrdinalIgnoreCase);
+            }
+
+            return !string.IsNullOrEmpty(address) && offered.Contains(address.Trim());
+        }
+
+        /// <summary>Whether the open scene's inventory offers <paramref name="address"/>; true with no scene settings.</summary>
+        public static bool ActiveOffers(string address) => Active == null || Active.Offers(address);
 
         /// <summary>The most floors a world may have; 0 means there is no limit.</summary>
         public int MaxFloors => Mathf.Max(0, maxFloors);

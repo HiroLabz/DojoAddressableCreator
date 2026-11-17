@@ -300,6 +300,591 @@
                 "y": 0
             },
             "data": ""
+        },
+        {
+            "id": "default.defaultaccentsidetable",
+            "category": "tables",
+            "name": "default_accent_side_table",
+            "address": "default/default_accent_side_table",
+            "icon": "default/Thumbnails/default_accent_side_table",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultbaseplatform",
+            "category": "floors",
+            "name": "default_base_platform",
+            "address": "default/default_base_platform",
+            "icon": "default/Thumbnails/default_base_platform",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultcontrolconsole",
+            "category": "appliances",
+            "name": "default_control_console",
+            "address": "default/default_control_console",
+            "icon": "default/Thumbnails/default_control_console",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultcurvedwallfacade",
+            "category": "walls",
+            "name": "default_curved_wall_facade",
+            "address": "default/default_curved_wall_facade",
+            "icon": "default/Thumbnails/default_curved_wall_facade",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultdashboardscreen",
+            "category": "appliances",
+            "name": "default_dashboard_screen",
+            "address": "default/default_dashboard_screen",
+            "icon": "default/Thumbnails/default_dashboard_screen",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultdeskbeacon",
+            "category": "appliances",
+            "name": "default_desk_beacon",
+            "address": "default/default_desk_beacon",
+            "icon": "default/Thumbnails/default_desk_beacon",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultdeskplant",
+            "category": "furnitures",
+            "name": "default_desk_plant",
+            "address": "default/default_desk_plant",
+            "icon": "default/Thumbnails/default_desk_plant",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultdevlabdeskbench",
+            "category": "tables",
+            "name": "default_dev_lab_desk_bench",
+            "address": "default/default_dev_lab_desk_bench",
+            "icon": "default/Thumbnails/default_dev_lab_desk_bench",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultdisplayshelf",
+            "category": "drawers",
+            "name": "default_display_shelf",
+            "address": "default/default_display_shelf",
+            "icon": "default/Thumbnails/default_display_shelf",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultdividerwalllarge",
+            "category": "walls",
+            "name": "default_divider_wall_large",
+            "address": "default/default_divider_wall_large",
+            "icon": "default/Thumbnails/default_divider_wall_large",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultdividerwallmedium",
+            "category": "walls",
+            "name": "default_divider_wall_medium",
+            "address": "default/default_divider_wall_medium",
+            "icon": "default/Thumbnails/default_divider_wall_medium",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultdividerwallsmall",
+            "category": "walls",
+            "name": "default_divider_wall_small",
+            "address": "default/default_divider_wall_small",
+            "icon": "default/Thumbnails/default_divider_wall_small",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultdualmonitor",
+            "category": "appliances",
+            "name": "default_dual_monitor",
+            "address": "default/default_dual_monitor",
+            "icon": "default/Thumbnails/default_dual_monitor",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultdualworkstationdesk",
+            "category": "tables",
+            "name": "default_dual_workstation_desk",
+            "address": "default/default_dual_workstation_desk",
+            "icon": "default/Thumbnails/default_dual_workstation_desk",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultentryportalwall",
+            "category": "walls",
+            "name": "default_entry_portal_wall",
+            "address": "default/default_entry_portal_wall",
+            "icon": "default/Thumbnails/default_entry_portal_wall",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultergonomicofficechair",
+            "category": "furnitures",
+            "name": "default_ergonomic_office_chair",
+            "address": "default/default_ergonomic_office_chair",
+            "icon": "default/Thumbnails/default_ergonomic_office_chair",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultfrontcounter",
+            "category": "tables",
+            "name": "default_front_counter",
+            "address": "default/default_front_counter",
+            "icon": "default/Thumbnails/default_front_counter",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultglasspartition",
+            "category": "walls",
+            "name": "default_glass_partition",
+            "address": "default/default_glass_partition",
+            "icon": "default/Thumbnails/default_glass_partition",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultglassperimeterrailing",
+            "category": "walls",
+            "name": "default_glass_perimeter_railing",
+            "address": "default/default_glass_perimeter_railing",
+            "icon": "default/Thumbnails/default_glass_perimeter_railing",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaulthologramprojector",
+            "category": "appliances",
+            "name": "default_hologram_projector",
+            "address": "default/default_hologram_projector",
+            "icon": "default/Thumbnails/default_hologram_projector",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultlargepresentationdisplay",
+            "category": "appliances",
+            "name": "default_large_presentation_display",
+            "address": "default/default_large_presentation_display",
+            "icon": "default/Thumbnails/default_large_presentation_display",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultledtrimlight",
+            "category": "appliances",
+            "name": "default_led_trim_light",
+            "address": "default/default_led_trim_light",
+            "icon": "default/Thumbnails/default_led_trim_light",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultlightgrayfloortile",
+            "category": "floors",
+            "name": "default_light_gray_floor_tile",
+            "address": "default/default_light_gray_floor_tile",
+            "icon": "default/Thumbnails/default_light_gray_floor_tile",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultlongplanter",
+            "category": "furnitures",
+            "name": "default_long_planter",
+            "address": "default/default_long_planter",
+            "icon": "default/Thumbnails/default_long_planter",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultloungepodchair",
+            "category": "furnitures",
+            "name": "default_lounge_pod_chair",
+            "address": "default/default_lounge_pod_chair",
+            "icon": "default/Thumbnails/default_lounge_pod_chair",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultlowloungetable",
+            "category": "tables",
+            "name": "default_low_lounge_table",
+            "address": "default/default_low_lounge_table",
+            "icon": "default/Thumbnails/default_low_lounge_table",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultmediumplanter",
+            "category": "furnitures",
+            "name": "default_medium_planter",
+            "address": "default/default_medium_planter",
+            "icon": "default/Thumbnails/default_medium_planter",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultmeetingchair",
+            "category": "furnitures",
+            "name": "default_meeting_chair",
+            "address": "default/default_meeting_chair",
+            "icon": "default/Thumbnails/default_meeting_chair",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultmeetingtable",
+            "category": "tables",
+            "name": "default_meeting_table",
+            "address": "default/default_meeting_table",
+            "icon": "default/Thumbnails/default_meeting_table",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultpartitionendcap",
+            "category": "walls",
+            "name": "default_partition_end_cap",
+            "address": "default/default_partition_end_cap",
+            "icon": "default/Thumbnails/default_partition_end_cap",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultplanterbox",
+            "category": "furnitures",
+            "name": "default_planter_box",
+            "address": "default/default_planter_box",
+            "icon": "default/Thumbnails/default_planter_box",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultprinterstoragemodule",
+            "category": "appliances",
+            "name": "default_printer_storage_module",
+            "address": "default/default_printer_storage_module",
+            "icon": "default/Thumbnails/default_printer_storage_module",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultserverracktower",
+            "category": "appliances",
+            "name": "default_server_rack_tower",
+            "address": "default/default_server_rack_tower",
+            "icon": "default/Thumbnails/default_server_rack_tower",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultserverwallmodule",
+            "category": "walls",
+            "name": "default_server_wall_module",
+            "address": "default/default_server_wall_module",
+            "icon": "default/Thumbnails/default_server_wall_module",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultsinglemonitor",
+            "category": "appliances",
+            "name": "default_single_monitor",
+            "address": "default/default_single_monitor",
+            "icon": "default/Thumbnails/default_single_monitor",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultsingleworkstationdesk",
+            "category": "tables",
+            "name": "default_single_workstation_desk",
+            "address": "default/default_single_workstation_desk",
+            "icon": "default/Thumbnails/default_single_workstation_desk",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultsmallpottedplant",
+            "category": "furnitures",
+            "name": "default_small_potted_plant",
+            "address": "default/default_small_potted_plant",
+            "icon": "default/Thumbnails/default_small_potted_plant",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultstoragecabinet",
+            "category": "drawers",
+            "name": "default_storage_cabinet",
+            "address": "default/default_storage_cabinet",
+            "icon": "default/Thumbnails/default_storage_cabinet",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultstraightwallpanel",
+            "category": "walls",
+            "name": "default_straight_wall_panel",
+            "address": "default/default_straight_wall_panel",
+            "icon": "default/Thumbnails/default_straight_wall_panel",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaulttablehologrameffect",
+            "category": "appliances",
+            "name": "default_table_hologram_effect",
+            "address": "default/default_table_hologram_effect",
+            "icon": "default/Thumbnails/default_table_hologram_effect",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaulttallpottedplant",
+            "category": "furnitures",
+            "name": "default_tall_potted_plant",
+            "address": "default/default_tall_potted_plant",
+            "icon": "default/Thumbnails/default_tall_potted_plant",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaulttriplemonitor",
+            "category": "appliances",
+            "name": "default_triple_monitor",
+            "address": "default/default_triple_monitor",
+            "icon": "default/Thumbnails/default_triple_monitor",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultwoodfloortile",
+            "category": "floors",
+            "name": "default_wood_floor_tile",
+            "address": "default/default_wood_floor_tile",
+            "icon": "default/Thumbnails/default_wood_floor_tile",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultworkstationreturntable",
+            "category": "tables",
+            "name": "default_work_station_return_table",
+            "address": "default/default_work_station_return_table",
+            "icon": "default/Thumbnails/default_work_station_return_table",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultelevatormvp",
+            "category": "others",
+            "name": "default_elevator_mvp",
+            "address": "default/default_elevator_mvp",
+            "icon": "default/Thumbnails/default_elevator_mvp",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
         }
     ]
 }

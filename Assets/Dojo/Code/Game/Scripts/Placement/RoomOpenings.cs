@@ -42,7 +42,7 @@ namespace Dojo.Game.Placement
         const float SmallestGap = 1f;
 
         /// <summary>The grid rooms are built on. A wall piece's width is a whole number of cells.</summary>
-        const float Grid = 0.25f;
+        static float Grid => PlacementGrid.Step;
 
         /// <summary>Within this, two sides or two ends are the same place.</summary>
         const float Same = 0.05f;
@@ -135,8 +135,15 @@ namespace Dojo.Game.Placement
         }
 
         /// <summary>True when a piece's resource names a wall: how the format tells walls apart.</summary>
+        /// <remarks>
+        /// Glass counts: the MVP kit walls rooms with glass partitions and railings as well as solid
+        /// walls, and a room is fenced, cut for doorways and kept to its edge the same way by either.
+        /// </remarks>
         public static bool IsWall(string resource)
-            => !string.IsNullOrEmpty(resource) && resource.IndexOf("wall", StringComparison.OrdinalIgnoreCase) >= 0;
+            => !string.IsNullOrEmpty(resource)
+               && (resource.IndexOf("wall", StringComparison.OrdinalIgnoreCase) >= 0
+                   || resource.IndexOf("partition", StringComparison.OrdinalIgnoreCase) >= 0
+                   || resource.IndexOf("railing", StringComparison.OrdinalIgnoreCase) >= 0);
 
         // ── Facing ──────────────────────────────────────────────────────────────────────────
 

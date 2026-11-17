@@ -51,17 +51,26 @@ namespace Dojo.Game.InGame.Agents
                  "not freeze mid-step.")]
         [SerializeField] Vector2 rateLimits = new Vector2(0.4f, 2.5f);
 
+        [Tooltip("Bool parameter set while the agent is seated, for a controller with a sitting " +
+                 "state. A controller without this parameter is left alone.")]
+        [SerializeField] string sittingParameter = "Sitting";
+
         NavMeshAgent agent;
         Animator animator;
+        AgentRoutine routine;
         int speedHash;
         int walkRateHash;
+        int sittingHash;
+        bool? hasSitting;
 
         void Awake()
         {
             agent = GetComponent<NavMeshAgent>();
             animator = GetComponentInChildren<Animator>(true);
+            routine = GetComponent<AgentRoutine>();
             speedHash = Animator.StringToHash(speedParameter);
             walkRateHash = Animator.StringToHash(walkRateParameter);
+            sittingHash = Animator.StringToHash(sittingParameter);
 
             if (animator == null)
             {
@@ -86,6 +95,14 @@ namespace Dojo.Game.InGame.Agents
                 ? Mathf.Clamp01(worldSpeed / agent.speed)
                 : 0f;
 
+            // Walking off a chair after standing up: the routine moves it with the NavMeshAgent off,
+            // so the pace comes from the routine, and the walk plays instead of a slide.
+            if (routine != null && routine.IsSteppingOff)
+            {
+                worldSpeed = routine.SteppingOffSpeed;
+                speed = agent.speed > 0f ? Mathf.Clamp01(worldSpeed / agent.speed) : 0.5f;
+            }
+
             animator.SetFloat(speedHash, speed, damping, Time.deltaTime);
 
             // The walk clip has no forward stride to plant a foot with — it is a waddle in place —
@@ -97,6 +114,32 @@ namespace Dojo.Game.InGame.Agents
                 : 1f;
 
             animator.SetFloat(walkRateHash, rate);
+
+            // Only a controller with a sitting state is told; the old robots' controller has none,
+            // and setting a parameter it lacks would warn every frame. Read once the animator runs,
+            // since a controller's parameters are not readable before then.
+            if (hasSitting == null && animator.isActiveAndEnabled && animator.runtimeAnimatorController != null)
+            {
+                hasSitting = HasBool(animator, sittingHash);
+            }
+
+            if (hasSitting == true)
+            {
+                animator.SetBool(sittingHash, routine != null && routine.IsSeated);
+            }
+        }
+
+        static bool HasBool(Animator animator, int hash)
+        {
+            foreach (var parameter in animator.parameters)
+            {
+                if (parameter.nameHash == hash && parameter.type == AnimatorControllerParameterType.Bool)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

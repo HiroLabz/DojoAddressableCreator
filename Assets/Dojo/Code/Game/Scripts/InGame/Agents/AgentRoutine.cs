@@ -65,6 +65,16 @@ namespace Dojo.Game.InGame.Agents
         [Tooltip("Peak height of the hop, above the straight line between the floor and the seat.")]
         [SerializeField] float jumpHeight = 0.8f;
 
+        [Tooltip("For a model that sits with an animation: how far above its feet its thighs rest " +
+                 "in the seated pose, in metres. The agent is placed that far below the cushion, so it " +
+                 "sits on top of it. Below zero for a model with no sitting pose, which is lifted onto " +
+                 "the seat by half its height, as the capsule was.")]
+        [SerializeField] float seatedThighHeight = -1f;
+
+        [Tooltip("For a model that sits with an animation: seconds its stand-up clip takes. It rises " +
+                 "where it sits for this long, then walks off the chair.")]
+        [SerializeField] float standUpSeconds = 2.2f;
+
         [Tooltip("Give up walking to a chair in its own area after this long.")]
         [SerializeField] float approachTimeout = 15f;
 
@@ -154,6 +164,25 @@ namespace Dojo.Game.InGame.Agents
         Vector3 glideToPos;
         Quaternion glideToRot;
         float glideStartedAt;
+        float glideSeconds;
+        float glideArc;
+
+        // Getting up for a model that sits with an animation: first it rises where it sits, then
+        // it walks off the chair, so neither part slides it across the floor.
+        bool risingFromSeat;
+        bool steppingOff;
+
+        /// <summary>
+        /// True while an agent that sits with an animation walks off its chair after standing up.
+        /// The NavMeshAgent is off for it, so <see cref="AgentAnimationDriver"/> reads the pace here.
+        /// </summary>
+        public bool IsSteppingOff => state == State.StandingUp && steppingOff;
+
+        /// <summary>Walking pace of the step off the chair, in metres a second.</summary>
+        public float SteppingOffSpeed => StepOffSpeed(agent != null ? agent.speed : 0f);
+
+        /// <summary>The step off a chair is taken at half the agent's walking speed, never a crawl.</summary>
+        public static float StepOffSpeed(float walkSpeed) => Mathf.Max(0.3f, walkSpeed * 0.5f);
 
         /// <summary>True while the agent is away on a summons rather than on its own floor.</summary>
         public bool IsSummoned => summoned;
@@ -1079,8 +1108,11 @@ namespace Dojo.Game.InGame.Agents
             standPoint = transform.position;
             agent.enabled = false;
 
+            var seat = target.SeatPosition;
             BeginGlide(
-                target.SeatPosition + Vector3.up * halfHeight,
+                seatedThighHeight >= 0f
+                    ? seat - Vector3.up * seatedThighHeight
+                    : seat + Vector3.up * halfHeight,
                 target.SeatRotation,
                 State.SittingDown);
         }
@@ -1099,6 +1131,17 @@ namespace Dojo.Game.InGame.Agents
                 target.SetInUse(false);
             }
 
+            if (seatedThighHeight >= 0f)
+            {
+                // Rises where it sits: only down to the floor's height, never across it.
+                var here = transform.position;
+                BeginGlide(new Vector3(here.x, standPoint.y, here.z), transform.rotation, State.StandingUp);
+                glideSeconds = standUpSeconds;
+                glideArc = 0f;
+                risingFromSeat = true;
+                return;
+            }
+
             BeginGlide(standPoint, transform.rotation, State.StandingUp);
         }
 
@@ -1109,18 +1152,39 @@ namespace Dojo.Game.InGame.Agents
             glideToPos = toPosition;
             glideToRot = toRotation;
             glideStartedAt = Time.time;
+            glideSeconds = jumpSeconds;
+            glideArc = jumpHeight;
+            risingFromSeat = false;
+            steppingOff = false;
             state = glideState;
+        }
+
+        /// <summary>
+        /// After rising from the seat, walks to where it stood before sitting, facing the way it
+        /// goes, at <see cref="SteppingOffSpeed"/>.
+        /// </summary>
+        void BeginSteppingOff()
+        {
+            var way = standPoint - transform.position;
+            way.y = 0f;
+
+            BeginGlide(standPoint,
+                way.sqrMagnitude > 1e-4f ? Quaternion.LookRotation(way.normalized, Vector3.up) : transform.rotation,
+                State.StandingUp);
+            glideSeconds = way.magnitude / SteppingOffSpeed;
+            glideArc = 0f;
+            steppingOff = true;
         }
 
         void TickGliding(State next)
         {
-            var duration = Mathf.Max(0.01f, jumpSeconds);
+            var duration = Mathf.Max(0.01f, glideSeconds);
             var k = Mathf.Clamp01((Time.time - glideStartedAt) / duration);
 
             // Constant travel along the line with a parabola laid over it, so it reads as a hop
             // rather than a slide. The arc term is zero at both ends and peaks halfway across.
             var pos = Vector3.Lerp(glideFromPos, glideToPos, k);
-            pos.y += jumpHeight * 4f * k * (1f - k);
+            pos.y += glideArc * 4f * k * (1f - k);
             transform.position = pos;
 
             // Turn to face the seat early in the hop so the agent lands already oriented.
@@ -1147,6 +1211,14 @@ namespace Dojo.Game.InGame.Agents
                 state = State.Sitting;
                 return;
             }
+
+            if (risingFromSeat)
+            {
+                BeginSteppingOff();
+                return;
+            }
+
+            steppingOff = false;
 
             // Back on the floor: hand the transform to the NavMeshAgent again.
             ReleaseChair();

@@ -36,6 +36,9 @@ namespace Dojo.Game.Placement
         /// An elevator whose stop on another floor would land on something already standing there.
         /// </summary>
         BlockedOnAnotherFloor,
+
+        /// <summary>A wall put on top of something. Walls stand on the floor and nowhere else.</summary>
+        WallOffTheFloor,
     }
 
     /// <summary>
@@ -921,6 +924,12 @@ namespace Dojo.Game.Placement
             if (piece != null && piece.IsFloor)
             {
                 return PlacementRejection.None;
+            }
+
+            // A wall stands on the floor: never on a desk, a shelf or another wall.
+            if (RoomWalls.IsWall(piece) && PlacementGrid.LevelOfKey(origin.z) != PlacementGrid.FloorLevel)
+            {
+                return PlacementRejection.WallOffTheFloor;
             }
 
             Grid.CellsFor(origin, rotatedFootprint, scratch);

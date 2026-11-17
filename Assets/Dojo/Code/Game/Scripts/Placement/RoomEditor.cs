@@ -31,7 +31,7 @@ namespace Dojo.Game.Placement
         readonly List<KeyValuePair<CameraRig, CameraRig.ViewState>> keptViews = new List<KeyValuePair<CameraRig, CameraRig.ViewState>>();
 
         /// <summary>Rooms move in whole grid cells, so a room centred on its origin keeps its pieces on their cells.</summary>
-        const float Snap = 0.25f;
+        static float Snap => PlacementGrid.Step;
 
         public RoomEditor(WorldService world, Storeys storeys, RoomCatalog catalog, WorldSettings settings,
             FurniturePlacementService placement)
@@ -504,7 +504,7 @@ namespace Dojo.Game.Placement
         }
 
         /// <summary>The size of an area's cells: the placement grid's, which painted areas use too.</summary>
-        const float AreaCell = 0.25f;
+        static float AreaCell => PlacementGrid.Step;
 
         /// <summary>
         /// A stable id for a room's area, from its name. Only the room file keeps it: a placed

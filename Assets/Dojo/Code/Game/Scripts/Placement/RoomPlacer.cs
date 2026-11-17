@@ -75,7 +75,7 @@ namespace Dojo.Game.Placement
         /// A room's walls stand just outside its own tiles, so laid tile to tile against the floor
         /// next to it, they hang over that floor's edge by half a wall.
         /// </summary>
-        const float Overhang = 0.25f;
+        static float Overhang => PlacementGrid.Step;
 
         /// <summary>How close two tiles' sizes must be for one to line up with the other.</summary>
         const float SameSize = 0.05f;
@@ -96,7 +96,7 @@ namespace Dojo.Game.Placement
         const float Margin = 0.08f;
 
         /// <summary>Rooms move in whole grid cells, so their pieces stay on the cells they were laid on.</summary>
-        const float Snap = 0.25f;
+        static float Snap => PlacementGrid.Step;
 
         readonly RoomCatalog catalog;
         readonly WorldService world;
@@ -278,7 +278,7 @@ namespace Dojo.Game.Placement
                 return true;
             }
 
-            return NameOf(piece).IndexOf("wall", System.StringComparison.OrdinalIgnoreCase) >= 0;
+            return RoomOpenings.IsWall(NameOf(piece));
         }
 
         /// <summary>
