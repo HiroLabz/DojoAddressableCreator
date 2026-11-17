@@ -382,6 +382,10 @@ namespace Dojo.Game.Editor
             var profile = settings.activeProfileId;
             var previousPath = profiles.GetValueByName(profile, AddressableAssetSettings.kRemoteBuildPath);
             var previousVersion = settings.OverridePlayerVersion;
+            var previousMonoScriptNaming = settings.MonoScriptBundleNaming;
+            var previousMonoScriptPrefix = settings.MonoScriptBundleCustomNaming;
+            var previousBuiltInNaming = settings.BuiltInBundleNaming;
+            var previousBuiltInPrefix = settings.BuiltInBundleCustomNaming;
 
             AddressablesPlayerBuildResult result;
             string catalogFolder;
@@ -394,6 +398,16 @@ namespace Dojo.Game.Editor
                 profiles.SetValue(profile, AddressableAssetSettings.kRemoteBuildPath, staging);
                 settings.OverridePlayerVersion = version.ToString(CultureInfo.InvariantCulture);
 
+                // The script-references and built-in bundles are named from the project, not their
+                // contents, so they keep their name while their bytes change. The CDN caches every
+                // bundle for a year, so a reused name serves the old bytes and fails the catalogue's
+                // CRC check (17 Nov, version 1). Named after the version, they never reuse a path.
+                var prefix = ContentRelease.BundlePrefix(version);
+                settings.MonoScriptBundleNaming = MonoScriptBundleNaming.Custom;
+                settings.MonoScriptBundleCustomNaming = prefix;
+                settings.BuiltInBundleNaming = BuiltInBundleNaming.Custom;
+                settings.BuiltInBundleCustomNaming = prefix;
+
                 catalogFolder = settings.RemoteCatalogBuildPath != null
                     ? settings.RemoteCatalogBuildPath.GetValue(settings)
                     : null;
@@ -405,6 +419,10 @@ namespace Dojo.Game.Editor
             {
                 profiles.SetValue(profile, AddressableAssetSettings.kRemoteBuildPath, previousPath);
                 settings.OverridePlayerVersion = previousVersion;
+                settings.MonoScriptBundleNaming = previousMonoScriptNaming;
+                settings.MonoScriptBundleCustomNaming = previousMonoScriptPrefix;
+                settings.BuiltInBundleNaming = previousBuiltInNaming;
+                settings.BuiltInBundleCustomNaming = previousBuiltInPrefix;
                 AssetDatabase.SaveAssets();
             }
 

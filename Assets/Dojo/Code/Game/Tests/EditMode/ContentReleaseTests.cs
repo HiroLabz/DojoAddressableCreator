@@ -220,6 +220,13 @@ namespace Dojo.Game.Tests.EditMode
         }
 
         [Test]
+        public void TheProjectNamedBundles_GetANewNameEveryVersion_SoTheCdnNeverServesAnOldCopy()
+        {
+            Assert.AreEqual("dojo_v2", ContentRelease.BundlePrefix(2));
+            Assert.AreNotEqual(ContentRelease.BundlePrefix(2), ContentRelease.BundlePrefix(3));
+        }
+
+        [Test]
         public void PackNames_WithNoProcessFolder_IsEmpty()
         {
             CollectionAssert.IsEmpty(ContentRelease.PackNames(Path.Combine(root, "nowhere")));

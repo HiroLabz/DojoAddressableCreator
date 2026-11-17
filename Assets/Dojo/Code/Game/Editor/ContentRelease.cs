@@ -36,6 +36,12 @@ namespace Dojo.Game.Editor
         static readonly Regex BuildFile = new Regex(@"(\.bundle$)|(^catalog.*\.(bin|hash|json)$)",
             RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
+        /// <summary>
+        /// The name prefix of the bundles Addressables names from the project rather than their
+        /// contents (script references, built-in assets): the version, so no release reuses one.
+        /// </summary>
+        public static string BundlePrefix(int version) => "dojo_v" + version.ToString(CultureInfo.InvariantCulture);
+
         /// <summary>The catalogue a release is named by.</summary>
         public static string CatalogFileName(int version) => "catalog_" + version.ToString(CultureInfo.InvariantCulture) + ".bin";
 
