@@ -412,7 +412,7 @@ namespace Dojo.Game.Placement
 
                 foreach (var stop in shaft.stops.Values)
                 {
-                    if (stop == null)
+                    if (!IsStanding(stop))
                     {
                         lost = true;
                         break;
@@ -426,11 +426,7 @@ namespace Dojo.Game.Placement
 
                 foreach (var stop in shaft.stops.Values)
                 {
-                    if (stop != null)
-                    {
-                        placement.Release(stop);
-                        UnityEngine.Object.Destroy(stop.gameObject);
-                    }
+                    TakeDown(stop);
                 }
 
                 shafts.RemoveAt(i);
@@ -467,10 +463,9 @@ namespace Dojo.Game.Placement
 
                 foreach (var other in shaft.stops)
                 {
-                    if (other.Value != null && other.Value != moved)
+                    if (other.Value != moved)
                     {
-                        placement.Release(other.Value);
-                        UnityEngine.Object.Destroy(other.Value.gameObject);
+                        TakeDown(other.Value);
                     }
                 }
 
@@ -484,7 +479,9 @@ namespace Dojo.Game.Placement
             {
                 var piece = child.GetComponent<FurniturePiece>();
 
-                if (piece == null || piece.IsLifted || !IsStop(piece) || Owned(piece))
+                // Not one being taken down: Destroy lands at the end of the frame, and a stop this
+                // pass took down a moment ago would otherwise come back as a new elevator.
+                if (!IsStanding(piece) || piece.IsLifted || !IsStop(piece) || Owned(piece))
                 {
                     continue;
                 }
@@ -521,13 +518,7 @@ namespace Dojo.Game.Placement
 
                 foreach (var floor in gone)
                 {
-                    var stop = shaft.stops[floor];
-                    if (stop != null)
-                    {
-                        placement.Release(stop);
-                        UnityEngine.Object.Destroy(stop.gameObject);
-                    }
-
+                    TakeDown(shaft.stops[floor]);
                     shaft.stops.Remove(floor);
                     changed = true;
                 }
@@ -535,7 +526,7 @@ namespace Dojo.Game.Placement
                 for (var floor = 0; floor < storeys.Count; floor++)
                 {
                     FurniturePiece stop;
-                    if (shaft.stops.TryGetValue(floor, out stop) && stop != null)
+                    if (shaft.stops.TryGetValue(floor, out stop) && IsStanding(stop))
                     {
                         continue;
                     }
@@ -568,6 +559,32 @@ namespace Dojo.Game.Placement
             }
 
             RefreshLinks();
+        }
+
+        /// <summary>
+        /// Whether a stop is still standing: neither destroyed nor switched off to be destroyed.
+        /// </summary>
+        /// <remarks>
+        /// A deleted piece is switched off at once and destroyed at the end of the frame (the
+        /// placement controller's delete, and <see cref="TakeDown"/>). Until then it is not null,
+        /// so a null check alone takes it for standing: a shaft missing a stop the player had just
+        /// deleted kept its others, and a stop taken down here was picked up again as a new
+        /// elevator in the same pass, with a fresh stop built for it on the other floor (QA, 17 Nov).
+        /// Nothing else switches a stop off.
+        /// </remarks>
+        public static bool IsStanding(Component stop) => stop != null && stop.gameObject.activeSelf;
+
+        /// <summary>Gives a stop's cells back and takes it out of the world now, not at the end of the frame.</summary>
+        void TakeDown(FurniturePiece stop)
+        {
+            if (stop == null)
+            {
+                return;
+            }
+
+            placement.Release(stop);
+            stop.gameObject.SetActive(false);
+            UnityEngine.Object.Destroy(stop.gameObject);
         }
 
         bool Owned(FurniturePiece piece)
