@@ -11,12 +11,14 @@ namespace Dojo.Game.Editor
     /// that put one there. No Unity calls, so every rule here is tested on plain folders.
     /// </summary>
     /// <remarks>
-    /// One folder holds everything: <c>version.json</c> at the top, naming the newest release, and
-    /// one <c>v&lt;version&gt;</c> folder per release with its catalogue, hash and bundles. The game
-    /// reads <c>version.json</c> first, then everything else from the folder it names.
+    /// One flat folder holds the whole release: <c>version.json</c>, <c>catalog_&lt;version&gt;.bin</c>
+    /// with its <c>.hash</c>, and every bundle. The game reads <c>version.json</c> first, then the
+    /// catalogue it names, then the bundles, all from that one folder.
     /// <para>
-    /// <c>version.json</c> is written last and only after every file of the release is checked, so
-    /// a build that fails part-way leaves the game on the release it already had.
+    /// <c>version.json</c> is written only after every file of the release is copied and checked, so
+    /// a build that fails part-way leaves the game on the release it already had. Once it points at
+    /// the new release, the files of earlier builds are removed, so the folder only ever holds one
+    /// release.
     /// </para>
     /// </remarks>
     public static class ContentRelease
@@ -27,10 +29,12 @@ namespace Dojo.Game.Editor
         /// <summary>The folder every pack lives in, one folder per pack.</summary>
         public const string ProcessFolder = "Assets/Process";
 
-        static readonly Regex ReleaseFolder = new Regex(@"^v\d+$", RegexOptions.CultureInvariant);
+        /// <summary>A release folder from the earlier layout, which put each release in v&lt;version&gt;/.</summary>
+        static readonly Regex OldReleaseFolder = new Regex(@"^v\d+$", RegexOptions.CultureInvariant);
 
-        /// <summary>The folder one release is served from. Matches the game's <c>ReleaseRootFor</c>.</summary>
-        public static string ReleaseFolderName(int version) => "v" + version.ToString(CultureInfo.InvariantCulture);
+        /// <summary>The files an Addressables build writes: bundles, and catalogues with their hashes.</summary>
+        static readonly Regex BuildFile = new Regex(@"(\.bundle$)|(^catalog.*\.(bin|hash|json)$)",
+            RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
         /// <summary>The catalogue a release is named by.</summary>
         public static string CatalogFileName(int version) => "catalog_" + version.ToString(CultureInfo.InvariantCulture) + ".bin";
@@ -93,54 +97,95 @@ namespace Dojo.Game.Editor
         }
 
         /// <summary>
-        /// Everything in the output folder the game does not read: anything but <c>version.json</c>
-        /// and the <c>v&lt;version&gt;</c> folders. Listed, never deleted.
+        /// The build files now in the folder (bundles, catalogues, hashes, and any v&lt;version&gt;
+        /// folders from the earlier layout). The next build replaces all of them.
         /// </summary>
-        public static List<string> Leftovers(string outputFolder)
+        public static List<string> BuildFiles(string outputFolder)
         {
-            var leftovers = new List<string>();
+            var found = new List<string>();
             if (!Directory.Exists(outputFolder))
             {
-                return leftovers;
+                return found;
             }
 
             foreach (var file in Directory.GetFiles(outputFolder))
             {
                 var name = Path.GetFileName(file);
-                if (!string.Equals(name, VersionFileName, StringComparison.OrdinalIgnoreCase))
+                if (BuildFile.IsMatch(name))
                 {
-                    leftovers.Add(name);
+                    found.Add(name);
                 }
             }
 
             foreach (var directory in Directory.GetDirectories(outputFolder))
             {
                 var name = Path.GetFileName(directory);
-                if (!ReleaseFolder.IsMatch(name))
+                if (OldReleaseFolder.IsMatch(name))
                 {
-                    leftovers.Add(name + "/");
+                    found.Add(name + "/");
                 }
             }
 
-            leftovers.Sort(StringComparer.OrdinalIgnoreCase);
-            return leftovers;
+            found.Sort(StringComparer.OrdinalIgnoreCase);
+            return found;
+        }
+
+        /// <summary>
+        /// Everything else in the output folder: not version.json and not a build file. Listed in
+        /// the window, never touched.
+        /// </summary>
+        public static List<string> OtherFiles(string outputFolder)
+        {
+            var other = new List<string>();
+            if (!Directory.Exists(outputFolder))
+            {
+                return other;
+            }
+
+            foreach (var file in Directory.GetFiles(outputFolder))
+            {
+                var name = Path.GetFileName(file);
+                if (!string.Equals(name, VersionFileName, StringComparison.OrdinalIgnoreCase) && !BuildFile.IsMatch(name))
+                {
+                    other.Add(name);
+                }
+            }
+
+            foreach (var directory in Directory.GetDirectories(outputFolder))
+            {
+                var name = Path.GetFileName(directory);
+                if (!OldReleaseFolder.IsMatch(name))
+                {
+                    other.Add(name + "/");
+                }
+            }
+
+            other.Sort(StringComparer.OrdinalIgnoreCase);
+            return other;
+        }
+
+        /// <summary>What <see cref="Install"/> put in the folder and what it took out.</summary>
+        public sealed class Installed
+        {
+            public int Bundles;
+            public List<string> Removed = new List<string>();
         }
 
         /// <summary>
         /// Puts a finished build into the output folder as release <paramref name="version"/>:
-        /// copies the catalogue, its hash and every bundle into <c>v&lt;version&gt;</c>, checks each
-        /// copy, then writes <c>version.json</c>.
+        /// copies the catalogue, its hash and every bundle into the folder, checks each copy, writes
+        /// <c>version.json</c>, then removes the files of earlier builds.
         /// </summary>
         /// <param name="outputFolder">The folder the game loads from.</param>
         /// <param name="version">The release's number; must be the folder's next one.</param>
         /// <param name="catalogFolder">Where the build wrote <c>catalog_&lt;version&gt;.bin</c> and its hash.</param>
         /// <param name="bundlePaths">Every bundle the build wrote.</param>
         /// <param name="builtUtc">When it was built, written into version.json.</param>
-        /// <returns>How many bundles went in.</returns>
         /// <exception cref="ContentReleaseException">
-        /// Anything is missing or did not copy whole. version.json is then left as it was.
+        /// Anything is missing or did not copy whole. version.json and the earlier build's files are
+        /// then left as they were.
         /// </exception>
-        public static int Install(string outputFolder, int version, string catalogFolder,
+        public static Installed Install(string outputFolder, int version, string catalogFolder,
             IList<string> bundlePaths, DateTime builtUtc)
         {
             var current = CurrentVersion(outputFolder);
@@ -168,36 +213,56 @@ namespace Dojo.Game.Editor
                     + "changed:\n  " + string.Join("\n  ", missing));
             }
 
-            // Nothing points at this folder yet - version.json still names the current release - so
-            // anything in it is from a build that never finished, and is replaced.
-            var release = Path.Combine(outputFolder, ReleaseFolderName(version));
-            if (Directory.Exists(release))
-            {
-                Directory.Delete(release, true);
-            }
-
-            Directory.CreateDirectory(release);
-
+            // The new files go in beside the old ones. A bundle whose content did not change keeps
+            // its name, so it is simply written again; the old release stays loadable until
+            // version.json moves on.
+            var keep = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { VersionFileName };
             var problems = new List<string>();
+
             foreach (var source in sources)
             {
-                var target = Path.Combine(release, Path.GetFileName(source));
+                var name = Path.GetFileName(source);
+                var target = Path.Combine(outputFolder, name);
+                keep.Add(name);
                 File.Copy(source, target, true);
 
                 if (!File.Exists(target) || new FileInfo(target).Length != new FileInfo(source).Length)
                 {
-                    problems.Add(Path.GetFileName(source));
+                    problems.Add(name);
                 }
             }
 
             if (problems.Count > 0)
             {
-                throw new ContentReleaseException(problems.Count + " file(s) did not copy whole into " + release
+                throw new ContentReleaseException(problems.Count + " file(s) did not copy whole into " + outputFolder
                     + ", so version.json was left on the previous release:\n  " + string.Join("\n  ", problems));
             }
 
             WriteVersionFile(outputFolder, version, catalog, builtUtc);
-            return bundlePaths.Count;
+
+            // Only now that the game is pointed at the new release: everything an earlier build left
+            // is removed, so the folder holds exactly one release.
+            var installed = new Installed { Bundles = bundlePaths.Count };
+            foreach (var name in BuildFiles(outputFolder))
+            {
+                if (keep.Contains(name))
+                {
+                    continue;
+                }
+
+                if (name.EndsWith("/", StringComparison.Ordinal))
+                {
+                    Directory.Delete(Path.Combine(outputFolder, name.Substring(0, name.Length - 1)), true);
+                }
+                else
+                {
+                    File.Delete(Path.Combine(outputFolder, name));
+                }
+
+                installed.Removed.Add(name);
+            }
+
+            return installed;
         }
 
         /// <summary>The text of version.json for a release.</summary>

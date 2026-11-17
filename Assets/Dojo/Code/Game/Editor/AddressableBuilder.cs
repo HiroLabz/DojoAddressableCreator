@@ -18,9 +18,10 @@ namespace Dojo.Game.Editor
     /// <remarks>
     /// <b>Process Addressable Folder</b> runs the Addressable Generator over each pack folder in
     /// turn, 'default' first — the same code its Generate Thumbnails button runs, with the settings
-    /// shown here. <b>Build</b> builds the content as the output folder's next version: the release
-    /// goes into <c>v&lt;version&gt;</c> there and <c>version.json</c> is written last, so there is
-    /// nothing to copy afterwards. See <see cref="ContentRelease"/>.
+    /// shown here. <b>Build</b> builds the content as the output folder's next version: the
+    /// catalogue and bundles go straight into that folder, <c>version.json</c> is written after
+    /// them, and the files of earlier builds are removed, so there is nothing to copy or clean up
+    /// afterwards. See <see cref="ContentRelease"/>.
     /// </remarks>
     public sealed class AddressableBuilder : EditorWindow
     {
@@ -221,7 +222,7 @@ namespace Dojo.Game.Editor
             {
                 outputFolder = EditorGUILayout.TextField(
                     new GUIContent("Save to",
-                        "The folder the game loads content from: version.json and one v<version> folder per release go here."),
+                        "The folder the game loads content from: version.json, the catalogue and every bundle go straight in here."),
                     outputFolder);
 
                 if (GUILayout.Button("Browse", GUILayout.Width(70f)))
@@ -259,10 +260,17 @@ namespace Dojo.Game.Editor
                         : "No version here yet    →    Build makes version " + next
                           + (Directory.Exists(folder) ? string.Empty : "  (the folder is created)");
 
-                    var leftovers = ContentRelease.Leftovers(folder);
-                    if (leftovers.Count > 0)
+                    var buildFiles = ContentRelease.BuildFiles(folder);
+                    if (buildFiles.Count > 0)
                     {
-                        line += "\n\nNot used by the game (left alone): " + string.Join(", ", leftovers);
+                        line += "\n" + buildFiles.Count + " build file(s) here now; Build replaces them with version "
+                            + next + "'s, so only one release is ever in the folder.";
+                    }
+
+                    var other = ContentRelease.OtherFiles(folder);
+                    if (other.Count > 0)
+                    {
+                        line += "\nNot build files, left alone: " + string.Join(", ", other);
                     }
 
                     EditorGUILayout.HelpBox(line, MessageType.Info);
@@ -355,14 +363,14 @@ namespace Dojo.Game.Editor
 
             if (!EditorUtility.DisplayDialog("Build content version " + version,
                     "Builds the content as version " + version + " into:\n" + folder + "\n\n"
-                    + ContentRelease.ReleaseFolderName(version) + "/ gets the catalogue and bundles, then version.json "
-                    + "is set to " + version + ". Nothing to copy afterwards.",
+                    + "The catalogue and bundles go straight into that folder, version.json is set to " + version
+                    + ", and the files of earlier builds are removed. Nothing to copy afterwards.",
                     "Build version " + version, "Cancel"))
             {
                 return;
             }
 
-            var staging = Path.Combine(ProjectRoot, "Temp", "AddressableBuilder", ContentRelease.ReleaseFolderName(version));
+            var staging = Path.Combine(ProjectRoot, "Temp", "AddressableBuilder", "build_" + version.ToString(CultureInfo.InvariantCulture));
             if (Directory.Exists(staging))
             {
                 Directory.Delete(staging, true);
@@ -416,7 +424,7 @@ namespace Dojo.Game.Editor
                 }
             }
 
-            int installed;
+            ContentRelease.Installed installed;
             try
             {
                 Directory.CreateDirectory(folder);
@@ -439,10 +447,12 @@ namespace Dojo.Game.Editor
                 }
             }
 
-            var release = Path.Combine(folder, ContentRelease.ReleaseFolderName(version));
             buildResult = "Version " + version + " built " + DateTime.Now.ToString("HH:mm", CultureInfo.InvariantCulture)
-                + "\n" + ContentRelease.CatalogFileName(version) + " and " + installed + " bundle(s) in " + release
-                + "\nversion.json in " + folder + " now says " + version + ".";
+                + "\n" + ContentRelease.CatalogFileName(version) + " and " + installed.Bundles + " bundle(s) in " + folder
+                + "\nversion.json there now says " + version + "."
+                + (installed.Removed.Count > 0
+                    ? "\nRemoved " + installed.Removed.Count + " file(s) from earlier builds."
+                    : string.Empty);
 
             Debug.Log(Log + " " + buildResult.Replace("\n", " "));
             EditorUtility.DisplayDialog("Content version " + version + " built", buildResult, "OK");

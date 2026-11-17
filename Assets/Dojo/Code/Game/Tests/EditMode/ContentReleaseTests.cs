@@ -7,13 +7,13 @@ using NUnit.Framework;
 namespace Dojo.Game.Tests.EditMode
 {
     /// <summary>
-    /// The Addressable Builder's release layout: version.json and v&lt;version&gt;/ in the one folder
-    /// the game loads from, the next number, the pack folders it processes, and that version.json
-    /// only moves once every file of the release is in place.
+    /// The Addressable Builder's release layout: one flat folder holding version.json, the
+    /// catalogue, its hash and every bundle of exactly one release; the next number; the pack
+    /// folders it processes; and that version.json only moves once every file is in place.
     /// </summary>
     public sealed class ContentReleaseTests
     {
-        static readonly DateTime Built = new DateTime(2026, 11, 17, 16, 0, 0, DateTimeKind.Utc);
+        static readonly DateTime Built = new DateTime(2026, 11, 18, 9, 0, 0, DateTimeKind.Utc);
 
         string root;
         string output;
@@ -41,6 +41,11 @@ namespace Dojo.Game.Tests.EditMode
         /// <summary>Writes what an Addressables build of one version leaves: catalogue, hash and bundles.</summary>
         List<string> FakeBuild(int version, params string[] bundleNames)
         {
+            foreach (var file in Directory.GetFiles(build))
+            {
+                File.Delete(file);
+            }
+
             File.WriteAllText(Path.Combine(build, "catalog_" + version + ".bin"), "catalog " + version);
             File.WriteAllText(Path.Combine(build, "catalog_" + version + ".hash"), "hash " + version);
 
@@ -48,12 +53,14 @@ namespace Dojo.Game.Tests.EditMode
             foreach (var name in bundleNames)
             {
                 var path = Path.Combine(build, name);
-                File.WriteAllText(path, "bundle " + name + " " + version);
+                File.WriteAllText(path, "bundle " + name);
                 bundles.Add(path);
             }
 
             return bundles;
         }
+
+        string[] OutputFiles() => Array.ConvertAll(Directory.GetFiles(output), Path.GetFileName);
 
         [Test]
         public void AFolderWithNoVersionFile_BuildsVersionZero()
@@ -80,51 +87,79 @@ namespace Dojo.Game.Tests.EditMode
         }
 
         [Test]
-        public void Install_PutsTheReleaseInItsOwnFolder_AndVersionJsonNextToIt()
+        public void Install_PutsEveryFileStraightInTheFolder_NoVersionFolder()
         {
-            var bundles = FakeBuild(0, "a.bundle", "b.bundle");
+            var installed = ContentRelease.Install(output, 0, build, FakeBuild(0, "a.bundle", "b.bundle"), Built);
 
-            var installed = ContentRelease.Install(output, 0, build, bundles, Built);
-
-            Assert.AreEqual(2, installed);
-            var release = Path.Combine(output, "v0");
+            Assert.AreEqual(2, installed.Bundles);
             CollectionAssert.AreEquivalent(
-                new[] { "a.bundle", "b.bundle", "catalog_0.bin", "catalog_0.hash" },
-                Array.ConvertAll(Directory.GetFiles(release), Path.GetFileName));
+                new[] { "a.bundle", "b.bundle", "catalog_0.bin", "catalog_0.hash", "version.json" }, OutputFiles());
+            CollectionAssert.IsEmpty(Directory.GetDirectories(output));
             Assert.AreEqual(ContentRelease.VersionJson(0, "catalog_0.bin", Built),
                 File.ReadAllText(Path.Combine(output, "version.json")));
-            Assert.IsFalse(File.Exists(Path.Combine(output, "version.json.tmp")));
         }
 
         [Test]
-        public void Install_OverAnOlderRelease_MovesVersionJsonOn_AndKeepsTheOlderFolder()
+        public void Install_OverAnEarlierBuild_LeavesExactlyOneRelease()
         {
-            ContentRelease.Install(output, 0, build, FakeBuild(0, "a.bundle"), Built);
+            ContentRelease.Install(output, 0, build, FakeBuild(0, "kept.bundle", "old.bundle"), Built);
 
-            ContentRelease.Install(output, 1, build, FakeBuild(1, "a.bundle", "c.bundle"), Built);
+            var installed = ContentRelease.Install(output, 1, build, FakeBuild(1, "kept.bundle", "new.bundle"), Built);
 
             Assert.AreEqual(1, ContentRelease.CurrentVersion(output));
-            Assert.IsTrue(Directory.Exists(Path.Combine(output, "v0")), "the game may still be on v0 until it reads the new version.json");
-            Assert.IsTrue(File.Exists(Path.Combine(output, "v1", "c.bundle")));
-            Assert.IsTrue(File.Exists(Path.Combine(output, "v1", "catalog_1.bin")));
+            CollectionAssert.AreEquivalent(
+                new[] { "kept.bundle", "new.bundle", "catalog_1.bin", "catalog_1.hash", "version.json" }, OutputFiles());
+            CollectionAssert.AreEquivalent(new[] { "catalog_0.bin", "catalog_0.hash", "old.bundle" }, installed.Removed);
+        }
+
+        [Test]
+        public void Install_ClearsOutTheOldVersionFoldersAndLooseFilesOfEarlierBuilds()
+        {
+            File.WriteAllText(Path.Combine(output, "version.json"), ContentRelease.VersionJson(2, "catalog_2.bin", Built));
+            File.WriteAllText(Path.Combine(output, "catalog_0.1.0.bin"), "old");
+            File.WriteAllText(Path.Combine(output, "catalog_0.1.0.hash"), "old");
+            File.WriteAllText(Path.Combine(output, "stale_abc.bundle"), "old");
+            Directory.CreateDirectory(Path.Combine(output, "v2"));
+            File.WriteAllText(Path.Combine(output, "v2", "catalog_2.bin"), "old");
+
+            ContentRelease.Install(output, 3, build, FakeBuild(3, "a.bundle"), Built);
+
+            CollectionAssert.AreEquivalent(new[] { "a.bundle", "catalog_3.bin", "catalog_3.hash", "version.json" }, OutputFiles());
+            CollectionAssert.IsEmpty(Directory.GetDirectories(output));
+        }
+
+        [Test]
+        public void Install_LeavesFilesThatAreNotBuildFilesAlone()
+        {
+            File.WriteAllText(Path.Combine(output, "README.txt"), "notes");
+            Directory.CreateDirectory(Path.Combine(output, "notes"));
+
+            ContentRelease.Install(output, 0, build, FakeBuild(0, "a.bundle"), Built);
+
+            Assert.IsTrue(File.Exists(Path.Combine(output, "README.txt")));
+            Assert.IsTrue(Directory.Exists(Path.Combine(output, "notes")));
+            CollectionAssert.AreEqual(new[] { "notes/", "README.txt" }, ContentRelease.OtherFiles(output));
         }
 
         [Test]
         public void Install_RefusesAVersionThatIsNotTheNextOne_AndChangesNothing()
         {
             File.WriteAllText(Path.Combine(output, "version.json"), ContentRelease.VersionJson(1, "catalog_1.bin", Built));
+            File.WriteAllText(Path.Combine(output, "catalog_1.bin"), "live");
 
             Assert.Throws<ContentReleaseException>(() =>
                 ContentRelease.Install(output, 3, build, FakeBuild(3, "a.bundle"), Built));
 
             Assert.AreEqual(1, ContentRelease.CurrentVersion(output));
-            Assert.IsFalse(Directory.Exists(Path.Combine(output, "v3")));
+            CollectionAssert.AreEquivalent(new[] { "catalog_1.bin", "version.json" }, OutputFiles());
         }
 
         [Test]
-        public void Install_WithABundleMissing_LeavesVersionJsonOnThePreviousRelease()
+        public void Install_WithABundleMissing_LeavesTheLiveReleaseUntouched()
         {
             File.WriteAllText(Path.Combine(output, "version.json"), ContentRelease.VersionJson(1, "catalog_1.bin", Built));
+            File.WriteAllText(Path.Combine(output, "catalog_1.bin"), "live");
+            File.WriteAllText(Path.Combine(output, "live.bundle"), "live");
             var bundles = FakeBuild(2, "a.bundle");
             bundles.Add(Path.Combine(build, "never_written.bundle"));
 
@@ -132,6 +167,7 @@ namespace Dojo.Game.Tests.EditMode
 
             StringAssert.Contains("never_written.bundle", refused.Message);
             Assert.AreEqual(1, ContentRelease.CurrentVersion(output));
+            CollectionAssert.AreEquivalent(new[] { "catalog_1.bin", "live.bundle", "version.json" }, OutputFiles());
         }
 
         [Test]
@@ -155,28 +191,18 @@ namespace Dojo.Game.Tests.EditMode
         }
 
         [Test]
-        public void Install_ReplacesAHalfBuiltFolder_ThatNothingPointsAt()
-        {
-            Directory.CreateDirectory(Path.Combine(output, "v0"));
-            File.WriteAllText(Path.Combine(output, "v0", "stale.bundle"), "from a build that never finished");
-
-            ContentRelease.Install(output, 0, build, FakeBuild(0, "a.bundle"), Built);
-
-            Assert.IsFalse(File.Exists(Path.Combine(output, "v0", "stale.bundle")));
-            Assert.IsTrue(File.Exists(Path.Combine(output, "v0", "a.bundle")));
-        }
-
-        [Test]
-        public void Leftovers_AreEverythingButVersionJsonAndTheReleaseFolders()
+        public void BuildFiles_AreBundlesCataloguesHashesAndOldVersionFolders()
         {
             File.WriteAllText(Path.Combine(output, "version.json"), "{}");
             File.WriteAllText(Path.Combine(output, "catalog_0.1.0.bin"), "old");
-            File.WriteAllText(Path.Combine(output, "old.bundle"), "old");
-            Directory.CreateDirectory(Path.Combine(output, "v0"));
+            File.WriteAllText(Path.Combine(output, "catalog_4.hash"), "old");
+            File.WriteAllText(Path.Combine(output, "x.bundle"), "old");
+            File.WriteAllText(Path.Combine(output, "README.txt"), "notes");
             Directory.CreateDirectory(Path.Combine(output, "v12"));
             Directory.CreateDirectory(Path.Combine(output, "notes"));
 
-            CollectionAssert.AreEqual(new[] { "catalog_0.1.0.bin", "notes/", "old.bundle" }, ContentRelease.Leftovers(output));
+            CollectionAssert.AreEqual(new[] { "catalog_0.1.0.bin", "catalog_4.hash", "v12/", "x.bundle" },
+                ContentRelease.BuildFiles(output));
         }
 
         [Test]
