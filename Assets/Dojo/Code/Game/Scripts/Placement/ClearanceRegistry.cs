@@ -65,6 +65,13 @@ namespace Dojo.Game.Placement
         /// than slices of them, because a part is one rigid thing - an arm that hangs down to the
         /// hip is as wide at the shoulder.
         /// <para>
+        /// A skinned mesh is not one rigid thing: it bends at every joint, and Harold's robots are
+        /// one mesh each, head and all. So it is measured by its points in the pose it stands in,
+        /// and only the points down in the band count. Whole, the 18 Nov owner measured 0.47m - his
+        /// helmet, and a box Unity hangs off-centre round the mesh - and was too wide for any
+        /// doorway into the meeting room; his legs are 0.28m.
+        /// </para>
+        /// <para>
         /// In the body's own frame, so the answer does not depend on which way it happens to be
         /// facing: a world-space box around a model turned at an angle is wider than the model.
         /// From the pivot because that is where the NavMeshAgent stands - a model hung off-centre
@@ -88,6 +95,23 @@ namespace Dojo.Game.Placement
                 // Effects, trails and lines are not the body.
                 if (renderer is ParticleSystemRenderer || renderer is TrailRenderer || renderer is LineRenderer)
                 {
+                    continue;
+                }
+
+                // A skinned body is one mesh from the boots to the hat, so as one part it would
+                // count whole: a helmet held high as wide as the legs. Its points are measured
+                // instead, as it stands now, each one a part of its own.
+                var skinned = renderer as SkinnedMeshRenderer;
+                if (skinned != null && skinned.sharedMesh != null)
+                {
+                    foreach (var point in PointsOf(skinned))
+                    {
+                        var offset = unturn * (point - body.position);
+                        parts.Add(new Vector4(Mathf.Max(Mathf.Abs(offset.x), Mathf.Abs(offset.z)), offset.y, offset.y, 0f));
+                        bottom = Mathf.Min(bottom, offset.y);
+                        top = Mathf.Max(top, offset.y);
+                    }
+
                     continue;
                 }
 
@@ -138,6 +162,30 @@ namespace Dojo.Game.Placement
             }
 
             return widest;
+        }
+
+        static Mesh baked;
+
+        /// <summary>The world positions of a skinned mesh's points, in the pose it has now.</summary>
+        /// <remarks>
+        /// Baked with <c>useScale</c>, the form that <see cref="Transform.TransformPoint(Vector3)"/>
+        /// puts back where it is drawn. Harold's models carry a 1.66 import scale on the mesh's own
+        /// transform; baked without it, the owner came out 1.5m tall, beyond his own bounds.
+        /// </remarks>
+        static System.Collections.Generic.IEnumerable<Vector3> PointsOf(SkinnedMeshRenderer skinned)
+        {
+            if (baked == null)
+            {
+                baked = new Mesh { name = "ClearanceRegistry.baked", hideFlags = HideFlags.HideAndDontSave };
+            }
+
+            skinned.BakeMesh(baked, true);
+
+            var into = skinned.transform;
+            foreach (var vertex in baked.vertices)
+            {
+                yield return into.TransformPoint(vertex);
+            }
         }
 
         /// <summary>
