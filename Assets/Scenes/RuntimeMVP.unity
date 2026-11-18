@@ -26022,6 +26022,14 @@ MonoBehaviour:
     - default/default_superComputer
     - default/default_superComputer_2
     - default/default_superComputer_3
+    - default/Rooms/default_room_mvp_sales
+    - default/Rooms/default_room_mvp_marketing
+    - default/Rooms/default_room_mvp_customer_support
+    - default/Rooms/default_room_mvp_customer_success
+    - default/Rooms/default_room_mvp_finance
+    - default/Rooms/default_room_mvp_accounting
+    - default/Rooms/default_room_mvp_hr
+    - default/Rooms/default_room_mvp_recruitment
 --- !u!4 &1510082292
 Transform:
   m_ObjectHideFlags: 0
