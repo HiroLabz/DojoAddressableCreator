@@ -7,27 +7,57 @@
             "tag": "default"
         },
         {
-            "name": "IT and Security",
-            "address": "default/Rooms/default_room_mvp_it_and_security",
-            "icon": "default/Rooms/Thumbnails/room_mvp_it_and_security",
+            "name": "Sales",
+            "address": "default/Rooms/default_room_mvp_sales",
+            "icon": "default/Rooms/Thumbnails/room_mvp_sales",
             "tag": "default"
         },
         {
-            "name": "Conference Room",
-            "address": "default/Rooms/default_room_mvp_conference_room",
-            "icon": "default/Rooms/Thumbnails/room_mvp_conference_room",
+            "name": "Marketing",
+            "address": "default/Rooms/default_room_mvp_marketing",
+            "icon": "default/Rooms/Thumbnails/room_mvp_marketing",
             "tag": "default"
         },
         {
-            "name": "Operations",
-            "address": "default/Rooms/default_room_mvp_operations",
-            "icon": "default/Rooms/Thumbnails/room_mvp_operations",
+            "name": "Customer Support",
+            "address": "default/Rooms/default_room_mvp_customer_support",
+            "icon": "default/Rooms/Thumbnails/room_mvp_customer_support",
             "tag": "default"
         },
         {
-            "name": "Product and Development",
-            "address": "default/Rooms/default_room_mvp_product_and_development",
-            "icon": "default/Rooms/Thumbnails/room_mvp_product_and_development",
+            "name": "Customer Success",
+            "address": "default/Rooms/default_room_mvp_customer_success",
+            "icon": "default/Rooms/Thumbnails/room_mvp_customer_success",
+            "tag": "default"
+        },
+        {
+            "name": "Finance",
+            "address": "default/Rooms/default_room_mvp_finance",
+            "icon": "default/Rooms/Thumbnails/room_mvp_finance",
+            "tag": "default"
+        },
+        {
+            "name": "Accounting",
+            "address": "default/Rooms/default_room_mvp_accounting",
+            "icon": "default/Rooms/Thumbnails/room_mvp_accounting",
+            "tag": "default"
+        },
+        {
+            "name": "HR",
+            "address": "default/Rooms/default_room_mvp_hr",
+            "icon": "default/Rooms/Thumbnails/room_mvp_hr",
+            "tag": "default"
+        },
+        {
+            "name": "Recruitment",
+            "address": "default/Rooms/default_room_mvp_recruitment",
+            "icon": "default/Rooms/Thumbnails/room_mvp_recruitment",
+            "tag": "default"
+        },
+        {
+            "name": "Legal",
+            "address": "default/Rooms/default_room_mvp_legal",
+            "icon": "default/Rooms/Thumbnails/room_mvp_legal",
             "tag": "default"
         },
         {
@@ -37,9 +67,27 @@
             "tag": "default"
         },
         {
-            "name": "Legal",
-            "address": "default/Rooms/default_room_mvp_legal",
-            "icon": "default/Rooms/Thumbnails/room_mvp_legal",
+            "name": "Operations",
+            "address": "default/Rooms/default_room_mvp_operations",
+            "icon": "default/Rooms/Thumbnails/room_mvp_operations",
+            "tag": "default"
+        },
+        {
+            "name": "IT and Security",
+            "address": "default/Rooms/default_room_mvp_it_and_security",
+            "icon": "default/Rooms/Thumbnails/room_mvp_it_and_security",
+            "tag": "default"
+        },
+        {
+            "name": "Product and Development",
+            "address": "default/Rooms/default_room_mvp_product_and_development",
+            "icon": "default/Rooms/Thumbnails/room_mvp_product_and_development",
+            "tag": "default"
+        },
+        {
+            "name": "Conference Room",
+            "address": "default/Rooms/default_room_mvp_conference_room",
+            "icon": "default/Rooms/Thumbnails/room_mvp_conference_room",
             "tag": "default"
         },
         {
