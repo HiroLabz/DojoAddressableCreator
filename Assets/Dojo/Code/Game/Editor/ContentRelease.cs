@@ -42,6 +42,27 @@ namespace Dojo.Game.Editor
         /// </summary>
         public static string BundlePrefix(int version) => "dojo_v" + version.ToString(CultureInfo.InvariantCulture);
 
+        /// <summary>
+        /// A bundle's file name with the version's <paramref name="prefix"/> in front, once: a name
+        /// that already starts with it (the script-references and built-in bundles) is kept.
+        /// Used by <c>VersionedPackedMode</c> for every bundle.
+        /// </summary>
+        public static string Prefixed(string prefix, string bundleName)
+        {
+            if (string.IsNullOrEmpty(prefix) || string.IsNullOrEmpty(bundleName))
+            {
+                return bundleName;
+            }
+
+            var cut = bundleName.LastIndexOfAny(new[] { '/', '\\' }) + 1;
+            var folder = bundleName.Substring(0, cut);
+            var file = bundleName.Substring(cut);
+
+            return file.StartsWith(prefix + "_", StringComparison.Ordinal) || file.StartsWith(prefix + ".", StringComparison.Ordinal)
+                ? bundleName
+                : folder + prefix + "_" + file;
+        }
+
         /// <summary>The catalogue a release is named by.</summary>
         public static string CatalogFileName(int version) => "catalog_" + version.ToString(CultureInfo.InvariantCulture) + ".bin";
 
@@ -227,6 +248,27 @@ namespace Dojo.Game.Editor
                     + "changed:\n  " + string.Join("\n  ", missing));
             }
 
+            // A name the folder already has must hold the same bytes: the CDN caches every file
+            // for a year by its name, so a changed file under an old name would reach players as
+            // the old copy and fail its CRC check. The CDN's deploy refuses it too (content
+            // version 3, 18 Nov); this says so before anything is committed or pushed.
+            var reused = new List<string>();
+            foreach (var source in sources)
+            {
+                var existing = Path.Combine(outputFolder, Path.GetFileName(source));
+                if (File.Exists(existing) && !SameBytes(existing, source))
+                {
+                    reused.Add(Path.GetFileName(source));
+                }
+            }
+
+            if (reused.Count > 0)
+            {
+                throw new ContentReleaseException(reused.Count + " file(s) keep a name the release folder already has, "
+                    + "with different bytes, so players would get the old copy. Nothing was changed:\n  "
+                    + string.Join("\n  ", reused));
+            }
+
             // The new files go in beside the old ones. A bundle whose content did not change keeps
             // its name, so it is simply written again; the old release stays loadable until
             // version.json moves on.
@@ -277,6 +319,49 @@ namespace Dojo.Game.Editor
             }
 
             return installed;
+        }
+
+        /// <summary>True when both files have exactly the same bytes.</summary>
+        static bool SameBytes(string a, string b)
+        {
+            var infoA = new FileInfo(a);
+            var infoB = new FileInfo(b);
+            if (infoA.Length != infoB.Length)
+            {
+                return false;
+            }
+
+            using (var streamA = File.OpenRead(a))
+            using (var streamB = File.OpenRead(b))
+            {
+                var bufferA = new byte[81920];
+                var bufferB = new byte[81920];
+                int read;
+                while ((read = streamA.Read(bufferA, 0, bufferA.Length)) > 0)
+                {
+                    var offset = 0;
+                    while (offset < read)
+                    {
+                        var got = streamB.Read(bufferB, offset, read - offset);
+                        if (got <= 0)
+                        {
+                            return false;
+                        }
+
+                        offset += got;
+                    }
+
+                    for (var i = 0; i < read; i++)
+                    {
+                        if (bufferA[i] != bufferB[i])
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
         }
 
         /// <summary>The text of version.json for a release.</summary>
