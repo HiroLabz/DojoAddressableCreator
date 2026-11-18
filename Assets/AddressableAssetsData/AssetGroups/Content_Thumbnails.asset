@@ -21,18 +21,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 083b15607a623a342aa883ccb8743c85
-    m_Address: default/Thumbnails/default_table_white
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 0ec0965071b08144b8ef24e2c29a46db
-    m_Address: default/Thumbnails/default_stairs
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 126fcf1467de4464b942d6484411016f
     m_Address: default/Thumbnails/default_small_potted_plant
     m_ReadOnly: 0
@@ -57,20 +45,8 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 1a7e95b1566b60a4ba5b27c3994533c7
-    m_Address: default/Thumbnails/default_grayFloor
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2160122716b73c04aa73f3d564306b9c
     m_Address: default/Thumbnails/default_display_shelf
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 25237d813726f844cbafb4777369e041
-    m_Address: default/Thumbnails/default_monitor_1
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -135,18 +111,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4cd0e71315a704e47b6cbe31154c6bb7
-    m_Address: default/Thumbnails/default_elevator
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 51ed227913eb1814f896b467c7d3399b
-    m_Address: default/Thumbnails/default_floor_1
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 56535f8e5bb0d1941a01e6a9af490068
     m_Address: default/Thumbnails/default_glass_partition
     m_ReadOnly: 0
@@ -188,12 +152,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 693392ebf0a4a5e4897c3776463d7599
-    m_Address: default/Thumbnails/default_plant_desk
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6a6c2289ae3b6ce4bbfcf7e4bdf778c4
     m_Address: default/Thumbnails/default_single_workstation_desk
@@ -267,12 +225,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 8cc75f3ff35657142b3e968e33191f68
-    m_Address: default/Thumbnails/default_chair_blue
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8d5c0568371a84a42b2ef4a460e640e5
     m_Address: default/Thumbnails/default_superComputer_3
     m_ReadOnly: 0
@@ -293,12 +245,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 98243c021721a8b4b943aa15822788a3
     m_Address: default/Thumbnails/default_lounge_pod_chair
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 98a30bf817586dc49b559ec08817befd
-    m_Address: default/Thumbnails/default_plant_office
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -333,12 +279,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b3bba22e91f6590418a3630e01508cac
-    m_Address: default/Thumbnails/default_wall_1
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b7dd7b90909f51e4493594c35036c584
     m_Address: strawberry/Thumbnails/default_floor_1
     m_ReadOnly: 0
@@ -347,18 +287,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b94489043efd287408615d249c46b8bd
     m_Address: default/Thumbnails/default_divider_wall_medium
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bd3301e6d684a784b865f588d7955c75
-    m_Address: default/Thumbnails/default_plant_box
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c944a203cbfed9e47b8c199b7629969c
-    m_Address: default/Thumbnails/default_wall_2
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -375,20 +303,8 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: cb4ed46625b3f5f4cbb05f2717061753
-    m_Address: default/Thumbnails/default_table_orange
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cc2e7930836cdd842b9323a8a6da8a4b
     m_Address: default/Thumbnails/default_accent_side_table
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: cf2878169ea8b3d4cbbd1f73cb675241
-    m_Address: default/Thumbnails/default_location_pin_red
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -405,26 +321,8 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d23f703b23bfd8a40a323b8a49cea4ca
-    m_Address: default/Thumbnails/default_chair_red
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d69b8a5eecf9d58479fc8e8ea77687c5
-    m_Address: default/Thumbnails/default_table_conference
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e2b91f06a9b573342b29086c88ac39e1
     m_Address: default/Thumbnails/default_tall_potted_plant
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e3130cd25d8a5e04c8c7bcde44297d0c
-    m_Address: default/Thumbnails/default_wall_3
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -488,12 +386,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: fec1a434efc04d1448b9db53daa72a0d
-    m_Address: default/Thumbnails/default_chair
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 878d66ff5773b60499b24cccd4ffc09c, type: 2}

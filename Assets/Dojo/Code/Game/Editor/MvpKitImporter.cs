@@ -94,7 +94,7 @@ namespace Dojo.Game.Editor
             { "WoodFloorTile", new Look { Name = "mvp_WoodFloorTile", Base = "WoodFloorTile_BaseColor.png", Normal = "WoodFloorTile_Normal.png", Roughness = "WoodFloorTile_Roughness.png" } },
         };
 
-        [MenuItem("Tools/Dojo/MVP Kit/1. Build Prefabs")]
+        [MenuItem("Tools/Dojo/Content/1. Build MVP Kit Prefabs", false, 1)]
         public static void BuildAll()
         {
             Directory.CreateDirectory(PackFolder + "/Prefabs");
@@ -142,7 +142,6 @@ namespace Dojo.Game.Editor
             Debug.Log("[MVP Kit] Built " + built + " prefab(s): " + report);
         }
 
-        public const string SourceScene = "Assets/Scenes/Runtime.unity";
         public const string MvpScene = "Assets/Scenes/RuntimeMVP.unity";
         public const string MvpWorld = "default/World/world_mvp";
         public const string MvpSaveFile = "world_mvp.json";
@@ -150,16 +149,19 @@ namespace Dojo.Game.Editor
         const string RoomPrefix = "default_room_mvp_";
 
         /// <summary>
-        /// Makes the MVP scene from the Runtime scene, if there is none yet, and sets it to the kit:
-        /// a 0.3 m grid, the MVP default world, its own save file, and an inventory of the kit's
-        /// pieces and rooms only.
+        /// Sets the MVP scene to the kit: a 0.3 m grid, the MVP default world, its own save file,
+        /// and an inventory of the kit's pieces and rooms only. Run it after new pieces come in.
         /// </summary>
-        [MenuItem("Tools/Dojo/MVP Kit/2. Set Up MVP Scene")]
+        /// <remarks>
+        /// It used to make the MVP scene from the Runtime scene; that scene went with the old
+        /// assets (18 Nov), so the MVP scene has to be there.
+        /// </remarks>
+        [MenuItem("Tools/Dojo/Content/2. Update MVP Scene Inventory", false, 2)]
         public static void SetUpScene()
         {
-            if (!File.Exists(MvpScene) && !AssetDatabase.CopyAsset(SourceScene, MvpScene))
+            if (!File.Exists(MvpScene))
             {
-                Debug.LogError("[MVP Kit] Could not copy " + SourceScene + " to " + MvpScene + ".");
+                Debug.LogError("[MVP Kit] There is no " + MvpScene + " to set up.");
                 return;
             }
 

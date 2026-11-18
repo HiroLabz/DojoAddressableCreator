@@ -27,10 +27,10 @@ namespace Dojo.Game.Editor
         const string RoomsFolder = "Assets/Process/default/Rooms";
         const string PackFilePrefix = "default_room_";
 
-        [MenuItem("Tools/Dojo/Rooms/Mark Room Openings")]
+        [MenuItem("Tools/Dojo/Content/Rooms/Mark Room Openings")]
         public static void Mark() => Run(true);
 
-        [MenuItem("Tools/Dojo/Rooms/Check Room Openings")]
+        [MenuItem("Tools/Dojo/Content/Rooms/Check Room Openings")]
         public static void Check() => Run(false);
 
         static void Run(bool mark)

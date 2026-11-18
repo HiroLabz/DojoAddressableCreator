@@ -7,9 +7,9 @@ using UnityEngine;
 namespace Dojo.Game.Editor
 {
     /// <summary>
-    /// Tools ▸ Dojo ▸ Export World To Pack: the world last saved with SAVE WORLD becomes the default
-    /// pack's starting world (<c>Assets/Process/default/World/world.json</c>, address
-    /// <c>default/World/world</c>), the one a new player's game opens on.
+    /// Tools ▸ Dojo ▸ Content ▸ Export World To Pack: the world last saved with SAVE WORLD becomes the default
+    /// pack's starting world (<c>Assets/Process/default/World/world_mvp.json</c>, address
+    /// <c>default/World/world_mvp</c>), the one a new player's game opens on. The first kit's world.json went with the old assets (18 Nov).
     /// </summary>
     /// <remarks>
     /// Replaces copying the file out of the persistent data folder by hand. Only the current world
@@ -23,9 +23,9 @@ namespace Dojo.Game.Editor
     /// </remarks>
     public static class WorldPackExporter
     {
-        const string PackPath = "Assets/Process/default/World/world.json";
+        const string PackPath = "Assets/Process/default/World/world_mvp.json";
 
-        [MenuItem("Tools/Dojo/Export World To Pack")]
+        [MenuItem("Tools/Dojo/Content/3. Export World To Pack", false, 3)]
         public static void Export()
         {
             var source = new WorldLibraryFile(null);
