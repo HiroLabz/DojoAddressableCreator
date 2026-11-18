@@ -55,10 +55,18 @@ namespace Dojo.Game.Editor
                 return null;
             }
 
-            var match = Regex.Match(File.ReadAllText(path), "\"version\"\\s*:\\s*(\\d+)\\s*[,}]");
+            return ParseVersion(File.ReadAllText(path), path);
+        }
+
+        /// <summary>The version in the text of a version.json.</summary>
+        /// <param name="source">Where the text came from, for the error message.</param>
+        /// <exception cref="InvalidDataException">There is no whole-number version in it.</exception>
+        public static int ParseVersion(string json, string source)
+        {
+            var match = Regex.Match(json ?? string.Empty, "\"version\"\\s*:\\s*(\\d+)\\s*[,}]");
             if (!match.Success)
             {
-                throw new InvalidDataException(path + " has no \"version\" that is a whole number. "
+                throw new InvalidDataException(source + " has no \"version\" that is a whole number. "
                     + "Fix or remove it before building.");
             }
 
