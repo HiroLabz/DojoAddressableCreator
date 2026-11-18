@@ -37,6 +37,7 @@ namespace Dojo.Game.Editor
             new Dictionary<string, AddressableGenerator.PackSummary>();
 
         Vector2 scroll;
+        bool processing;
         string processResult = string.Empty;
         string buildResult = string.Empty;
 
@@ -83,6 +84,13 @@ namespace Dojo.Game.Editor
         /// <summary>Finds every pack folder in Assets/Process again and what each holds.</summary>
         void RefreshPacks()
         {
+            // Processing imports assets, which calls OnProjectChange and OnFocus. Rebuilding the
+            // list then would pull it from under ProcessAll's loop; ProcessAll refreshes at the end.
+            if (processing)
+            {
+                return;
+            }
+
             packFolders.Clear();
             summaries.Clear();
 
@@ -306,32 +314,48 @@ namespace Dojo.Game.Editor
             var reports = new List<string>();
             var problems = new List<string>();
 
+            // A copy of the list as it is now, so nothing done while processing can change it.
+            var work = new List<KeyValuePair<string, AddressableGenerator.PackSummary>>();
             foreach (var folder in packFolders)
             {
-                var summary = summaries[folder];
-                if (!summary.CanProcess)
-                {
-                    reports.Add("── " + summary.Pack + ": skipped. " + summary.Text.Replace("\n", " "));
-                    continue;
-                }
+                work.Add(new KeyValuePair<string, AddressableGenerator.PackSummary>(folder, summaries[folder]));
+            }
 
-                try
+            processing = true;
+            try
+            {
+                foreach (var pair in work)
                 {
-                    Debug.Log(Log + " processing " + folder);
-                    var result = AddressableGenerator.Process(folder, options);
-                    reports.Add("── " + result.Pack + " ──\n" + result.Report);
-
-                    if (result.Skipped > 0)
+                    var folder = pair.Key;
+                    var summary = pair.Value;
+                    if (!summary.CanProcess)
                     {
-                        problems.Add(result.Pack + ": " + result.Skipped + " prefab(s) could not be rendered (see the report).");
+                        reports.Add("── " + summary.Pack + ": skipped. " + summary.Text.Replace("\n", " "));
+                        continue;
+                    }
+
+                    try
+                    {
+                        Debug.Log(Log + " processing " + folder);
+                        var result = AddressableGenerator.Process(folder, options);
+                        reports.Add("── " + result.Pack + " ──\n" + result.Report);
+
+                        if (result.Skipped > 0)
+                        {
+                            problems.Add(result.Pack + ": " + result.Skipped + " prefab(s) could not be rendered (see the report).");
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        Debug.LogException(exception);
+                        problems.Add(summary.Pack + ": " + exception.Message);
+                        reports.Add("── " + summary.Pack + ": FAILED — " + exception.Message);
                     }
                 }
-                catch (Exception exception)
-                {
-                    Debug.LogException(exception);
-                    problems.Add(summary.Pack + ": " + exception.Message);
-                    reports.Add("── " + summary.Pack + ": FAILED — " + exception.Message);
-                }
+            }
+            finally
+            {
+                processing = false;
             }
 
             processResult = string.Join("\n\n", reports);
