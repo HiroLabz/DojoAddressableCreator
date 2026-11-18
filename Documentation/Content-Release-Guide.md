@@ -33,6 +33,14 @@ How content gets from DojoAddressableCreator into the game. This builds on Bob's
 ## New assets from Harold
 Harold puts new 3D assets on the creator branch `development/bob/3dDump`. It's an asset store only: never merge it.
 1. Pull the files you need into your working branch: `git checkout origin/development/bob/3dDump -- <files>`.
-2. Run **Tools ▸ Dojo ▸ MVP Kit ▸ 1. Build Prefabs**. If a name clashes with a first-kit piece, give it its own name in `MvpKitImporter.Renamed`, as was done for `Elevator` → `default_elevator_mvp`.
-3. Run the Addressable Generator, and add the new address to both MVP kit lists: `RuntimeMVP`'s inventory list and `Game.unity`'s `worldSettings.inventoryOnly`.
+2. Run **Tools ▸ Dojo ▸ Content ▸ 1. Build MVP Kit Prefabs**. If a name needs changing, give it its own name in `MvpKitImporter.Renamed`. The MVP elevator keeps `default_elevator_mvp`: saved worlds use that address.
+3. Run the Addressable Generator. Then add the new address to both MVP kit lists: **Tools ▸ Dojo ▸ Content ▸ 2. Update MVP Scene Inventory** does `RuntimeMVP`'s, and `Game.unity`'s `worldSettings.inventoryOnly` in dojo-game-app is edited by hand.
 4. Test it locally (see *Test locally*), then publish it as the next release.
+
+## Content tools
+Everything for making content is under **Tools ▸ Dojo ▸ Content**:
+- **1. Build MVP Kit Prefabs** and **2. Update MVP Scene Inventory**: Harold's models into the default pack, and the MVP scene's inventory list.
+- **3. Export World To Pack**: the world last saved becomes `default/World/world_mvp`, the world new players start in.
+- **Rooms ▸**: Mark Room Openings, Check Room Openings, Promote Room To Pack, Generate Room Thumbnails.
+
+The old (pre-MVP) assets were deleted on 18 Nov: the first kit's pieces and rooms, its default world, the `_old` packs and the OfficeEssentialsPack. The one-off UI builders went with them. Everything is still in git at the tag `fallback/pre-mvp-cleanup`, in this repo, dojo-game-app and DojoAddressables. The strawberry pack and the area locator pin (`default_dojo_animated_pin`) were kept.

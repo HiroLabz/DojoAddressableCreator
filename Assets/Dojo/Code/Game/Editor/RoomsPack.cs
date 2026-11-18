@@ -314,7 +314,7 @@ namespace Dojo.Game.Editor
         // ── Menu ────────────────────────────────────────────────────────────────────────────
 
         [MenuItem("Assets/Dojo/Promote Room To Pack", true)]
-        [MenuItem("Tools/Dojo/Promote Room To Pack", true)]
+        [MenuItem("Tools/Dojo/Content/Rooms/Promote Room To Pack", true)]
         static bool CanPromoteSelected()
         {
             var path = Selection.activeObject != null ? AssetDatabase.GetAssetPath(Selection.activeObject) : null;
@@ -326,7 +326,7 @@ namespace Dojo.Game.Editor
 
         /// <summary>Promotes the room_&lt;x&gt;.json selected in the Project window.</summary>
         [MenuItem("Assets/Dojo/Promote Room To Pack")]
-        [MenuItem("Tools/Dojo/Promote Room To Pack")]
+        [MenuItem("Tools/Dojo/Content/Rooms/Promote Room To Pack")]
         static void PromoteSelected()
         {
             var path = AssetDatabase.GetAssetPath(Selection.activeObject);

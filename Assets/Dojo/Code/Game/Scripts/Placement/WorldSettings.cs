@@ -57,7 +57,7 @@ namespace Dojo.Game.Placement
 
         [Header("Reset")]
         [Tooltip("Content address of the floor tile RESET WORLD lays, alone, in the middle of floor 1 - only when the content has no default world to load instead.")]
-        [SerializeField] string resetFloor = "default/default_floor_1";
+        [SerializeField] string resetFloor = "default/default_light_gray_floor_tile";
 
         [Header("Auto save")]
         [Tooltip("Write the current world back to disk whenever anything in it is added, moved, " +
@@ -143,7 +143,7 @@ namespace Dojo.Game.Placement
         /// <summary>True when anything walks, which is what navigation is baked for.</summary>
         public bool AnyCharacters => agents || manager;
 
-        public string ResetFloor => string.IsNullOrWhiteSpace(resetFloor) ? "default/default_floor_1" : resetFloor.Trim();
+        public string ResetFloor => string.IsNullOrWhiteSpace(resetFloor) ? "default/default_light_gray_floor_tile" : resetFloor.Trim();
 
         public bool AutoSave => autoSave;
 

@@ -182,12 +182,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3c8bd692a64fbc84d9ef910f42234c78
-    m_Address: default/Materials/elevator_shaft
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3fed8449116270d46818d5ff525a926b
     m_Address: strawberry/Textures/default_table_orange_normal
     m_ReadOnly: 0
@@ -292,12 +286,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6619c5fce8425a846a4825737adcea45
     m_Address: default/Textures/default_superComputer_2_normal
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 68ca4ac834511d24c830e4625910ae39
-    m_Address: default/Materials/elevator_lamp
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -421,12 +409,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 939c145e25e8f2742b2ed229439e9b02
-    m_Address: default/World/world
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 94ce381f1e7f6f642b8c040747afa54d
     m_Address: default/Materials/default_superComputer_body
     m_ReadOnly: 0
@@ -522,12 +504,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b92873fb4ba6e8845a22f34c31601adb
-    m_Address: default/Meshes/connector_cube
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bc87a92c166e4484489ceedeec5e5703
     m_Address: default/Textures/default_floor_1_normal
     m_ReadOnly: 0
@@ -540,23 +516,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c347934e5d4b51a47b9947fe7095d5d4
-    m_Address: default/Materials/stairs_steps
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c40f792713a14de4685b55a01af841ae
     m_Address: strawberry/Textures/default_chair_blue_albedo
     m_ReadOnly: 0
     m_SerializedLabels:
     - strawberry
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c5f09809cf74410689ee7827f381182d
-    m_Address: default/Materials/grayFloor
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cb54006d5a584af448978ea1e8993afe
     m_Address: default/Materials/Pin_Orb_Diamond
@@ -582,12 +546,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d0eb7d76eb23194478ebc1102216fcce
-    m_Address: default/Materials/LocationPin_Red
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d11ddaffe17b7a54bbf5f466162bb577
     m_Address: default/Materials/default_knowledge_shelf_books_3
     m_ReadOnly: 0
@@ -596,12 +554,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d2a464ae325e23f428ee3a1f15fc5956
     m_Address: default/Textures/mvp/mvp_Tree_metallicSmoothness
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d4a11eac345b49cd88498e76ff2f750f
-    m_Address: default/Textures/grayFloor_albedo
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
@@ -632,12 +584,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: df1b60f04fe47a84a960f951b7dbd21a
     m_Address: default/Materials/default_superComputer_3_face
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: df3aefb32828b894eaf3fb27b01643d9
-    m_Address: default/Materials/elevator_doors
     m_ReadOnly: 0
     m_SerializedLabels:
     - default

@@ -32,7 +32,7 @@ namespace Dojo.Game.Editor
 
         static readonly Color KeyColour = new Color(1f, 0f, 1f, 1f);
 
-        [MenuItem("Tools/Dojo/Generate Room Thumbnails")]
+        [MenuItem("Tools/Dojo/Content/Rooms/Generate Room Thumbnails")]
         public static void Generate()
         {
             if (!AssetDatabase.IsValidFolder(PrefabFolder))
