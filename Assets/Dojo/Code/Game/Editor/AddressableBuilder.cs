@@ -663,7 +663,9 @@ namespace Dojo.Game.Editor
                     : null;
                 catalogFolder = string.IsNullOrWhiteSpace(catalogFolder) ? staging : Path.GetFullPath(catalogFolder);
 
-                AddressableAssetSettings.BuildPlayerContent(out result);
+                // Every bundle is named after the version too, not only the script-references and
+                // built-in ones: see VersionedPackedMode (content version 3, 18 Nov).
+                result = VersionedPackedMode.Build(settings, version);
             }
             finally
             {

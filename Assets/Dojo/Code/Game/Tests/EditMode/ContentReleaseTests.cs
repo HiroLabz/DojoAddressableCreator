@@ -227,6 +227,42 @@ namespace Dojo.Game.Tests.EditMode
         }
 
         [Test]
+        public void EveryBundle_CarriesTheVersion_Once()
+        {
+            Assert.AreEqual("dojo_v4_content_agents_assets_default_e8277bd2.bundle",
+                ContentRelease.Prefixed("dojo_v4", "content_agents_assets_default_e8277bd2.bundle"));
+            Assert.AreEqual("dojo_v4_monoscripts_9f2a.bundle", ContentRelease.Prefixed("dojo_v4", "dojo_v4_monoscripts_9f2a.bundle"),
+                "the script-references bundle already carries it");
+            Assert.AreEqual("dojo_v4.bundle", ContentRelease.Prefixed("dojo_v4", "dojo_v4.bundle"));
+            Assert.AreEqual("sub/dojo_v4_x.bundle", ContentRelease.Prefixed("dojo_v4", "sub/x.bundle"));
+            Assert.AreEqual("dojo_v4_dojo_v40_x.bundle", ContentRelease.Prefixed("dojo_v4", "dojo_v40_x.bundle"),
+                "version 40's prefix is not version 4's");
+        }
+
+        [Test]
+        public void TheSameBundleNameWithTheSameBytes_IsStillFine()
+        {
+            ContentRelease.Install(output, 0, build, FakeBuild(0, "kept.bundle"), Built);
+
+            Assert.DoesNotThrow(() => ContentRelease.Install(output, 1, build, FakeBuild(1, "kept.bundle"), Built));
+        }
+
+        [Test]
+        public void ABundleNameTheFolderHasWithDifferentBytes_IsRefused_AndChangesNothing()
+        {
+            ContentRelease.Install(output, 0, build, FakeBuild(0, "content_agents.bundle"), Built);
+            var before = File.ReadAllText(Path.Combine(output, "content_agents.bundle"));
+
+            var bundles = FakeBuild(1, "content_agents.bundle");
+            File.WriteAllText(bundles[0], "the same name, new bytes");
+
+            var refused = Assert.Throws<ContentReleaseException>(() => ContentRelease.Install(output, 1, build, bundles, Built));
+            StringAssert.Contains("content_agents.bundle", refused.Message);
+            Assert.AreEqual(0, ContentRelease.CurrentVersion(output), "version.json stays on the published release");
+            Assert.AreEqual(before, File.ReadAllText(Path.Combine(output, "content_agents.bundle")));
+        }
+
+        [Test]
         public void PackNames_WithNoProcessFolder_IsEmpty()
         {
             CollectionAssert.IsEmpty(ContentRelease.PackNames(Path.Combine(root, "nowhere")));

@@ -8,6 +8,7 @@
         "VContainer",
         "Unity.Addressables",
         "Unity.Addressables.Editor",
+        "Unity.ScriptableBuildPipeline",
         "Unity.ResourceManager",
         "UnityEngine.UI",
         "Unity.TextMeshPro"
