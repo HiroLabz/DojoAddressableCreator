@@ -62,6 +62,12 @@ namespace Dojo.Game.InGame.Controllers
                  "walk this close to is not sat on: he walks as near to it as he can get and stops.")]
         [SerializeField] float hopReach = 1.5f;
 
+        [Tooltip("For a model that sits with an animation: how far above its feet its thighs rest " +
+                 "in the seated pose, in metres. He is placed that far below the cushion, so he sits " +
+                 "on top of it, as the agents do. Below zero for a model with no sitting pose, which " +
+                 "is lifted onto the seat by half its height.")]
+        [SerializeField] float seatedThighHeight = -1f;
+
         [Header("Arrival")]
         [Tooltip("Turn to face the camera once a walk finishes, so the manager comes to rest " +
                  "looking at the player rather than whichever way he happened to be heading.")]
@@ -1441,7 +1447,11 @@ namespace Dojo.Game.InGame.Controllers
             agent.enabled = false;
 
             hoppingToSeat = true;
-            hop.Begin(transform, seat.SeatPosition + Vector3.up * halfHeight, seat.SeatRotation,
+            // As the agents sit: thighs on the cushion for a model with a sitting pose.
+            var seated = seatedThighHeight >= 0f
+                ? seat.SeatPosition - Vector3.up * seatedThighHeight
+                : seat.SeatPosition + Vector3.up * halfHeight;
+            hop.Begin(transform, seated, seat.SeatRotation,
                       jumpSeconds, jumpHeight);
         }
 
