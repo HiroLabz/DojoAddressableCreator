@@ -145,6 +145,165 @@ namespace Dojo.Game.Editor
         Vector2 scroll;
         string lastResult = "";
 
+        /// <summary>How many prefabs the last run could not render.</summary>
+        int lastSkipped;
+
+        /// <summary>
+        /// False for a run made on another tool's behalf (<see cref="AddressableBuilder"/>), which
+        /// must not change the folder and groups this window remembers.
+        /// </summary>
+        bool rememberSettings = true;
+
+        /// <summary>
+        /// The settings the Addressable Generator window shows, for running it over a pack folder
+        /// from another tool. Defaults match the window's.
+        /// </summary>
+        [Serializable]
+        public sealed class PackOptions
+        {
+            public bool includeSubfolders = true;
+            public bool applyToAddressables = true;
+            public string prefabGroupName = "Content_Placeables";
+            public string thumbnailGroupName = "Content_Thumbnails";
+            public string categorySource = PackFolder + "/" + DefaultPack + "/" + ItemsName;
+            public string dataGroupName = "Content_Agents";
+            public string dataAssets =
+                "Assets/Dojo/Content/Agents/agents.json\n"
+                + "Assets/Dojo/Content/Managers/manager.json";
+            public int size = 256;
+            public bool transparentBackground = true;
+            public Color background = new Color(0.24f, 0.24f, 0.24f, 1f);
+            public float yaw = 135f;
+            public float pitch = 20f;
+            public float padding = 1.15f;
+        }
+
+        /// <summary>What one pack folder holds, as the window's Source box shows it.</summary>
+        public struct PackSummary
+        {
+            public string Pack;
+            public string Text;
+            public bool CanProcess;
+        }
+
+        /// <summary>The outcome of processing one pack folder.</summary>
+        public struct PackResult
+        {
+            public string Pack;
+            public string Report;
+            public int Skipped;
+        }
+
+        /// <summary>The pack every player gets; processed before any other.</summary>
+        public const string DefaultPackName = DefaultPack;
+
+        /// <summary>
+        /// A hidden generator set up for one pack folder: the same code the window runs, with the
+        /// given settings. Destroy it with <see cref="UnityEngine.Object.DestroyImmediate(UnityEngine.Object)"/>.
+        /// </summary>
+        static AddressableGenerator ForPack(string packFolder, PackOptions options)
+        {
+            var generator = CreateInstance<AddressableGenerator>();
+            generator.hideFlags = HideFlags.HideAndDontSave;
+            generator.rememberSettings = false;
+            generator.rootFolder = packFolder;
+
+            options = options ?? new PackOptions();
+            generator.includeSubfolders = options.includeSubfolders;
+            generator.applyToAddressables = options.applyToAddressables;
+            generator.prefabGroupName = options.prefabGroupName;
+            generator.thumbnailGroupName = options.thumbnailGroupName;
+            generator.categorySource = options.categorySource;
+            generator.dataGroupName = options.dataGroupName;
+            generator.dataAssets = options.dataAssets;
+            generator.size = Mathf.Clamp(options.size, 16, 1024);
+            generator.transparentBackground = options.transparentBackground;
+            generator.background = options.background;
+            generator.yaw = options.yaw;
+            generator.pitch = options.pitch;
+            generator.padding = options.padding;
+            return generator;
+        }
+
+        /// <summary>
+        /// What a pack folder holds — prefabs, thumbnails, the other folders and the group each goes
+        /// to — and whether it can be processed, exactly as the window judges it.
+        /// </summary>
+        public static PackSummary Summarise(string packFolder, PackOptions options)
+        {
+            var generator = ForPack(packFolder, options);
+
+            try
+            {
+                var summary = new PackSummary { Pack = generator.Pack };
+
+                if (!generator.RootIsValid)
+                {
+                    summary.Text = "There is no folder at " + generator.Root + ".";
+                    return summary;
+                }
+
+                if (generator.LooksLikeFolderOfPacks())
+                {
+                    summary.Text = "This folder holds packs rather than being one, so it is not processed.";
+                    return summary;
+                }
+
+                var settings = AddressableAssetSettingsDefaultObject.Settings;
+                var found = generator.FindPrefabPaths().Count;
+                var extraFiles = 0;
+                var lines = new List<string>
+                {
+                    PrefabsFolderName + "/    " + found + " prefab(s)"
+                        + (AssetDatabase.IsValidFolder(generator.PrefabFolder) ? "" : "  — no such folder, nothing to render"),
+                    ThumbnailsFolderName + "/    the PNGs and " + ManifestName + " are written here"
+                        + (AssetDatabase.IsValidFolder(generator.ThumbnailFolder) ? "" : "  (created on the first run)"),
+                };
+
+                foreach (var folder in generator.ExtraFolders())
+                {
+                    var name = Path.GetFileName(folder);
+                    var count = FindExtraAssets(folder).Count;
+                    extraFiles += count;
+                    lines.Add(name + "/    " + count + " file(s)  →  " + GroupFor(settings, name));
+                }
+
+                summary.Text = string.Join("\n", lines);
+                summary.CanProcess = !string.IsNullOrWhiteSpace(generator.Pack) && found + extraFiles > 0;
+
+                if (!summary.CanProcess)
+                {
+                    summary.Text += "\nNothing to process in this folder.";
+                }
+
+                return summary;
+            }
+            finally
+            {
+                DestroyImmediate(generator);
+            }
+        }
+
+        /// <summary>
+        /// Runs the generator over one pack folder — thumbnails, manifests, labels, addresses, the
+        /// other folders and the shared assets — exactly as its Generate Thumbnails button does,
+        /// without changing what the window remembers.
+        /// </summary>
+        public static PackResult Process(string packFolder, PackOptions options)
+        {
+            var generator = ForPack(packFolder, options);
+
+            try
+            {
+                generator.Generate();
+                return new PackResult { Pack = generator.Pack, Report = generator.lastResult, Skipped = generator.lastSkipped };
+            }
+            finally
+            {
+                DestroyImmediate(generator);
+            }
+        }
+
         [MenuItem("Tools/Dojo/Addressables/2. Addressable Generator", false, 2)]
         static void Open()
         {
@@ -695,10 +854,13 @@ namespace Dojo.Game.Editor
         {
             var paths = FindPrefabPaths();
 
-            EditorPrefs.SetString(RootKey, rootFolder);
-            EditorPrefs.SetString(PrefabGroupKey, prefabGroupName);
-            EditorPrefs.SetString(ThumbnailGroupKey, thumbnailGroupName);
-            EditorPrefs.SetString(CategorySourceKey, categorySource);
+            if (rememberSettings)
+            {
+                EditorPrefs.SetString(RootKey, rootFolder);
+                EditorPrefs.SetString(PrefabGroupKey, prefabGroupName);
+                EditorPrefs.SetString(ThumbnailGroupKey, thumbnailGroupName);
+                EditorPrefs.SetString(CategorySourceKey, categorySource);
+            }
 
             var entries = new List<ThumbnailEntry>();
             var skipped = new List<string>();
@@ -729,6 +891,7 @@ namespace Dojo.Game.Editor
             // What every pack's materials share — the fading shader — in a bundle of its own.
             packReport += RegisterSharedAssets();
 
+            lastSkipped = skipped.Count;
             lastResult = entries.Count + " thumbnail(s) written to\n" + outputFolder
                 + "\n\nPack: " + Pack + "   Addresses: " + Prefix + "/…"
                 + packReport
