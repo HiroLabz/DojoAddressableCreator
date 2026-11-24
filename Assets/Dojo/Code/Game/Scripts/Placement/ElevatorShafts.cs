@@ -60,6 +60,11 @@ namespace Dojo.Game.Placement
         bool building;
         bool pending;
 
+        // Prototype (WorldSettings.AutoFloorAboveElevator): set when the player puts a piece down,
+        // so only an elevator just placed grows a floor - never one in a world being loaded.
+        bool placedByPlayer;
+        bool growing;
+
         sealed class Shaft
         {
             public string address;
@@ -100,7 +105,15 @@ namespace Dojo.Game.Placement
 
             if (hub != null)
             {
-                subscription = hub.Subscribe<WorldChanged>(_ => ReconcileNextFrame());
+                subscription = hub.Subscribe<WorldChanged>(e =>
+                {
+                    if (e.Reason == "committed")
+                    {
+                        placedByPlayer = true;
+                    }
+
+                    ReconcileNextFrame();
+                });
             }
 
             // Asked while an elevator is being dragged, so the footprint goes red over a spot it
@@ -171,7 +184,254 @@ namespace Dojo.Game.Placement
                 exits++;
             }
 
-            return exits > 0 ? PlacementRejection.None : PlacementRejection.NoOtherFloor;
+            if (exits > 0)
+            {
+                return PlacementRejection.None;
+            }
+
+            // Prototype: the floor above gets a landing once it is put down - a new floor on the top
+            // one, or the floor already there with nothing at that spot.
+            var on = settings != null && settings.AutoFloorAboveElevator;
+            return GrowsAFloor(on, own, storeys.Count, storeys.CanAdd) || LandsAbove(on, own, storeys.Count)
+                ? PlacementRejection.None
+                : PlacementRejection.NoOtherFloor;
+        }
+
+        /// <summary>
+        /// Whether an elevator with no other floor to stop at, standing below the top floor, gets
+        /// a landing laid on the floor directly above (Jacob, 17 Nov). Only on spots of that floor
+        /// with nothing there: no tile goes over ground or under anything already standing.
+        /// </summary>
+        public static bool LandsAbove(bool enabled, int own, int floorCount)
+            => enabled && own >= 0 && own < floorCount - 1;
+
+        // ── Prototype: a floor above for an elevator on the top floor ─────────────────────────
+
+        /// <summary>
+        /// Whether an elevator with no other floor to stop at, standing on <paramref name="own"/>,
+        /// gets a new floor above it: only when the prototype is on, it is on the top floor, and
+        /// there is room under the floor limit. Never for a floor below the top, whose floor above
+        /// the player already has.
+        /// </summary>
+        public static bool GrowsAFloor(bool enabled, int own, int floorCount, bool canAdd)
+            => enabled && canAdd && floorCount > 0 && own == floorCount - 1;
+
+        /// <summary>How many tiles deep the landing reaches in front of the elevator's doors.</summary>
+        public const int LandingDepthTiles = 2;
+
+        /// <summary>
+        /// The tile origins, in cells, for the landing on the floor above: the elevator's own block,
+        /// <see cref="LandingDepthTiles"/> tiles in front of its doors (the -X face, turned with the
+        /// elevator) and a tile either side, covered in whole tiles from its corner. The last tiles
+        /// may reach past the block.
+        /// </summary>
+        public static List<Vector2Int> LandingTiles(Vector2Int origin, Vector2Int footprint, int rotationSteps, int tile)
+        {
+            tile = Mathf.Max(1, tile);
+
+            int minX = origin.x, minZ = origin.y, maxX = origin.x + footprint.x, maxZ = origin.y + footprint.y;
+            var doors = Quaternion.Euler(0f, PlacementGrid.Normalise(rotationSteps) * 90f, 0f) * Vector3.left;
+
+            // Two tiles deep in front of the doors and a tile either side: the manager walks with a
+            // wide clearance (0.45 m), and one row left him a strip too thin to stand on, so the
+            // ride was offered but he could not get off at the top (Play, 17 Nov).
+            var deep = LandingDepthTiles * tile;
+
+            if (doors.x < -0.5f) { minX -= deep; minZ -= tile; maxZ += tile; }
+            else if (doors.x > 0.5f) { maxX += deep; minZ -= tile; maxZ += tile; }
+            else if (doors.z > 0.5f) { maxZ += deep; minX -= tile; maxX += tile; }
+            else if (doors.z < -0.5f) { minZ -= deep; minX -= tile; maxX += tile; }
+
+            var tiles = new List<Vector2Int>();
+
+            for (var x = minX; x < maxX; x += tile)
+            {
+                for (var z = minZ; z < maxZ; z += tile)
+                {
+                    tiles.Add(new Vector2Int(x, z));
+                }
+            }
+
+            return tiles;
+        }
+
+        /// <summary>
+        /// Adds the floor above <paramref name="own"/> and lays the landing under the shaft there,
+        /// so the fill that follows puts a stop on it. The view stays on the floor being built.
+        /// </summary>
+        void GrowFloorAbove(Shaft shaft, int own)
+        {
+            GameObject tilePrefab;
+            if (!TryLandingTile(out tilePrefab))
+            {
+                return;
+            }
+
+            growing = true;
+
+            try
+            {
+                var floor = storeys.Add();
+                if (floor < 0)
+                {
+                    return;
+                }
+
+                storeys.View(own);
+
+                var laid = LayLanding(shaft, floor, tilePrefab);
+
+                Debug.Log("[Floors] Elevator on the top floor: added " + Storeys.LabelFor(floor) + " with a landing of "
+                    + laid + " tile(s) (prototype, waiting on Bob's approval).");
+            }
+            finally
+            {
+                growing = false;
+            }
+        }
+
+        /// <summary>
+        /// Lays the landing on the floor already above <paramref name="own"/>, on its empty spots
+        /// only. When something there leaves the elevator's own block not fully covered, the floor
+        /// gets no stop, and the Console says why.
+        /// </summary>
+        void LandOnFloorAbove(Shaft shaft, int own)
+        {
+            GameObject tilePrefab;
+            if (!TryLandingTile(out tilePrefab))
+            {
+                return;
+            }
+
+            var floor = own + 1;
+            var laid = LayLanding(shaft, floor, tilePrefab);
+            var covered = placement.IsGroundUnder(OriginOn(shaft, floor), shaft.footprint);
+
+            Debug.Log("[Floors] Elevator: laid a landing of " + laid + " tile(s) on " + Storeys.LabelFor(floor)
+                + (covered ? "." : ", but that floor still has no ground under the whole elevator there, so it gets no stop.")
+                + " (prototype, waiting on Bob's approval)");
+        }
+
+        bool TryLandingTile(out GameObject tilePrefab)
+        {
+            tilePrefab = null;
+            var address = settings.ElevatorLandingTile;
+
+            if (content == null || !content.TryGet(address, out tilePrefab) || tilePrefab == null)
+            {
+                Debug.LogWarning("[Floors] The landing tile '" + address + "' is not in the content, so no "
+                    + "landing was laid for the elevator.");
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Lays landing tiles for the shaft on <paramref name="floor"/>, skipping any tile whose
+        /// block has ground or anything standing on any of its cells. Returns how many were laid.
+        /// </summary>
+        int LayLanding(Shaft shaft, int floor, GameObject tilePrefab)
+        {
+            var address = settings.ElevatorLandingTile;
+            var layer = Mathf.Max(0, LayerMask.NameToLayer(settings.PlacedLayerName));
+            var origin = OriginOn(shaft, floor);
+            var size = TileCells(tilePrefab);
+            var block = new Vector2Int(size, size);
+            var laid = 0;
+
+            foreach (var at in LandingTiles(new Vector2Int(origin.x, origin.y), shaft.footprint, shaft.rotationSteps, size))
+            {
+                var key = new Vector3Int(at.x, at.y, PlacementGrid.KeyFor(floor, PlacementGrid.FloorLevel));
+
+                if (AnyGroundIn(key, block) || Blocked(key, block, shaft))
+                {
+                    continue;
+                }
+
+                var piece = FurnitureSpawner.Spawn(tilePrefab, grid, grid.CentreOf(key, block), layer,
+                    placement.MaxFootprintCells, storeys.Floor(floor), resolver);
+
+                if (piece == null)
+                {
+                    continue;
+                }
+
+                var placed = piece.GetComponent<PlacedPiece>();
+                if (placed != null)
+                {
+                    placed.Set(string.Empty, address);
+                }
+
+                piece.SizeTo(grid.CellSize);
+                piece.Settle();
+                placement.Register(piece);
+                laid++;
+            }
+
+            // The service keeps its own list of floor slabs; without this the new tiles are not ground
+            // yet, and the fill skipped the stop on this floor ("no ground under the whole elevator").
+            // With it, the fill puts the stop at the shaft's spot and turn: in line with the one below.
+            if (laid > 0)
+            {
+                placement.RefreshFloors();
+            }
+
+            return laid;
+        }
+
+        /// <summary>Whether any single cell of the block already has ground under it.</summary>
+        bool AnyGroundIn(Vector3Int origin, Vector2Int block)
+        {
+            for (var x = 0; x < block.x; x++)
+            {
+                for (var z = 0; z < block.y; z++)
+                {
+                    if (placement.IsGroundUnder(new Vector3Int(origin.x + x, origin.y + z, origin.z), Vector2Int.one))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>Whether any floor but <paramref name="own"/> has ground under the shaft's spot.</summary>
+        bool HasOtherGround(Shaft shaft, int own)
+        {
+            for (var floor = 0; floor < storeys.Count; floor++)
+            {
+                if (floor != own && placement.IsGroundUnder(OriginOn(shaft, floor), shaft.footprint))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>How many cells wide a landing tile is, measured from its prefab; 4 (1.2 m) by default.</summary>
+        int TileCells(GameObject tilePrefab)
+        {
+            var bounds = new Bounds();
+            var measured = false;
+
+            foreach (var renderer in tilePrefab.GetComponentsInChildren<Renderer>(true))
+            {
+                if (!measured)
+                {
+                    bounds = renderer.bounds;
+                    measured = true;
+                }
+                else
+                {
+                    bounds.Encapsulate(renderer.bounds);
+                }
+            }
+
+            var cell = grid.CellSize;
+            return measured && cell > 0f ? Mathf.Max(1, PlacementGrid.RoundCell(Mathf.Max(bounds.size.x, bounds.size.z) / cell)) : 4;
         }
 
         /// <summary>
@@ -397,12 +657,15 @@ namespace Dojo.Game.Placement
         /// </summary>
         void Reconcile()
         {
-            if (building || world == null)
+            // Adding a floor for an elevator raises Storeys.Changed mid-way; the reconcile already
+            // running finishes the job.
+            if (building || growing || world == null)
             {
                 return;
             }
 
             var changed = false;
+            var fresh = new List<Shaft>();
 
             // Deleted: any stop gone takes the whole shaft with it.
             for (var i = shafts.Count - 1; i >= 0; i--)
@@ -497,8 +760,41 @@ namespace Dojo.Game.Placement
 
                 shaft.stops[Storeys.StoreyOf(piece.transform)] = piece;
                 shafts.Add(shaft);
+                fresh.Add(shaft);
                 changed = true;
             }
+
+            // Prototype: an elevator just put down on the top floor, with no other floor to stop
+            // at, gets the floor above with a landing; the fill below then puts its stop there.
+            if (placedByPlayer && settings != null && settings.AutoFloorAboveElevator)
+            {
+                foreach (var shaft in fresh)
+                {
+                    var own = -1;
+                    foreach (var key in shaft.stops.Keys)
+                    {
+                        own = key;
+                    }
+
+                    if (HasOtherGround(shaft, own))
+                    {
+                        continue;
+                    }
+
+                    if (GrowsAFloor(true, own, storeys.Count, storeys.CanAdd))
+                    {
+                        GrowFloorAbove(shaft, own);
+                        changed = true;
+                    }
+                    else if (LandsAbove(true, own, storeys.Count))
+                    {
+                        LandOnFloorAbove(shaft, own);
+                        changed = true;
+                    }
+                }
+            }
+
+            placedByPlayer = false;
 
             // A stop on every floor with ground under the whole spot and nothing standing there; none
             // where the ground has gone, or on a floor that no longer exists.

@@ -70,6 +70,13 @@ namespace Dojo.Framework.UI
 
             /// <summary>The rightmost, the one the popup is asking for.</summary>
             Primary,
+
+            /// <summary>
+            /// The X at the card's corner: closed without choosing, nothing happens - the same as
+            /// Cancel where there is one. Not in <see cref="Choices"/>, which lists the row of
+            /// buttons. Hidden on a popup that must be answered (<see cref="Dismissible"/>).
+            /// </summary>
+            Dismissed,
         }
 
         [Header("Words")]
@@ -82,6 +89,11 @@ namespace Dojo.Framework.UI
         [SerializeField] Button cancel;
         [SerializeField] Button destructive;
         [SerializeField] Button primary;
+
+        [Tooltip("The X at the card's corner: closes the popup without choosing (ClickUp 14ze67xg5my). " +
+                 "Built onto every popup prefab by Tools > Dojo > Build Popup Close Buttons; a popup that " +
+                 "must be answered, the sign-in lock say, hides it with Dismissible(false).")]
+        [SerializeField] Button close;
 
         [Header("Answer (leave empty for a popup that asks for nothing typed)")]
         [Tooltip("A box for the player to type an answer in - a name. The primary button stays off " +
@@ -114,7 +126,8 @@ namespace Dojo.Framework.UI
 
                 foreach (Choice choice in Enum.GetValues(typeof(Choice)))
                 {
-                    if (ButtonFor(choice) != null)
+                    // The X is at the corner, not in the row.
+                    if (choice != Choice.Dismissed && ButtonFor(choice) != null)
                     {
                         present.Add(choice);
                     }
@@ -130,6 +143,24 @@ namespace Dojo.Framework.UI
 
         /// <summary>Whether this popup has that button.</summary>
         public bool Has(Choice choice) => ButtonFor(choice) != null;
+
+        /// <summary>Whether the X is there to close it without choosing.</summary>
+        public bool IsDismissible => close != null && close.gameObject.activeSelf;
+
+        /// <summary>
+        /// Shows or hides the X. Off for a popup that must be answered: the sign-in lock, which
+        /// counts down and goes by itself, and a question that follows a failure where the only
+        /// way on is one of its buttons.
+        /// </summary>
+        public MessagePopup Dismissible(bool on)
+        {
+            if (close != null)
+            {
+                close.gameObject.SetActive(on);
+            }
+
+            return this;
+        }
 
         /// <summary>What it says. The detail line is hidden when there is none.</summary>
         public MessagePopup Present(string heading, string explanation, string footnote = null)
@@ -234,6 +265,7 @@ namespace Dojo.Framework.UI
             Listen(cancel, Choice.Cancel);
             Listen(destructive, Choice.Destructive);
             Listen(primary, Choice.Primary);
+            Listen(close, Choice.Dismissed);
 
             if (answer != null)
             {
@@ -311,13 +343,14 @@ namespace Dojo.Framework.UI
                 case Choice.Cancel: return cancel;
                 case Choice.Destructive: return destructive;
                 case Choice.Primary: return primary;
+                case Choice.Dismissed: return close;
                 default: return null;
             }
         }
 
         protected override void OnDestroy()
         {
-            foreach (var button in new[] { cancel, destructive, primary })
+            foreach (var button in new[] { cancel, destructive, primary, close })
             {
                 if (button != null)
                 {

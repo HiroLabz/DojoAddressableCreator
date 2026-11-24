@@ -52,6 +52,10 @@ namespace Dojo.Game.Placement
                  "piece and the same opacity over that much floor reads as a solid green carpet.")]
         [SerializeField] Color paintedColour = new Color(0.35f, 1f, 0.55f, 0.45f);
 
+        [Tooltip("Colour of the box an area is being dragged out with. Blue, the Dojo accent, so the " +
+                 "box stands apart from the green of the area already painted under it.")]
+        [SerializeField] Color boxColour = new Color(0.184f, 0.561f, 1f, 0.9f);
+
         [Tooltip("How far above the floor surface the panel sits. Enough to clear the floor without " +
                  "looking detached from it — a coplanar quad flickers as the two fight for depth.")]
         [SerializeField] float lift = 0.015f;
@@ -134,6 +138,16 @@ namespace Dojo.Game.Placement
             panel.localScale = new Vector3(sizeMetres.x, 1f, sizeMetres.y);
 
             material.SetColor(BaseColorId, valid ? validColour : invalidColour);
+        }
+
+        /// <summary>
+        /// Shades the box an area is being dragged out with: blue while it adds, red while it
+        /// takes away. The same panel as <see cref="Track"/>, so only one of the two shows at once.
+        /// </summary>
+        public void TrackBox(Vector3 centre, float floorTop, Vector2 sizeMetres, bool erasing)
+        {
+            Track(centre, floorTop, sizeMetres, Quaternion.identity, true);
+            material.SetColor(BaseColorId, erasing ? invalidColour : boxColour);
         }
 
         /// <summary>

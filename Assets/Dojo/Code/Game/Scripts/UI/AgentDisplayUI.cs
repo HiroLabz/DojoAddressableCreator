@@ -3,6 +3,7 @@ using Dojo.Framework.Events;
 using Dojo.Framework.UI;
 using Dojo.Game.Events;
 using Dojo.Game.InGame.Agents;
+using Dojo.Game.Managers;
 using Dojo.Game.Placement;
 using Dojo.Game.Server;
 using TMPro;
@@ -53,6 +54,12 @@ namespace Dojo.Game.UI
         [Tooltip("Select area: which block area this agent walks in, or none for its whole floor.")]
         [SerializeField] TMP_Dropdown areaDropdown;
 
+        [Tooltip("Select department: one of the vision's presets, or Custom… to type one.")]
+        [SerializeField] TMP_Dropdown departmentDropdown;
+
+        [Tooltip("Set role: asks for the agent's job title, such as \"Lead researcher\".")]
+        [SerializeField] Button roleButton;
+
         [Header("Tiles")]
         [Tooltip("Size of one agent tile in the drawer strip, in pixels.")]
         [SerializeField] Vector2 tileSize = new Vector2(84f, 84f);
@@ -75,6 +82,16 @@ namespace Dojo.Game.UI
         // Where a painted area is announced, so the world can save itself. This panel knows
         // nothing about who is listening.
         IEventHub hub;
+
+        // Asks for a custom department and for the job title.
+        IDialogManager dialogs;
+        PopupPrefabs popups;
+
+        // The department behind each of the department dropdown's choices, in order. The last
+        // choice, Custom…, has none and is CustomChoice.
+        readonly List<string> departmentChoices = new List<string>();
+
+        const string CustomChoice = "Custom…";
 
         readonly List<Tile> tiles = new List<Tile>();
 
@@ -126,9 +143,11 @@ namespace Dojo.Game.UI
             PlacementController controller,
             FurniturePlacementService placementService,
             AgentAssembler agentAssembler,
-            IEventHub eventHub)
+            IEventHub eventHub,
+            IDialogManager dialogManager)
         {
             this.hub = eventHub;
+            this.dialogs = dialogManager;
             this.registry = agentRegistry;
             this.blockAreas = areas;
             this.placement = controller;
@@ -136,6 +155,55 @@ namespace Dojo.Game.UI
             this.assembler = agentAssembler;
 
             Listen();
+        }
+
+        /// <summary>The styled popups, where the scene has them (QA issue 8).</summary>
+        [Inject]
+        public void ConstructPopups(IObjectResolver resolver)
+        {
+            if (resolver != null)
+            {
+                resolver.TryResolve(out popups);
+            }
+        }
+
+        /// <summary>
+        /// Asks for a line of text in the styled Prompt popup, as the area's name is asked for; the
+        /// dialog's Prompt where there is none. Nothing happens when it is cancelled.
+        /// </summary>
+        void AskText(string heading, string question, string suggestion, string hint, System.Action<string> typed, System.Action cancelled)
+        {
+            if (popups == null || popups.Prompt == null || PopupManager.Instance == null)
+            {
+                dialogs.Prompt(question, suggestion, typed, cancelled, hint);
+                return;
+            }
+
+            var popup = PopupManager.Instance.Show(popups.Prompt)
+                .Tint(MessagePopup.Tone.Info)
+                .Present(heading, question)
+                .Caption(MessagePopup.Choice.Cancel, "CANCEL")
+                .Caption(MessagePopup.Choice.Primary, "SAVE")
+                .Ask(suggestion);
+
+            // The Prompt's own hint is for naming an area.
+            var box = popup.GetComponentInChildren<TMP_InputField>(true);
+            if (box != null && box.placeholder is TMP_Text placeholder && !string.IsNullOrEmpty(hint))
+            {
+                placeholder.text = hint;
+            }
+
+            popup.Chosen += choice =>
+            {
+                if (choice == MessagePopup.Choice.Primary && popup.Answer.Length > 0)
+                {
+                    typed(popup.Answer);
+                }
+                else
+                {
+                    cancelled?.Invoke();
+                }
+            };
         }
 
         void Awake()
@@ -153,6 +221,16 @@ namespace Dojo.Game.UI
             if (areaDropdown != null)
             {
                 areaDropdown.onValueChanged.AddListener(OnAreaChosen);
+            }
+
+            if (departmentDropdown != null)
+            {
+                departmentDropdown.onValueChanged.AddListener(OnDepartmentChosen);
+            }
+
+            if (roleButton != null)
+            {
+                roleButton.onClick.AddListener(OnSetRole);
             }
 
             // Deliberately does NOT hide the card. Hiding it here looks harmless and is not: the
@@ -374,8 +452,20 @@ namespace Dojo.Game.UI
             Refresh();
         }
 
+        /// <summary>
+        /// Raised after the card is redrawn — on a selection, an area painted or assigned, a
+        /// department or role set — so the parts of the card other components fill stay in step.
+        /// </summary>
+        public event System.Action Refreshed;
+
         /// <summary>Puts the card and the tiles in step with the roster and the areas.</summary>
         void Refresh()
+        {
+            RedrawCard();
+            Refreshed?.Invoke();
+        }
+
+        void RedrawCard()
         {
             var agent = Selected;
 
@@ -403,9 +493,9 @@ namespace Dojo.Game.UI
 
             if (descriptionLabel != null)
             {
-                // The department and the type are on the card because they are the two things the
-                // credentials carry that the name does not.
-                descriptionLabel.text = agent.description + "\n<size=80%>" + Upper(agent.workId)
+                // The department, the job and the type are on the card because they are the things
+                // the credentials carry that the name does not.
+                descriptionLabel.text = agent.description + "\n<size=80%>" + DetailsText(agent)
                     + " · " + agent.Status + " · " + AreaText(agent) + "</size>";
             }
 
@@ -416,6 +506,206 @@ namespace Dojo.Game.UI
 
             SetInteractable(true);
             FillAreaChoices(agent);
+            FillDepartmentChoices(agent);
+        }
+
+        /// <summary>The department and the job, in words: "SALES · Lead researcher", either alone.</summary>
+        /// <remarks>
+        /// Only a department the player chose. The sync's guess comes from the platform slug, which
+        /// can be a word like "default" that reads as a department called Default.
+        /// </remarks>
+        public static string DetailsText(AgentCredential agent)
+        {
+            if (agent == null)
+            {
+                return string.Empty;
+            }
+
+            var department = agent.departmentChosen ? Upper(agent.workId) : string.Empty;
+
+            if (string.IsNullOrWhiteSpace(agent.jobTitle))
+            {
+                return department;
+            }
+
+            return string.IsNullOrEmpty(department) ? agent.jobTitle : department + " · " + agent.jobTitle;
+        }
+
+        /// <summary>
+        /// Lists the departments - the agent's own first when it is not a preset, then every
+        /// preset, then Custom… - and shows the one it has.
+        /// </summary>
+        void FillDepartmentChoices(AgentCredential agent)
+        {
+            if (departmentDropdown == null)
+            {
+                return;
+            }
+
+            filling = true;
+
+            var shown = DepartmentRows(agent, departmentChoices);
+            var options = new List<TMP_Dropdown.OptionData>();
+
+            foreach (var department in departmentChoices)
+            {
+                options.Add(new TMP_Dropdown.OptionData(department ?? DepartmentPrompt));
+            }
+
+            options.Add(new TMP_Dropdown.OptionData(CustomChoice));
+
+            departmentDropdown.ClearOptions();
+            departmentDropdown.AddOptions(options);
+            departmentDropdown.SetValueWithoutNotify(shown);
+            departmentDropdown.RefreshShownValue();
+
+            filling = false;
+        }
+
+        /// <summary>What the department dropdown reads when the agent has none.</summary>
+        const string DepartmentPrompt = "Select department";
+
+        /// <summary>
+        /// Fills <paramref name="rows"/> with the department behind each of the dropdown's rows, in
+        /// order, and returns the row to show. Custom… is not included; it always comes last.
+        /// </summary>
+        /// <remarks>
+        /// An agent with no department gets a prompt row first, held as <c>null</c>, and it is the
+        /// one shown. The dropdown's value then really means "none". Showing the first preset's
+        /// row with its caption painted over looked the same until anything refreshed the caption,
+        /// and then a new world's agent read as being in Reception — and Reception could not be
+        /// picked, because it was already the value.
+        /// <para>
+        /// A custom department is offered as itself, so the dropdown can show what the agent has
+        /// without pretending it is a preset. A guessed one is not shown at all - see DetailsText.
+        /// </para>
+        /// </remarks>
+        public static int DepartmentRows(AgentCredential agent, List<string> rows)
+        {
+            rows.Clear();
+
+            var current = agent != null && agent.departmentChosen ? agent.workId ?? string.Empty : string.Empty;
+            var shown = Departments.IndexOf(current);
+
+            if (string.IsNullOrWhiteSpace(current))
+            {
+                rows.Add(null);
+                shown = 0;
+            }
+            else if (shown < 0)
+            {
+                rows.Add(current);
+                shown = 0;
+            }
+
+            rows.AddRange(Departments.Presets);
+            return shown;
+        }
+
+        /// <summary>
+        /// Puts the agent in the department picked, or asks for a custom one. Saved at once, like
+        /// an area.
+        /// </summary>
+        void OnDepartmentChosen(int index)
+        {
+            var agent = Selected;
+
+            if (filling || agent == null || index < 0)
+            {
+                return;
+            }
+
+            if (index < departmentChoices.Count)
+            {
+                if (departmentChoices[index] == null)
+                {
+                    Refresh();   // the prompt: choosing it chooses nothing
+                    return;
+                }
+
+                ApplyDepartment(agent, departmentChoices[index]);
+                return;
+            }
+
+            // Custom…
+            if (dialogs == null)
+            {
+                Refresh();
+                return;
+            }
+
+            AskText("Name the department", "Which department is " + agent.name + " in?",
+                agent.departmentChosen ? agent.workId ?? string.Empty : string.Empty,
+                "e.g. Customer Success",
+                typed => ApplyDepartment(agent, typed),
+                Refresh);
+        }
+
+        void ApplyDepartment(AgentCredential agent, string department)
+        {
+            var normalised = Departments.Normalise(department);
+
+            // A blank custom name changes nothing: an agent always keeps a department once it has one.
+            if (string.IsNullOrEmpty(normalised))
+            {
+                Refresh();
+                return;
+            }
+
+            agent.workId = normalised;
+            agent.departmentChosen = true;
+
+            SaveDetails(agent);
+        }
+
+        /// <summary>Asks for the agent's job title. Blank clears it.</summary>
+        void OnSetRole()
+        {
+            var agent = Selected;
+
+            if (agent == null || dialogs == null)
+            {
+                return;
+            }
+
+            AskText("Set role", "What is " + agent.name + "'s role in this world?", agent.jobTitle ?? string.Empty,
+                "e.g. Lead researcher",
+                typed =>
+                {
+                    agent.jobTitle = string.IsNullOrWhiteSpace(typed) ? string.Empty : typed.Trim();
+                    SaveDetails(agent);
+                },
+                null);
+        }
+
+        /// <summary>
+        /// Saves the agent's department and job with the open world, brings every placed copy's
+        /// label in step, and redraws the card.
+        /// </summary>
+        /// <remarks>
+        /// Into the world, not the roster: each world is its own company layout, so a department
+        /// set here belongs to this world only and a new world starts without it. Announcing the
+        /// change is what saves it — autosave captures the details along with the rest of the
+        /// world (<see cref="WorldAgentDetails"/>).
+        /// </remarks>
+        void SaveDetails(AgentCredential agent)
+        {
+            if (hub != null)
+            {
+                hub.Publish(new WorldChanged(agent.name + "'s department or role"));
+            }
+
+            // A placed copy carries the department as a label only - a load rebuilds it from the
+            // roster - but a world saved now would write the old one into the file.
+            foreach (var placed in FindObjectsByType<PlacedAgent>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            {
+                if (placed.CredentialId == agent.id)
+                {
+                    placed.Set(agent.id, agent.name, agent.workId);
+                }
+            }
+
+            Refresh();
         }
 
         /// <summary>Where this agent walks, in words: its area and floor, or its whole floor.</summary>
@@ -492,6 +782,16 @@ namespace Dojo.Game.UI
             if (areaDropdown != null)
             {
                 areaDropdown.interactable = on;
+            }
+
+            if (departmentDropdown != null)
+            {
+                departmentDropdown.interactable = on;
+            }
+
+            if (roleButton != null)
+            {
+                roleButton.interactable = on;
             }
 
             if (placeAgentButton != null)
@@ -578,6 +878,9 @@ namespace Dojo.Game.UI
 
             Debug.Log("[Agents] placed " + (agent != null ? agent.name : "an agent") + " at "
                 + piece.transform.position.ToString("F2") + ", walking in: " + AreaText(agent), this);
+
+            // The Agents tab's DRAFT flag goes out once the agent is in the world.
+            Refresh();
         }
 
         static string Upper(string text)

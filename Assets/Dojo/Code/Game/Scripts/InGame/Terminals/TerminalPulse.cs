@@ -58,7 +58,9 @@ namespace Dojo.Game.InGame.Terminals
             phase = Mathf.Repeat(at.x * 0.37f + at.z * 0.61f, 1f) * period;
         }
 
-        void Update()
+        // On the physics tick, not every rendered frame: 3D objects run on FixedUpdate (Bob, 19 Nov,
+        // ClickUp 14ze67xfu9w), the click glows included. Time.time keeps the beat the same length.
+        void FixedUpdate()
         {
             if (parts == null)
             {

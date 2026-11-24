@@ -36,6 +36,27 @@ namespace Dojo.Game.InGame.Agents
         public string workId;
 
         /// <summary>
+        /// True once the player has picked <see cref="workId"/> on the agent card, rather than it
+        /// being the guess the roster sync made from the platform.
+        /// </summary>
+        /// <remarks>
+        /// The sync never overwrites a department either way. This is what keeps a chosen one in
+        /// the saved file: a guess is made again identically next launch, a choice cannot be.
+        /// </remarks>
+        [Tooltip("The player picked this department on the agent card. The sync only guesses one.")]
+        public bool departmentChosen;
+
+        /// <summary>
+        /// What the player calls this agent's job: "Lead researcher". Empty until one is set.
+        /// </summary>
+        /// <remarks>
+        /// Not "role": the server's <c>role</c> already means Agent or Manager. The platform has no
+        /// job field at all (checked against the live <c>/v1/agents</c> schema), so the game owns it.
+        /// </remarks>
+        [Tooltip("The agent's job, as the player named it. Empty until one is set.")]
+        public string jobTitle;
+
+        /// <summary>
         /// This agent's id on the Hiro platform, or empty when they are local only.
         /// </summary>
         /// <remarks>
@@ -99,8 +120,23 @@ namespace Dojo.Game.InGame.Agents
         [NonSerialized]
         public float areaCellSize = 0.25f;
 
+        /// <summary>
+        /// The platform's latest record of this agent, for this session only: what it may do -
+        /// its models, tools, approvals, guardrails and budget - for the Agent Passport. Null until
+        /// the platform has answered, and for an agent it does not know.
+        /// </summary>
+        /// <remarks>
+        /// Never saved, like the area: it is the platform's to say, and a saved copy would only go
+        /// stale. Set by the roster sync.
+        /// </remarks>
+        [NonSerialized]
+        public RemoteAgent platform;
+
         /// <summary>True once the player has painted somewhere for this agent to roam.</summary>
         public bool HasArea => area != null && area.Count > 0;
+
+        /// <summary>True once the player has set a department or a job title on the agent card.</summary>
+        public bool HasPlayerDetails => departmentChosen || !string.IsNullOrEmpty(jobTitle);
 
         /// <summary>True when this agent is linked to one on the platform and can be chatted with.</summary>
         public bool HasPlatformAgent => !string.IsNullOrEmpty(hiroAgentId);
@@ -124,6 +160,30 @@ namespace Dojo.Game.InGame.Agents
         // an accessor that offers the wrong answer conveniently is an invitation to reintroduce it.
         // AgentRoutine.ConfineTo takes the cells.
 
+        /// <summary>
+        /// A copy without the department and job the player gave it in the open world.
+        /// </summary>
+        /// <remarks>
+        /// For anything that outlives the world: the roster overlay and the shipped catalogue.
+        /// Those details belong to the world they were set in and are saved with it; written
+        /// anywhere else they would come back in the next world opened.
+        /// </remarks>
+        public AgentCredential CopyWithoutWorldDetails()
+        {
+            var copy = Copy();
+
+            if (copy.departmentChosen)
+            {
+                // The department was the player's, not the platform's guess: the next refresh
+                // fills the guess back in.
+                copy.workId = string.Empty;
+            }
+
+            copy.departmentChosen = false;
+            copy.jobTitle = string.Empty;
+            return copy;
+        }
+
         /// <summary>A copy, so an edit in progress cannot change the roster until it is committed.</summary>
         public AgentCredential Copy()
             => new AgentCredential
@@ -132,6 +192,8 @@ namespace Dojo.Game.InGame.Agents
                 name = name,
                 description = description,
                 workId = workId,
+                departmentChosen = departmentChosen,
+                jobTitle = jobTitle,
                 hiroAgentId = hiroAgentId,
                 hiroSlug = hiroSlug,
                 origin = origin,
@@ -139,6 +201,7 @@ namespace Dojo.Game.InGame.Agents
                 isolationMode = isolationMode,
                 areaCellSize = areaCellSize,
                 area = area == null ? new List<Vector3>() : new List<Vector3>(area),
+                platform = platform,
             };
     }
 

@@ -53,17 +53,16 @@ namespace Dojo.Game.Placement
 
         Grid grid;
 
-        /// <summary>The cell size a world uses when no grid has said otherwise.</summary>
-        public const float DefaultStep = 0.25f;
+        /// <summary>
+        /// The cell size a world uses when no grid has said otherwise: the MVP kit's 0.3 m, which
+        /// every world is built on (Bob, 16 Nov; ClickUp 14ze67xf93f).
+        /// </summary>
+        public const float DefaultStep = 0.3f;
 
         /// <summary>
-        /// The open scene's cell size, for the room code that has no grid of its own to ask: rooms
-        /// move, cut doorways and lay areas in whole cells of it.
+        /// The open scene's cell size, for the room code that has no grid of its own to ask: doorways
+        /// are cut in whole cells of it. Ported from DojoAddressableCreator.
         /// </summary>
-        /// <remarks>
-        /// One grid per scene, and every kit is built to its scene's: the first kit to 0.25 m, the
-        /// MVP kit to 0.3 m. Set as the grid wakes, so it is the scene's before any room is placed.
-        /// </remarks>
         public static float Step { get; private set; } = DefaultStep;
 
         void Awake()
@@ -161,10 +160,22 @@ namespace Dojo.Game.Placement
             var minZ = local.z - rotatedFootprint.y * cell * 0.5f;
 
             return new Vector3Int(
-                Mathf.RoundToInt(minX / cell),
-                Mathf.RoundToInt(minZ / cell),
+                RoundCell(minX / cell),
+                RoundCell(minZ / cell),
                 KeyFor(StoreyAt(world.y), level));
         }
+
+        /// <summary>
+        /// The nearest whole cell to a position measured in cells, a half always rounding up.
+        /// </summary>
+        /// <remarks>
+        /// Not <see cref="Mathf.RoundToInt"/>, which rounds a half to the even number: -8.5 goes to
+        /// -8 but 4.5 to 4, so the same piece came out a cell apart depending on whether it was
+        /// measured from its room's pivot or from the world's origin. A room's pieces are off the
+        /// grid (their tiles are not a whole number of cells), so they do land on halves, and
+        /// <see cref="RoomLayout.OriginOf"/> and this must agree on every one.
+        /// </remarks>
+        public static int RoundCell(float cells) => Mathf.FloorToInt(cells + 0.5f);
 
         /// <summary>
         /// World centre of the block starting at <paramref name="origin"/>. This is where the piece

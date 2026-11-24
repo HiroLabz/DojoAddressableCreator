@@ -4,6 +4,8 @@ using Dojo.Framework.Content;
 using Dojo.Framework.Events;
 using Dojo.Framework.World;
 using Dojo.Game.Events;
+using Dojo.Game.InGame.Agents;
+using Dojo.Game.InGame.Controllers;
 using Dojo.Game.Placement;
 using Dojo.Game.Systems;
 using UnityEngine;
@@ -19,8 +21,9 @@ namespace Dojo.Game.UI
     /// agents are assigned to it.
     /// </summary>
     /// <remarks>
-    /// The pin stands where he would stop if sent there - the middle of the area, or the free spot
-    /// nearest it - so it is never inside a desk. It follows the areas: one appears when an area is
+    /// The pin stands where he could stop - the middle of the area, or the free spot nearest it -
+    /// so it is never inside a desk, and where the camera can see it from the angle the game opens
+    /// on, so nothing in front of it hides it. It follows the areas: one appears when an area is
     /// made, moves when one is repainted or something is put down in it, and goes with it. Only
     /// the floor being looked at shows its locators, and only in Play: arranging the room has
     /// its own markings. An area the owner is in shows none - he is there already - and gets it
@@ -126,6 +129,12 @@ namespace Dojo.Game.UI
             }
 
             canvas = GetComponentInParent<Canvas>();
+
+            // The view the game opens on, before anyone has swung it.
+            if (Camera.main != null)
+            {
+                towardView = -Camera.main.transform.forward;
+            }
 
             // The pins' own root, in this scene but outside the world.
             var holder = new GameObject("AreaLocators");
@@ -236,7 +245,7 @@ namespace Dojo.Game.UI
                     {
                         entry.metresShown = shown;
                         entry.agentsShown = entry.agents;
-                        entry.label.Set(entry.area.Name, Line(entry.area.Floor, metres, entry.agents));
+                        entry.label.Set(entry.area.Name, Line(entry.area.Floor, metres, entry.agents, entry.area.Department));
                     }
                 }
 
@@ -312,7 +321,9 @@ namespace Dojo.Game.UI
 
                 entry.locator.name = "Locator " + area.Name;
                 entry.label.name = "Label " + area.Name;
-                entry.locator.transform.position = Spot(area, filter);
+
+                var head = entry.locator.Head - entry.locator.transform.position;
+                entry.locator.transform.position = Spot(area, filter, head);
                 entry.seen = false;
             }
 
@@ -347,23 +358,119 @@ namespace Dojo.Game.UI
         }
 
         /// <summary>
-        /// Where the owner would stop in the area: its middle, or the free spot nearest it. Its
-        /// middle when there is no walkable floor to be had - before the floor is baked, say.
+        /// Where the pin goes in the area: the free spot nearest its middle that the camera can see
+        /// from its starting angle - so no supercomputer, desk or wall in front hides it. The
+        /// nearest free spot when none can be seen, and the middle when there is no walkable floor
+        /// to be had - before the floor is baked, say.
         /// </summary>
-        static Vector3 Spot(BlockArea area, NavMeshQueryFilter filter)
+        /// <param name="head">The pin's head, from where it stands: its pad and its head must both be in sight.</param>
+        Vector3 Spot(BlockArea area, NavMeshQueryFilter filter, Vector3 head)
         {
             var reach = area.CellSize * 0.5f;
 
-            foreach (var point in area.CentreFirst())
+            Stander stand = (Vector3 point, out Vector3 spot) =>
             {
                 NavMeshHit hit;
                 if (NavMesh.SamplePosition(point, out hit, reach, filter))
                 {
-                    return hit.position;
+                    spot = hit.position;
+                    return true;
+                }
+
+                spot = default;
+                return false;
+            };
+
+            Func<Vector3, bool> seen = spot =>
+                InSight(spot + Vector3.up * PadLift, towardView, area.Floor)
+                && InSight(spot + head, towardView, area.Floor);
+
+            return Choose(area.CentreFirst(), stand, seen, area.Centre);
+        }
+
+        /// <summary>How far above the floor the pad is looked at from: clear of the floor's own collider.</summary>
+        const float PadLift = 0.15f;
+
+        /// <summary>The game's isometric angle, for when there is no camera to read it from.</summary>
+        static readonly Vector3 IsometricTowardView = -(Quaternion.Euler(35.264f, 45f, 0f) * Vector3.forward);
+
+        /// <summary>
+        /// Back along the camera's starting view: up, and towards it. Read once at the start, before
+        /// the player has swung the view, because a pin is placed for the view the game opens on.
+        /// </summary>
+        Vector3 towardView = IsometricTowardView;
+
+        /// <summary>Somewhere the owner could stand, near <paramref name="point"/>: true and the spot, or false.</summary>
+        public delegate bool Stander(Vector3 point, out Vector3 spot);
+
+        /// <summary>
+        /// The spot for a pin: the first of <paramref name="candidates"/> - the area's cells, middle
+        /// first - that the owner could stand on and the camera can see. With none in sight, the
+        /// first he could stand on; with none of those, <paramref name="fallback"/>.
+        /// </summary>
+        public static Vector3 Choose(IEnumerable<Vector3> candidates, Stander stand, Func<Vector3, bool> seen, Vector3 fallback)
+        {
+            var firstFree = false;
+            var free = fallback;
+
+            foreach (var point in candidates)
+            {
+                Vector3 spot;
+                if (!stand(point, out spot))
+                {
+                    continue;
+                }
+
+                if (!firstFree)
+                {
+                    firstFree = true;
+                    free = spot;
+                }
+
+                if (seen(spot))
+                {
+                    return spot;
                 }
             }
 
-            return area.Centre;
+            return free;
+        }
+
+        /// <summary>How far back towards the camera something can stand and still hide a pin.</summary>
+        const float SightReach = 12f;
+
+        /// <summary>
+        /// True when nothing on <paramref name="floor"/> stands between <paramref name="point"/> and
+        /// the camera, looking back along <paramref name="towardView"/>.
+        /// </summary>
+        /// <remarks>
+        /// Furniture and walls count. The floors above do not: they are hidden while this one is
+        /// looked at, though their colliders are still there. Nor do people, who walk on while the
+        /// pin stays.
+        /// </remarks>
+        public static bool InSight(Vector3 point, Vector3 towardView, int floor)
+        {
+            var hits = Physics.RaycastAll(point, towardView, SightReach, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+
+            foreach (var hit in hits)
+            {
+                if (Storeys.StoreyOf(hit.transform) != floor)
+                {
+                    continue;
+                }
+
+                if (hit.transform.GetComponentInParent<PlacedAgent>() != null
+                    || hit.transform.GetComponentInParent<PlacedManager>() != null
+                    || hit.transform.GetComponentInParent<AgentRoutine>() != null
+                    || hit.transform.GetComponentInParent<ManagerController>() != null)
+                {
+                    continue;
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -386,12 +493,20 @@ namespace Dojo.Game.UI
         }
 
         /// <summary>
-        /// The label's second line: the floor, the owner's distance in whole metres, and the agents
-        /// in the area - "3F · 12m · 2 AGENTS". The distance is left out when there is no owner.
+        /// The label's second line: the area's department, the floor, the owner's distance in whole
+        /// metres, and the agents in the area - "SALES · 3F · 12m · 2 AGENTS". The department is left
+        /// out when the area has none, the distance when there is no owner.
         /// </summary>
-        public static string Line(int floor, float metres, int agents)
+        public static string Line(int floor, float metres, int agents, string department = null)
         {
-            var parts = new List<string>(3) { Storeys.LabelFor(floor) };
+            var parts = new List<string>(4);
+
+            if (!string.IsNullOrWhiteSpace(department))
+            {
+                parts.Add(department.Trim().ToUpperInvariant());
+            }
+
+            parts.Add(Storeys.LabelFor(floor));
 
             if (metres >= 0f)
             {

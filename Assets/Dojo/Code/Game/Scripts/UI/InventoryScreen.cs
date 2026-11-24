@@ -1,4 +1,7 @@
+using Dojo.Game.Managers;
 using System;
+using Dojo.Framework.UI;
+using Dojo.Game.Placement;
 using Dojo.Game.Systems;
 using UnityEngine;
 using UnityEngine.UI;
@@ -256,6 +259,11 @@ namespace Dojo.Game.UI
         /// Shuts the screen and hands the room back to its occupants. The category is kept, so
         /// reopening returns to it.
         /// </summary>
+        /// <remarks>
+        /// While a room is being made, closing the inventory would end the Edit phase and with it
+        /// the room editor, throwing the room away. So it asks first: yes cancels the room editor
+        /// and closes; no leaves both open.
+        /// </remarks>
         public void Close()
         {
             // While a room is being made the inventory is how it is made, and the menu that would

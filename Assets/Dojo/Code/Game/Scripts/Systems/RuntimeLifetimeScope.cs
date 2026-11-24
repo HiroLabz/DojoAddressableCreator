@@ -218,6 +218,10 @@ namespace Dojo.Game.Systems
             RegisterDialog<SaveWorldDialog, ISaveWorldDialog>(builder, prefabs.SaveWorld);
             RegisterDialog<ShopDialog, IShopDialog>(builder, prefabs.Shop);
 
+            // Two to four answers, each its own button (OK / CANCEL / EDIT ROOM ...). Always
+            // generated in code, as in the game's RootLifetimeScope.
+            RegisterDialog<ChoiceDialog, IChoiceDialog>(builder, null);
+
             builder.RegisterInstance(popupPrefabs ?? new PopupPrefabs());
         }
 

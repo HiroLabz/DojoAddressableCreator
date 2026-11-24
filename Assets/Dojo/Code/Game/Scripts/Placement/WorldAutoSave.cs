@@ -172,6 +172,12 @@ namespace Dojo.Game.Placement
             {
                 // Superseded by a later change, or the scene went. Either way the write that
                 // matters is the one that comes after, not this one.
+                Debug.Log("[World] Auto save after '" + reason + "' stopped: a later change restarted the wait, or the scene closed.");
+            }
+            catch (Exception exception)
+            {
+                // Fire and forget: nothing awaits this task, so a failure would vanish unless it is logged here.
+                Debug.LogException(exception);
             }
         }
 

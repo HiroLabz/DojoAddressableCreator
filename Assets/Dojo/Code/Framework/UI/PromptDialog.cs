@@ -94,7 +94,12 @@ namespace Dojo.Framework.UI
         /// Puts a question on screen with a box to answer it in.
         /// </summary>
         /// <param name="suggestion">What the box starts with, and what is selected ready to replace.</param>
-        public void Ask(string question, string suggestion, Action<string> onConfirm, Action onCancel = null)
+        /// <param name="placeholder">
+        /// The faint hint in an empty box. Set on every ask, empty when none is given: one dialog
+        /// serves every question, and a hint left from the last one ("Name this world" under a
+        /// question about a role) is worse than no hint.
+        /// </param>
+        public void Ask(string question, string suggestion, Action<string> onConfirm, Action onCancel = null, string placeholder = null)
         {
             EnsureBuilt();
 
@@ -112,6 +117,11 @@ namespace Dojo.Framework.UI
             }
 
             input.text = suggestion ?? string.Empty;
+
+            if (input.placeholder is TMP_Text hint)
+            {
+                hint.text = placeholder ?? string.Empty;
+            }
 
             Show();
         }
@@ -270,7 +280,7 @@ namespace Dojo.Framework.UI
             placeholderRect.offsetMax = Vector2.zero;
             placeholder.alignment = TextAlignmentOptions.Left;
             placeholder.color = new Color(1f, 1f, 1f, 0.35f);
-            placeholder.text = "Name this world";
+            placeholder.text = string.Empty;   // set by each Ask
 
             var field = rect.gameObject.AddComponent<TMP_InputField>();
             field.textViewport = viewport;

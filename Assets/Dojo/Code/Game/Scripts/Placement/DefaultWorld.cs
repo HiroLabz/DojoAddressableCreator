@@ -29,12 +29,29 @@ namespace Dojo.Game.Placement
             ? WorldSettings.Active.DefaultWorld
             : WorldSettings.StandardDefaultWorld;
 
+        /// <summary>
+        /// Content address of the MVP kit's default world (Harold's pieces), which the game starts
+        /// from when the content has it.
+        /// </summary>
+        public const string MvpAddress = "default/World/world_mvp";
+
+        /// <summary>
+        /// The address the default world is read from: the MVP kit's when the content has it, else
+        /// the first kit's, so content published before the MVP kit still has a starter world.
+        /// </summary>
+        public static string AddressIn(IContentService content)
+        {
+            TextAsset asset;
+            return content != null && content.TryGet(MvpAddress, out asset) && asset != null ? MvpAddress : Address;
+        }
+
         /// <summary>The default world, or null when the content has none or it cannot be read.</summary>
         public static WorldSave Read(IContentService content)
         {
             TextAsset asset;
+            var address = AddressIn(content);
 
-            if (content == null || !content.TryGet(Address, out asset) || asset == null)
+            if (content == null || !content.TryGet(address, out asset) || asset == null)
             {
                 return null;
             }
@@ -47,7 +64,7 @@ namespace Dojo.Game.Placement
             }
             catch (Exception exception)
             {
-                Debug.LogWarning("[World] The default world at '" + Address + "' could not be read: "
+                Debug.LogWarning("[World] The default world at '" + address + "' could not be read: "
                     + exception.Message);
                 return null;
             }
@@ -85,8 +102,9 @@ namespace Dojo.Game.Placement
                 connectors = template.connectors ?? new List<WorldSave.SavedConnector>(),
                 navigation = template.navigation ?? new List<WorldSave.SavedSurface>(),
 
-                // The rooms placed in it, so their pieces come back grouped - one room each, moved
-                // and deleted whole - rather than loose on their floors.
+                // Its placed rooms come too, as they are. Their pieces name them by id, so without
+                // these the starter world's rooms (the MVP world's Conference Room and Dev Lab)
+                // would load as loose pieces: no longer a room to move whole, and no doors.
                 rooms = template.rooms ?? new List<WorldSave.SavedRoom>(),
             };
 

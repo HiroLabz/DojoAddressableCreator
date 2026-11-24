@@ -76,6 +76,26 @@ namespace Dojo.Game.Placement
                  "the code assume no maximum, so raising this is the whole change.")]
         [SerializeField] int maxFloors = 5;
 
+        [Header("Elevators")]
+        [Tooltip("PROTOTYPE, waiting on Bob's approval (ClickUp 14ze67xf93f). An elevator placed on " +
+                 "the top floor, with no other floor to stop at, adds the floor above with a landing " +
+                 "of floor tiles under it and in front of its doors, instead of being refused. Only " +
+                 "below the floor limit, and never on a floor the player already has.")]
+        [SerializeField] bool autoFloorAboveElevator;
+
+        [Tooltip("The floor tile the landing is laid with, by content address.")]
+        [SerializeField] string elevatorLandingTile = "default/default_light_gray_floor_tile";
+
+        /// <summary>Whether an elevator on the top floor adds the floor above (prototype).</summary>
+        public bool AutoFloorAboveElevator => autoFloorAboveElevator;
+
+        /// <summary>Content address of the tile the landing on the new floor is laid with.</summary>
+        public string ElevatorLandingTile
+            => string.IsNullOrWhiteSpace(elevatorLandingTile) ? "default/default_light_gray_floor_tile" : elevatorLandingTile.Trim();
+
+        /// <summary>Settings with the elevator prototype on or off, for tests.</summary>
+        public static WorldSettings WithAutoFloor(bool on) => new WorldSettings { autoFloorAboveElevator = on };
+
         [Header("Kit")]
         [Tooltip("Content address of the world a player starts in before they have saved one. Each " +
                  "kit has its own: the first kit's at default/World/world, the MVP kit's at " +
@@ -92,6 +112,14 @@ namespace Dojo.Game.Placement
 
         public const string StandardDefaultWorld = "default/World/world";
         public const string StandardSaveFile = "world.json";
+        [Tooltip("Pieces taken off the inventory but still part of the kit, by content address: not " +
+                 "offered for building, yet a saved world that has them is not old and still loads " +
+                 "and works with them (the old Knowledge Shelf and the supercomputers, whose roles " +
+                 "went to the display shelf and the server rack - Jacob, 19 Nov).")]
+        [SerializeField] string[] retired = Array.Empty<string>();
+
+        HashSet<string> offered;
+        HashSet<string> retiredSet;
 
         /// <summary>
         /// The open scene's settings, for the few readers with no container to be given them by:
@@ -107,8 +135,6 @@ namespace Dojo.Game.Placement
 
         /// <summary>The addresses the inventory is limited to; empty when it offers everything.</summary>
         public IReadOnlyList<string> InventoryOnly => inventoryOnly ?? Array.Empty<string>();
-
-        HashSet<string> offered;
 
         /// <summary>Whether the inventory offers the piece or room at <paramref name="address"/>.</summary>
         public bool Offers(string address)
@@ -126,8 +152,38 @@ namespace Dojo.Game.Placement
             return !string.IsNullOrEmpty(address) && offered.Contains(address.Trim());
         }
 
+        /// <summary>
+        /// Whether <paramref name="address"/> is a retired piece: hidden from the inventory, still
+        /// accepted in a saved world.
+        /// </summary>
+        public bool Retired(string address)
+        {
+            if (retired == null || retired.Length == 0 || string.IsNullOrEmpty(address))
+            {
+                return false;
+            }
+
+            if (retiredSet == null || retiredSet.Count != retired.Length)
+            {
+                retiredSet = new HashSet<string>(retired, StringComparer.OrdinalIgnoreCase);
+            }
+
+            return retiredSet.Contains(address.Trim());
+        }
+
+        /// <summary>Whether a saved world may have <paramref name="address"/>: offered, or retired.</summary>
+        public bool Accepts(string address) => Offers(address) || Retired(address);
+
         /// <summary>Whether the open scene's inventory offers <paramref name="address"/>; true with no scene settings.</summary>
         public static bool ActiveOffers(string address) => Active == null || Active.Offers(address);
+
+        /// <summary>Settings limited to <paramref name="addresses"/>, for tests.</summary>
+        public static WorldSettings Offering(params string[] addresses)
+            => new WorldSettings { inventoryOnly = addresses ?? Array.Empty<string>() };
+
+        /// <summary>Settings offering <paramref name="addresses"/> with <paramref name="retiredAddresses"/> retired, for tests.</summary>
+        public static WorldSettings Offering(string[] addresses, string[] retiredAddresses)
+            => new WorldSettings { inventoryOnly = addresses ?? Array.Empty<string>(), retired = retiredAddresses ?? Array.Empty<string>() };
 
         /// <summary>The most floors a world may have; 0 means there is no limit.</summary>
         public int MaxFloors => Mathf.Max(0, maxFloors);

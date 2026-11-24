@@ -182,10 +182,13 @@ namespace Dojo.Game.Placement
 
         // ── Painting ────────────────────────────────────────────────────────────────────────
 
-        /// <summary>A new area, given to nobody.</summary>
+        /// <summary>
+        /// A new area, given to nobody. A name another area already has, on any floor, is numbered:
+        /// "Sales 2", "Sales 3"... (see <see cref="UniqueName"/>).
+        /// </summary>
         public BlockArea Add(string name, int floor, List<Vector3> cells, float cellSize)
         {
-            var area = new BlockArea(NewId(), Clean(name), floor, cellSize, new List<Vector3>(cells ?? new List<Vector3>()));
+            var area = new BlockArea(NewId(), UniqueName(name), floor, cellSize, new List<Vector3>(cells ?? new List<Vector3>()));
             areas.Add(area);
             Announce("area '" + area.Name + "' added");
             return area;
@@ -206,6 +209,10 @@ namespace Dojo.Game.Placement
             return true;
         }
 
+        /// <summary>
+        /// Renames an area. A name another area already has is numbered, as in <see cref="Add"/>;
+        /// the area's own name, in any case, is its to keep.
+        /// </summary>
         public bool Rename(int id, string name)
         {
             var area = Find(id);
@@ -215,12 +222,57 @@ namespace Dojo.Game.Placement
                 return false;
             }
 
-            area.Name = Clean(name);
+            area.Name = UniqueName(name, id);
             Announce("area renamed to '" + area.Name + "'");
             return true;
         }
 
         // ── Departments (as the game's BlockAreas) ──────────────────────────────────────────
+
+        /// <summary>
+        /// <paramref name="name"/>, cleaned, or "name 2", "name 3"... when another area on any floor
+        /// already has it. Compared without case.
+        /// </summary>
+        /// <remarks>
+        /// An area's name is how agents, the elevator and Ask Dojo find it ("walk to Sales"), and
+        /// it is the label in every area list. Two areas of one name made all of those ambiguous,
+        /// and the agent's Area list showed two "Sales · 1F" (QA issue 25). Rooms already numbered
+        /// their areas this way; painting and renaming now do too. Worlds saved with a duplicate
+        /// keep it until one of the two is renamed.
+        /// </remarks>
+        /// <param name="except">An area whose own name doesn't count: the one being renamed.</param>
+        public string UniqueName(string name, int except = 0)
+        {
+            var clean = Clean(name);
+            var taken = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var area in areas)
+            {
+                if (area.Id != except && !string.IsNullOrEmpty(area.Name))
+                {
+                    taken.Add(area.Name);
+                }
+            }
+
+            if (!taken.Contains(clean))
+            {
+                return clean;
+            }
+
+            for (var n = 2; ; n++)
+            {
+                var suffix = " " + n;
+                var stem = clean.Length + suffix.Length > MaxNameLength
+                    ? clean.Substring(0, MaxNameLength - suffix.Length).TrimEnd()
+                    : clean;
+                var candidate = stem + suffix;
+
+                if (!taken.Contains(candidate))
+                {
+                    return candidate;
+                }
+            }
+        }
 
         /// <summary>
         /// Gives an area to a department, in the preset's spelling when it is one; null or blank
@@ -531,10 +583,13 @@ namespace Dojo.Game.Placement
             }
         }
 
+        /// <summary>The longest an area's name may be.</summary>
+        public const int MaxNameLength = 40;
+
         static string Clean(string name)
         {
             var trimmed = string.IsNullOrWhiteSpace(name) ? "Area" : name.Trim();
-            return trimmed.Length > 40 ? trimmed.Substring(0, 40) : trimmed;
+            return trimmed.Length > MaxNameLength ? trimmed.Substring(0, MaxNameLength) : trimmed;
         }
 
         /// <summary>One set of credentials that can be given an area: an agent's, or the manager's.</summary>

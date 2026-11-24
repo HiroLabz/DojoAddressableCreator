@@ -4,6 +4,7 @@ using Dojo.Game.InGame.Agents;
 using Dojo.Game.Server;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using VContainer;
 
 namespace Dojo.Game.UI
@@ -64,10 +65,14 @@ namespace Dojo.Game.UI
         [Tooltip("How big the selected agent's area is, e.g. 543 cells.")]
         [SerializeField] TextMeshProUGUI cardCellsLabel;
 
-        [Tooltip("The DRAFT flag. Shown while the agent has an area that is not yet committed.")]
+        [Tooltip("The DRAFT flag. Shown while the agent has an area but is not in the world yet.")]
         [SerializeField] GameObject cardDraftMarker;
 
+        [Tooltip("The selected agent's picture, inside the card's portrait plate.")]
+        [SerializeField] Image cardPicture;
+
         IAgentRegistry registry;
+        AgentPortraits portraits;
 
         readonly List<AgentRosterRow> rows = new List<AgentRosterRow>();
 
@@ -80,9 +85,10 @@ namespace Dojo.Game.UI
         public int SelectedId { get; private set; }
 
         [Inject]
-        public void Construct(IAgentRegistry agentRegistry)
+        public void Construct(IAgentRegistry agentRegistry, AgentPortraits agentPortraits)
         {
             registry = agentRegistry;
+            portraits = agentPortraits;
         }
 
         void Awake()
@@ -96,6 +102,56 @@ namespace Dojo.Game.UI
             {
                 searchPlaceholder.text = "Filter roster";
             }
+
+            // The card redraws itself when an area is assigned or painted; the lines filled here
+            // have to follow, or the note above the buttons keeps naming the old area.
+            if (display != null)
+            {
+                display.Refreshed += OnCardRefreshed;
+            }
+        }
+
+        /// <remarks>
+        /// The rows' DRAFT flags follow too: the card redraws when an agent is put in the world,
+        /// and that is what turns its flag off.
+        /// </remarks>
+        void OnCardRefreshed()
+        {
+            var inWorld = InWorld();
+
+            for (int i = 0; i < rows.Count; i++)
+            {
+                var agent = registry != null ? registry.Find(rows[i].AgentId) : null;
+                rows[i].SetDraft(IsDraft(agent, inWorld));
+            }
+
+            ApplyCard(display != null ? display.Selected : null, inWorld);
+        }
+
+        /// <summary>
+        /// Whether an agent's card says DRAFT: it has an area, but it has not been put in the world
+        /// yet (PLACE AGENT).
+        /// </summary>
+        /// <remarks>
+        /// Not the platform's "draft" status: platform drafts never reach the roster
+        /// (<see cref="ActiveAgents"/>). Once the agent is in the world it is working there, and its
+        /// Passport says ACTIVE; a DRAFT beside it read as a contradiction (QA issue 26).
+        /// </remarks>
+        /// <param name="inWorld">The roster ids of the agents standing in the world.</param>
+        public static bool IsDraft(AgentCredential agent, ICollection<int> inWorld)
+            => agent != null && agent.AreaCellCount > 0 && (inWorld == null || !inWorld.Contains(agent.id));
+
+        /// <summary>The roster ids of the agents standing in the world now.</summary>
+        static HashSet<int> InWorld()
+        {
+            var ids = new HashSet<int>();
+
+            foreach (var placed in FindObjectsByType<PlacedAgent>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+            {
+                ids.Add(placed.CredentialId);
+            }
+
+            return ids;
         }
 
         void OnDestroy()
@@ -103,6 +159,11 @@ namespace Dojo.Game.UI
             if (searchField != null)
             {
                 searchField.onValueChanged.RemoveListener(OnSearchChanged);
+            }
+
+            if (display != null)
+            {
+                display.Refreshed -= OnCardRefreshed;
             }
         }
 
@@ -153,6 +214,7 @@ namespace Dojo.Game.UI
         {
             ClearRows();
 
+            var inWorld = InWorld();
             var agents = registry != null ? registry.Agents : null;
             int total = agents != null ? agents.Count : 0;
             int live = 0;
@@ -184,7 +246,7 @@ namespace Dojo.Game.UI
                     }
 
                     row.name = "Row_" + agent.name;
-                    row.Bind(agent.id, agent.name, SubtitleOf(agent), agent.AreaCellCount > 0);
+                    row.Bind(agent.id, agent.name, SubtitleOf(agent), IsDraft(agent, inWorld), PictureOf(agent));
                     row.Clicked += OnRowClicked;
 
                     rows.Add(row);
@@ -230,17 +292,22 @@ namespace Dojo.Game.UI
                 rows[i].SetSelected(rows[i].AgentId == agentId);
             }
 
-            ApplyCard(registry != null ? registry.Find(agentId) : null);
+            ApplyCard(registry != null ? registry.Find(agentId) : null, InWorld());
         }
 
         /// <summary>
         /// Fills the parts of the card <see cref="AgentDisplayUI"/> has no field for. It owns the
-        /// name, the description, the portrait and the four buttons; these three are the design's
+        /// name, the description, the portrait plate and the four buttons; these four are the design's
         /// additions, and driving them here is cheaper than widening a component that already works.
         /// </summary>
-        void ApplyCard(AgentCredential agent)
+        void ApplyCard(AgentCredential agent, ICollection<int> inWorld)
         {
-            int cells = agent != null ? agent.AreaCellCount : 0;
+            if (cardPicture != null)
+            {
+                cardPicture.sprite = PictureOf(agent);
+                cardPicture.preserveAspect = true;
+                cardPicture.enabled = cardPicture.sprite != null;
+            }
 
             if (cardSubtitleLabel != null)
             {
@@ -255,10 +322,10 @@ namespace Dojo.Game.UI
                 cardCellsLabel.text = agent != null && display != null ? display.AreaText(agent) : string.Empty;
             }
 
-            // Lit while the agent has an area of its own.
+            // Lit while the agent has an area of its own but is not in the world yet.
             if (cardDraftMarker != null)
             {
-                cardDraftMarker.SetActive(cells > 0);
+                cardDraftMarker.SetActive(IsDraft(agent, inWorld));
             }
         }
 
@@ -279,6 +346,9 @@ namespace Dojo.Game.UI
                 countLabel.text = rows.Count + " of " + total;
             }
         }
+
+        Sprite PictureOf(AgentCredential agent)
+            => agent != null && portraits != null ? portraits.For(agent.id) : null;
 
         AgentRosterRow Create()
         {

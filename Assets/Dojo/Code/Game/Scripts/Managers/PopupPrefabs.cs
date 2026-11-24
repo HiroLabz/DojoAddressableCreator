@@ -42,11 +42,32 @@ namespace Dojo.Game.Managers
         /// <summary>Asks for a name: read it back from <see cref="MessagePopup.Answer"/>.</summary>
         public MessagePopup Prompt => prompt;
 
+        [Tooltip("Blue, a dropdown of the choices, Cancel and the primary: asks for one of a list " +
+                 "(Tools > Dojo > Build Chooser Popup).")]
+        [SerializeField] MessagePopup chooser;
+
+        /// <summary>Asks for one of a list: see <c>ChoicePicker</c> on it.</summary>
+        public MessagePopup Chooser => chooser;
+
         [Tooltip("Blue, a department dropdown, a box for a new one and a No department checkbox: " +
                  "asks which department an area belongs to. Built by Tools > Dojo > Build Department Popup.")]
         [SerializeField] MessagePopup department;
 
         /// <summary>Asks for an area's department: see <c>DepartmentPicker</c> on it.</summary>
         public MessagePopup Department => department;
+
+        [Tooltip("Blue, company name, industry, goals and world name, Cancel and START: the " +
+                 "Lobby's first START asks for the player's business with it.")]
+        [SerializeField] MessagePopup business;
+
+        /// <summary>Asks for the player's business: see <c>BusinessPicker</c> on it.</summary>
+        public MessagePopup Business => business;
+
+        [Tooltip("Blue, a row per active agent with an area and a department, SKIP and START: " +
+                 "puts the player's agents in the world before the first-time tour.")]
+        [SerializeField] MessagePopup agentAssignment;
+
+        /// <summary>Places the agents on first run: see <c>AgentAssignmentPicker</c> on it.</summary>
+        public MessagePopup AgentAssignment => agentAssignment;
     }
 }

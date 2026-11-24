@@ -24,11 +24,17 @@ namespace Dojo.Game.InGame.Effects
         static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
         const string EmissionKeyword = "_EMISSION";
 
+        /// <summary>How long a click's glow takes to come up. Shared with <see cref="OverlayGlow"/>.</summary>
+        public const float DefaultRiseSeconds = 0.1f;
+
+        /// <summary>How long a click's glow takes to fade. Shared with <see cref="OverlayGlow"/>.</summary>
+        public const float DefaultFadeSeconds = 0.6f;
+
         [Tooltip("How long it takes to reach full brightness.")]
-        [SerializeField] float riseSeconds = 0.1f;
+        [SerializeField] float riseSeconds = DefaultRiseSeconds;
 
         [Tooltip("How long it takes to fade back to the original colours.")]
-        [SerializeField] float fadeSeconds = 0.6f;
+        [SerializeField] float fadeSeconds = DefaultFadeSeconds;
 
         [Tooltip("Strength of the glow at its peak. Below 1 so the texture still shows through.")]
         [SerializeField] float peakIntensity = 0.9f;
@@ -81,12 +87,13 @@ namespace Dojo.Game.InGame.Effects
             Apply(Strength(0f));
         }
 
-        void Update()
+        // On the physics tick, not every rendered frame: 3D objects run on FixedUpdate.
+        void FixedUpdate()
         {
             Advance(Time.deltaTime);
         }
 
-        /// <summary>Moves the glow on by <paramref name="seconds"/>. Called by Update, and by tests.</summary>
+        /// <summary>Moves the glow on by <paramref name="seconds"/>. Called by FixedUpdate, and by tests.</summary>
         public void Advance(float seconds)
         {
             if (!IsGlowing)
@@ -115,16 +122,21 @@ namespace Dojo.Game.InGame.Effects
             }
         }
 
-        /// <summary>0 to 1: a straight rise, then an eased fall back to nothing.</summary>
-        float Strength(float t)
+        float Strength(float t) => Strength(t, riseSeconds, fadeSeconds);
+
+        /// <summary>
+        /// 0 to 1 at <paramref name="t"/> seconds in: a straight rise, then an eased fall back to
+        /// nothing. The one curve every click glow follows.
+        /// </summary>
+        public static float Strength(float t, float rise, float fade)
         {
-            if (t < riseSeconds)
+            if (t < rise)
             {
-                return riseSeconds > 0f ? t / riseSeconds : 1f;
+                return rise > 0f ? t / rise : 1f;
             }
 
-            var fade = fadeSeconds > 0f ? (t - riseSeconds) / fadeSeconds : 1f;
-            return 1f - Mathf.SmoothStep(0f, 1f, fade);
+            var fall = fade > 0f ? (t - rise) / fade : 1f;
+            return 1f - Mathf.SmoothStep(0f, 1f, fall);
         }
 
         void Apply(float strength)

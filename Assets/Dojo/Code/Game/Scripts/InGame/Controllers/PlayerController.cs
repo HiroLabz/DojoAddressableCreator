@@ -56,7 +56,8 @@ namespace Dojo.Game.InGame.Controllers
 
         void OnDestroy() => moveAction?.Dispose();
 
-        void Update()
+        // On the physics tick, not every rendered frame: 3D objects run on FixedUpdate.
+        void FixedUpdate()
         {
             var heading = ToCameraSpace(moveAction.ReadValue<Vector2>());
 
