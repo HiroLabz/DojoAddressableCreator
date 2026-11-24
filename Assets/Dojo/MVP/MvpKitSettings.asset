@@ -1,0 +1,195 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f2776189408a0343970352f037265da, type: 3}
+  m_Name: MvpKitSettings
+  m_EditorClassIdentifier: Dojo.Game.Editor::Dojo.Game.Editor.MvpKitSettings
+  pieces:
+  - model: AccentSideTable
+    prefabName: 
+    kind: 0
+    category: 
+  - model: BasePlatform
+    prefabName: 
+    kind: 0
+    category: 
+  - model: ControlConsole
+    prefabName: 
+    kind: 0
+    category: 
+  - model: CurvedWallFacade
+    prefabName: 
+    kind: 0
+    category: 
+  - model: DeskBeacon
+    prefabName: 
+    kind: 0
+    category: 
+  - model: DeskPlant
+    prefabName: 
+    kind: 0
+    category: 
+  - model: DevLabDeskBench
+    prefabName: 
+    kind: 0
+    category: 
+  - model: DisplayShelf
+    prefabName: 
+    kind: 0
+    category: 
+  - model: DividerWallLarge
+    prefabName: 
+    kind: 0
+    category: 
+  - model: DividerWallMedium
+    prefabName: 
+    kind: 0
+    category: 
+  - model: DividerWallSmall
+    prefabName: 
+    kind: 0
+    category: 
+  - model: DualMonitor
+    prefabName: 
+    kind: 0
+    category: 
+  - model: DualWorkstationDesk
+    prefabName: 
+    kind: 0
+    category: 
+  - model: Elevator
+    prefabName: 
+    kind: 0
+    category: 
+  - model: EntryPortalWall
+    prefabName: 
+    kind: 0
+    category: 
+  - model: ErgonomicOfficeChair
+    prefabName: 
+    kind: 0
+    category: 
+  - model: FrontCounter
+    prefabName: 
+    kind: 0
+    category: 
+  - model: GlassPartition
+    prefabName: 
+    kind: 0
+    category: 
+  - model: GlassPerimeterRailing
+    prefabName: 
+    kind: 0
+    category: 
+  - model: Hologram Projector
+    prefabName: 
+    kind: 0
+    category: 
+  - model: LargePresentationWallDisplay
+    prefabName: 
+    kind: 0
+    category: 
+  - model: LEDTrimLight
+    prefabName: 
+    kind: 0
+    category: 
+  - model: LightGrayFloorTile
+    prefabName: 
+    kind: 0
+    category: 
+  - model: LongPlanter
+    prefabName: 
+    kind: 0
+    category: 
+  - model: LoungePodChair
+    prefabName: 
+    kind: 0
+    category: 
+  - model: LowLoungeTable
+    prefabName: 
+    kind: 0
+    category: 
+  - model: MediumPlanter
+    prefabName: 
+    kind: 0
+    category: 
+  - model: MeetingChair
+    prefabName: 
+    kind: 0
+    category: 
+  - model: MeetingTable
+    prefabName: 
+    kind: 0
+    category: 
+  - model: PartitionEndCap
+    prefabName: 
+    kind: 0
+    category: 
+  - model: PlanterWallBox
+    prefabName: 
+    kind: 0
+    category: 
+  - model: PrinterStorageModule
+    prefabName: 
+    kind: 0
+    category: 
+  - model: ServerRackTower
+    prefabName: 
+    kind: 0
+    category: 
+  - model: ServerWallModule
+    prefabName: 
+    kind: 0
+    category: 
+  - model: SingleMonitor
+    prefabName: 
+    kind: 0
+    category: 
+  - model: SingleWorkstationDesk
+    prefabName: 
+    kind: 0
+    category: 
+  - model: SmallPottedPlant
+    prefabName: 
+    kind: 0
+    category: 
+  - model: StorageCabinet
+    prefabName: 
+    kind: 0
+    category: 
+  - model: StraightWallPanel
+    prefabName: 
+    kind: 0
+    category: 
+  - model: TableHologramEffect
+    prefabName: 
+    kind: 0
+    category: 
+  - model: TallPottedPlant
+    prefabName: 
+    kind: 0
+    category: 
+  - model: TripleMonitor
+    prefabName: 
+    kind: 0
+    category: 
+  - model: WallDashboardScreen
+    prefabName: 
+    kind: 0
+    category: 
+  - model: WoodFloorTile
+    prefabName: 
+    kind: 0
+    category: 
+  - model: WorkStationReturnTable
+    prefabName: 
+    kind: 0
+    category: 

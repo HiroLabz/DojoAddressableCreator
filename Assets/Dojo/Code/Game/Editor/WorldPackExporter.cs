@@ -23,17 +23,20 @@ namespace Dojo.Game.Editor
     /// </remarks>
     public static class WorldPackExporter
     {
-        const string PackPath = "Assets/Process/default/World/world_mvp.json";
+        public const string PackPath = "Assets/Process/default/World/world_mvp.json";
+
+        /// <summary>The MVP scene's own save file, read whatever scene was last open.</summary>
+        public static WorldLibraryFile Saves() => new WorldLibraryFile(MvpKitImporter.MvpSaveFile);
 
         [MenuItem("Tools/Dojo/Content/3. Export World To Pack", false, 3)]
         public static void Export()
         {
-            var source = new WorldLibraryFile(null);
+            var source = Saves();
 
             if (!source.Exists)
             {
                 EditorUtility.DisplayDialog("Export World To Pack",
-                    "There is no saved world yet. Play, build the world, and SAVE WORLD first.\n\n" + source.FullPath, "OK");
+                    "There is no saved world yet. Play RuntimeMVP, build the world, and SAVE WORLD first.\n\n" + source.FullPath, "OK");
                 return;
             }
 
@@ -46,30 +49,47 @@ namespace Dojo.Game.Editor
                 return;
             }
 
-            var summary = Describe(world);
+            ExportWorld(world, true);
+        }
 
-            if (!EditorUtility.DisplayDialog("Export World To Pack",
-                    "Export '" + world.name + "' as the default pack's starting world?\n\n" + summary
-                    + "\n\nThis replaces " + PackPath + ".", "Export", "Cancel"))
+        /// <summary>
+        /// Makes <paramref name="world"/> the default pack's starting world, after saying what it holds
+        /// and what the rule check found. False when it was not exported.
+        /// </summary>
+        public static bool ExportWorld(WorldSave world, bool ask)
+        {
+            var summary = Describe(world);
+            var problems = WorldRules.Check(world);
+            var findings = problems.Count == 0
+                ? "Rule check: no problems."
+                : "Rule check: " + problems.Count + " problem(s), first ones:\n- "
+                  + string.Join("\n- ", problems.GetRange(0, System.Math.Min(6, problems.Count)));
+
+            if (ask && !EditorUtility.DisplayDialog("Make Default World",
+                    "Make '" + world.name + "' the world new players start in?\n\n" + summary
+                    + "\n\n" + findings + "\n\nThis replaces " + PackPath + ".", "Make default", "Cancel"))
             {
-                return;
+                return false;
             }
 
-            BlankNames(world);
+            // A copy, so the saved world keeps its people's names.
+            var copy = JsonUtility.FromJson<WorldSave>(JsonUtility.ToJson(world));
+            BlankNames(copy);
 
             var pack = new WorldLibrary();
-            pack.worlds.Add(world);
-            pack.current = world.name;
+            pack.worlds.Add(copy);
+            pack.current = copy.name;
 
             Directory.CreateDirectory(Path.GetDirectoryName(PackPath));
             File.WriteAllText(PackPath, JsonUtility.ToJson(pack, true));
             AssetDatabase.ImportAsset(PackPath);
 
-            Debug.Log("[World] Exported '" + world.name + "' to " + PackPath + ": " + summary.Replace("\n", "; ")
-                + ". Run Tools > Dojo > Addressables > 2. Addressable Generator and upload the pack for the game to see it.");
+            Debug.Log("[World] '" + world.name + "' is now the default world (" + PackPath + "): " + summary.Replace("\n", "; ")
+                + ". " + findings.Replace("\n", " ")
+                + " For the game to see it, build and publish the content (Addressable Builder, see Documentation/Content-Release-Guide.md).");
+            return true;
         }
 
-        /// <summary>What the world carries that the game needs: areas with departments, and places for people.</summary>
         public static string Describe(WorldSave world)
         {
             int areas = 0, withDepartment = 0, conference = 0, agents = 0, managers = 0;
