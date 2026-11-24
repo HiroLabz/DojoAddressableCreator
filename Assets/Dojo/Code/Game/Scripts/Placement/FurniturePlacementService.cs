@@ -249,7 +249,13 @@ namespace Dojo.Game.Placement
         /// of bounds, and a stale one puts furniture out of bounds over ground that plainly exists.
         /// </para>
         /// </remarks>
-        public void RefreshFloors()
+        public void RefreshFloors() => RefreshFloors(null);
+
+        /// <summary>
+        /// As <see cref="RefreshFloors()"/>, leaving out every floor under <paramref name="except"/>:
+        /// a placed room picked up to be moved, whose own tiles must not count as ground it overlaps.
+        /// </summary>
+        public void RefreshFloors(Transform except)
         {
             floors.Clear();
 
@@ -262,7 +268,8 @@ namespace Dojo.Game.Placement
             foreach (var piece in FindObjectsByType<FurniturePiece>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
             {
                 Bounds slab;
-                if (piece.IsFloor && TryRendererBounds(piece.gameObject, out slab))
+                if (piece.IsFloor && (except == null || !piece.transform.IsChildOf(except))
+                    && TryRendererBounds(piece.gameObject, out slab))
                 {
                     floors.Add(slab);
                 }
@@ -1101,9 +1108,7 @@ namespace Dojo.Game.Placement
 
             foreach (var floor in floors)
             {
-                if (point.x < floor.min.x || point.x > floor.max.x
-                    || point.z < floor.min.z || point.z > floor.max.z
-                    || Grid.StoreyAt(floor.max.y) != storey)
+                if (!OnSlab(point, floor) || Grid.StoreyAt(floor.max.y) != storey)
                 {
                     continue;
                 }
@@ -1128,9 +1133,7 @@ namespace Dojo.Game.Placement
 
             foreach (var floor in floors)
             {
-                if (point.x >= floor.min.x && point.x <= floor.max.x
-                    && point.z >= floor.min.z && point.z <= floor.max.z
-                    && Grid.StoreyAt(floor.max.y) == storey)
+                if (OnSlab(point, floor) && Grid.StoreyAt(floor.max.y) == storey)
                 {
                     return true;
                 }
@@ -1138,6 +1141,23 @@ namespace Dojo.Game.Placement
 
             return false;
         }
+
+        /// <summary>How far past a slab's edge a point may lie and still be on it, in metres.</summary>
+        public const float SeamTolerance = 0.001f;
+
+        /// <summary>
+        /// Whether <paramref name="point"/> is over <paramref name="slab"/> across the floor, allowing
+        /// <see cref="SeamTolerance"/> at its edges.
+        /// </summary>
+        /// <remarks>
+        /// A point exactly on the seam between two tiles is on both, but float rounding can put it a
+        /// hair outside each, and then on neither. That is where an 8-cell elevator's door point
+        /// lands with 4-cell tiles (Harold's elevator on the 0.3 m grid, 17 Nov), and the elevator
+        /// was taken to open onto no floor on every floor it stopped at.
+        /// </remarks>
+        public static bool OnSlab(Vector3 point, Bounds slab)
+            => point.x >= slab.min.x - SeamTolerance && point.x <= slab.max.x + SeamTolerance
+               && point.z >= slab.min.z - SeamTolerance && point.z <= slab.max.z + SeamTolerance;
 
         /// <summary>
         /// True when an agent or the manager is standing in any of these cells. Carving under

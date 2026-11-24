@@ -20,7 +20,9 @@ namespace Dojo.Game.UI
     /// <b>+ New area</b> hands the gesture to <see cref="AreaPainter"/> - the brush, which knows
     /// nothing about what it paints for - and waits for <c>Committed</c> or <c>Cancelled</c>. A new
     /// area that was painted is then named in a popup; cancelling the name throws the painting away,
-    /// since an area nobody named is not one the player meant to keep.
+    /// since an area nobody named is not one the player meant to keep. Once named, the Department
+    /// popup asks which department it belongs to (<see cref="AreaDepartmentPrompt"/>), and each row's
+    /// Department button asks again.
     /// <para>
     /// Who uses an area is decided on the agent and You cards, not here. This only says who does.
     /// </para>
@@ -37,6 +39,29 @@ namespace Dojo.Game.UI
 
         [Tooltip("How to paint, shown while the brush is up.")]
         [SerializeField] TMP_Text hintLabel;
+
+        [Header("Tool")]
+        [Tooltip("BRUSH | BOX, shown while painting.")]
+        [SerializeField] GameObject toolRow;
+
+        [SerializeField] Button brushToolButton;
+        [SerializeField] Button boxToolButton;
+
+        [Tooltip("The face of the tool that is not in use.")]
+        [SerializeField] Sprite toolIdle;
+
+        [Tooltip("The face of the tool in use.")]
+        [SerializeField] Sprite toolSelected;
+
+        [Tooltip("The hint while the brush is the tool.")]
+        [SerializeField, TextArea] string brushHint =
+            "Drag to paint on the floor you're viewing. Ctrl-drag rubs out, the wheel sizes the brush. "
+            + "Right-click to finish, Esc to cancel.";
+
+        [Tooltip("The hint while the box is the tool.")]
+        [SerializeField, TextArea] string boxHint =
+            "Drag a box to select. Shift-drag adds to it, Ctrl+Shift-drag takes it away. "
+            + "Right-click to save, Esc to cancel.";
 
         [Header("List")]
         [SerializeField] Transform listContent;
@@ -78,7 +103,7 @@ namespace Dojo.Game.UI
             managerRoster = managerFile;
         }
 
-        /// <summary>The Department popup, where the scene has one (the Game scope registers it).</summary>
+        /// <summary>The Department popup, where the scene has one (the Game scene's scope).</summary>
         [Inject]
         public void ConstructDepartments(IObjectResolver resolver)
         {
@@ -96,7 +121,28 @@ namespace Dojo.Game.UI
             {
                 newAreaButton.onClick.AddListener(OnNewArea);
             }
+
+            if (brushToolButton != null)
+            {
+                brushToolButton.onClick.AddListener(() => ChooseTool(AreaTool.Brush));
+            }
+
+            if (boxToolButton != null)
+            {
+                boxToolButton.onClick.AddListener(() => ChooseTool(AreaTool.Box));
+            }
         }
+
+        /// <summary>Switches the painter's tool. Whatever is painted so far stays.</summary>
+        void ChooseTool(AreaTool chosen)
+        {
+            if (painter != null && painting)
+            {
+                painter.Tool = chosen;
+            }
+        }
+
+        void OnToolChanged(AreaTool _) => RefreshPainting();
 
         void OnDestroy() => Unlisten();
 
@@ -135,6 +181,7 @@ namespace Dojo.Game.UI
             {
                 painter.Committed += OnCommitted;
                 painter.Cancelled += OnCancelled;
+                painter.ToolChanged += OnToolChanged;
             }
 
             listening = true;
@@ -154,6 +201,7 @@ namespace Dojo.Game.UI
             {
                 painter.Committed -= OnCommitted;
                 painter.Cancelled -= OnCancelled;
+                painter.ToolChanged -= OnToolChanged;
             }
 
             listening = false;
@@ -271,6 +319,8 @@ namespace Dojo.Game.UI
 
         void RefreshPainting()
         {
+            var box = painting && painter != null && painter.Tool == AreaTool.Box;
+
             if (newAreaLabel != null)
             {
                 newAreaLabel.text = painting ? "RIGHT-CLICK TO FINISH" : "+ NEW AREA";
@@ -279,7 +329,16 @@ namespace Dojo.Game.UI
             if (hintLabel != null)
             {
                 hintLabel.gameObject.SetActive(painting);
+                hintLabel.text = box ? boxHint : brushHint;
             }
+
+            if (toolRow != null)
+            {
+                toolRow.SetActive(painting);
+            }
+
+            SetToolFace(brushToolButton, painting && !box);
+            SetToolFace(boxToolButton, box);
 
             foreach (var row in rows)
             {
@@ -287,6 +346,23 @@ namespace Dojo.Game.UI
                 {
                     row.SetInteractable(!painting);
                 }
+            }
+        }
+
+        /// <summary>Gives a tool button the face for in use or not.</summary>
+        void SetToolFace(Button button, bool selected)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            var face = button.targetGraphic as Image;
+            var sprite = selected ? toolSelected : toolIdle;
+
+            if (face != null && sprite != null)
+            {
+                face.sprite = sprite;
             }
         }
 
@@ -366,7 +442,7 @@ namespace Dojo.Game.UI
             }
 
             var floor = storeys != null ? storeys.Viewed : 0;
-            var size = grid != null ? grid.CellSize : 0.25f;
+            var size = grid != null ? grid.CellSize : Placement.PlacementGrid.DefaultStep;
 
             AskName("Name this area",
                 "What should this area be called? It's how agents and the elevator will know it.",
@@ -374,8 +450,8 @@ namespace Dojo.Game.UI
                 name =>
                 {
                     var added = areas.Add(name, floor, cells, size);
+                    LogIfNumbered(name, added.Name);
 
-                    // As the game: once named, which department it belongs to.
                     if (departments != null)
                     {
                         departments.Ask("'" + added.Name + "'", new[] { added.Id });
@@ -402,7 +478,27 @@ namespace Dojo.Game.UI
             }
 
             AskName("Rename '" + area.Name + "'", "What should this area be called now?", area.Name,
-                name => areas.Rename(areaId, name));
+                name =>
+                {
+                    if (areas.Rename(areaId, name))
+                    {
+                        LogIfNumbered(name, area.Name);
+                    }
+                });
+        }
+
+        /// <summary>Says so when the name typed was taken and the area got a number instead.</summary>
+        void LogIfNumbered(string typed, string given)
+        {
+            var asked = (typed ?? string.Empty).Trim();
+
+            // A name cut to the length limit is not a clash.
+            if (asked.Length > 0 && asked.Length <= BlockAreas.MaxNameLength
+                && !string.Equals(asked, given, System.StringComparison.Ordinal))
+            {
+                Debug.Log("[Areas] Another area is already called '" + asked + "', so this one is '"
+                    + given + "'.", this);
+            }
         }
 
         void OnDepartment(int areaId)

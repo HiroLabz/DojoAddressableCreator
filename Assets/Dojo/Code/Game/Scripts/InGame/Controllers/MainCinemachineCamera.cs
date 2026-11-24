@@ -116,6 +116,12 @@ namespace Dojo.Game.InGame.Controllers
         /// </summary>
         public void LookAway()
         {
+            // Held on an agent: the view stays where it is.
+            if (held != null)
+            {
+                return;
+            }
+
             looking = true;
             SetFollowing(false);
         }
@@ -184,8 +190,23 @@ namespace Dojo.Game.InGame.Controllers
         Transform focus;
 
         /// <summary>Blends the view onto <paramref name="subject"/> and keeps it there until <see cref="ClearFocus"/>.</summary>
+        /// <remarks>
+        /// During a <see cref="Hold"/> it is kept for when the hold ends rather than taking the view.
+        /// </remarks>
         public void FocusOn(Transform subject)
         {
+            if (visiting)
+            {
+                visiting = false;
+                SetDeadZone(true);
+            }
+
+            if (held != null)
+            {
+                focusBeforeHold = subject;
+                return;
+            }
+
             if (subject == null || subject == focus)
             {
                 return;
@@ -195,9 +216,45 @@ namespace Dojo.Game.InGame.Controllers
             Refollow();
         }
 
+        /// <summary>
+        /// Blends the view onto <paramref name="spot"/> and keeps it there only until the player
+        /// moves the camera: the first pan, turn or recentre, or the manager being sent somewhere,
+        /// drops it, and the camera carries on as it would have with no focus.
+        /// </summary>
+        /// <remarks>For Ask Dojo's search: going to look at a room.</remarks>
+        public void Visit(Transform spot)
+        {
+            FocusOn(spot);
+            visiting = spot != null && focus == spot;
+
+            // A room is looked at in the middle of the screen, not wherever the follow's dead zone
+            // happens to let it stop.
+            if (visiting)
+            {
+                SetDeadZone(false);
+            }
+        }
+
+        /// <summary>True while a <see cref="Visit"/> has the view.</summary>
+        public bool IsVisiting => visiting && focus != null;
+
+        bool visiting;
+
         /// <summary>Blends the view back onto the manager.</summary>
         public void ClearFocus()
         {
+            if (visiting)
+            {
+                visiting = false;
+                SetDeadZone(true);
+            }
+
+            if (held != null)
+            {
+                focusBeforeHold = null;
+                return;
+            }
+
             if (focus == null)
             {
                 return;
@@ -205,6 +262,228 @@ namespace Dojo.Game.InGame.Controllers
 
             focus = null;
             Refollow();
+        }
+
+        /// <summary>
+        /// Ends a <see cref="Visit"/> without moving the view: whatever the player is doing goes on,
+        /// and the camera's next return is to the manager.
+        /// </summary>
+        void EndVisit()
+        {
+            visiting = false;
+            focus = null;
+            SetDeadZone(true);
+        }
+
+        /// <summary>The dead zone as authored, switched off only for a <see cref="Visit"/>.</summary>
+        bool? deadZoneAuthored;
+
+        void SetDeadZone(bool on)
+        {
+            if (composer == null)
+            {
+                return;
+            }
+
+            var composition = composer.Composition;
+
+            if (!deadZoneAuthored.HasValue)
+            {
+                deadZoneAuthored = composition.DeadZone.Enabled;
+            }
+
+            composition.DeadZone.Enabled = on && deadZoneAuthored.Value;
+            composer.Composition = composition;
+        }
+
+        /// <summary>
+        /// True while the view is held on one subject with everything else the camera does paused:
+        /// while an agent's passport is up.
+        /// </summary>
+        public bool IsHeld => held != null;
+
+        Transform held;
+
+        /// <summary>Whoever was the focus when the hold began, given the view back when it ends.</summary>
+        Transform focusBeforeHold;
+
+        /// <summary>
+        /// Eases the view onto <paramref name="subject"/> and holds it there until
+        /// <see cref="LetGo"/>, with every other camera behaviour paused: no pan, turn or zoom, no
+        /// recentre key, no return to the manager, no looking at another floor, and the manager is
+        /// not turned to face the view.
+        /// </summary>
+        /// <remarks>
+        /// For the Agent Passport. Holding someone else while held moves the hold onto them.
+        /// </remarks>
+        public void Hold(Transform subject)
+        {
+            if (subject == null)
+            {
+                return;
+            }
+
+            if (held == null)
+            {
+                focusBeforeHold = focus;
+
+                if (rig != null)
+                {
+                    rig.Held = true;
+                }
+            }
+
+            held = subject;
+            faceAfterGesture = false;
+
+            if (focus != subject)
+            {
+                focus = subject;
+                Refollow();
+            }
+        }
+
+        /// <summary>
+        /// Ends the hold. The camera's own behaviour resumes, and the view eases back onto whoever
+        /// it was following before: the manager, normally.
+        /// </summary>
+        public void LetGo()
+        {
+            // By reference, not Unity's ==: a held agent taken out of the world reads as null, and
+            // the view still has to come off it.
+            if (ReferenceEquals(held, null))
+            {
+                return;
+            }
+
+            held = null;
+
+            if (rig != null)
+            {
+                rig.Held = false;
+            }
+
+            var before = focusBeforeHold;
+            focusBeforeHold = null;
+
+            if (!ReferenceEquals(focus, before))
+            {
+                focus = before;
+                Refollow();
+            }
+        }
+
+        /// <summary>How the view stood at one moment, to be put back exactly by <see cref="LetGo(Shot)"/>.</summary>
+        /// <remarks>
+        /// Opaque on purpose: what it holds is this component's own state, and only this component
+        /// knows how to put it back.
+        /// </remarks>
+        public sealed class Shot
+        {
+            internal bool following;
+            internal bool looking;
+            internal Transform focus;
+            internal Vector3 position;
+            internal Quaternion rotation;
+            internal LensSettings lens;
+            internal bool hasFreeCamera;
+        }
+
+        /// <summary>
+        /// The view as it stands now: following the manager (or a focus), or held where the player
+        /// panned it, with the free camera's pose and zoom. Taken before a <see cref="Hold"/> that
+        /// will be ended with <see cref="LetGo(Shot)"/>.
+        /// </summary>
+        /// <remarks>
+        /// Taken before the hold, not during: holding someone hands the view over through the free
+        /// camera, which moves it, so by then the pose the player left is gone.
+        /// </remarks>
+        public Shot TakeShot()
+        {
+            var shot = new Shot
+            {
+                following = following,
+                looking = looking,
+                focus = focus,
+                hasFreeCamera = freeCamera != null,
+            };
+
+            if (freeCamera != null)
+            {
+                shot.position = freeCamera.transform.position;
+                shot.rotation = freeCamera.transform.rotation;
+                shot.lens = freeCamera.Lens;
+            }
+
+            return shot;
+        }
+
+        /// <summary>
+        /// Ends the hold and puts the view back as <paramref name="back"/> found it: on the manager
+        /// (or the focus) if it was following, otherwise exactly where the player had panned it, at
+        /// the same zoom and angle. Eased there, like any return.
+        /// </summary>
+        /// <remarks>
+        /// For the NEEDS YOU tour, which promises the view as it was. Plain <see cref="LetGo()"/>
+        /// always goes back to following, which is right for the Agent Passport - it was opened from
+        /// a view on the agent - but would lose a view the player had panned to another corner or
+        /// another floor before pressing NEEDS YOU.
+        /// <para>
+        /// Following, the zoom comes back by itself: nothing can change it during a hold, and the
+        /// follow camera is handed the zoom it had. Panned, the free camera is planted on the pose
+        /// and zoom it had and handed the view, and the usual pause before the view goes back to
+        /// the manager starts again from now.
+        /// </para>
+        /// </remarks>
+        public void LetGo(Shot back)
+        {
+            if (back == null)
+            {
+                LetGo();
+                return;
+            }
+
+            // By reference, not Unity's ==, as in LetGo(): a held agent taken out of the world reads
+            // as null, and the view still has to come off it.
+            if (ReferenceEquals(held, null))
+            {
+                return;
+            }
+
+            held = null;
+            focusBeforeHold = null;
+
+            if (rig != null)
+            {
+                rig.Held = false;
+            }
+
+            // A focus destroyed while the view was away is forgotten rather than followed.
+            focus = back.focus != null ? back.focus : null;
+
+            if (back.following || !back.hasFreeCamera || freeCamera == null || suspended)
+            {
+                Refollow();
+                return;
+            }
+
+            freeCamera.transform.SetPositionAndRotation(back.position, back.rotation);
+            freeCamera.Lens = back.lens;
+
+            // The one handover out to the free camera that is a journey rather than the player
+            // taking the picture where it is, so it asks for the eased blend Release would cut.
+            ApplyBlend();
+            GiveViewTo(freeCamera, followCamera);
+            following = false;
+            looking = back.looking;
+            faceAfterGesture = false;
+
+            if (rig != null)
+            {
+                rig.DrivenCamera = freeCamera;
+            }
+
+            returnAt = Time.unscaledTime + Mathf.Max(0f, returnDelay);
         }
 
         /// <summary>
@@ -267,7 +546,21 @@ namespace Dojo.Game.InGame.Controllers
                 return;
             }
 
+            if (held != null)
+            {
+                // Nor while held on an agent: the view stays on them until the hold ends.
+                faceAfterGesture = false;
+                return;
+            }
+
             TrackFacing();
+
+            // A visit lasts until the player moves the camera: from then on it behaves as it
+            // would have with nobody to look at but the manager.
+            if (visiting && (rig != null && (rig.IsDragging || rig.IsRotating) || allowKeyboardResume && ResumePressed()))
+            {
+                EndVisit();
+            }
 
             // While the button is down the player is still choosing a view, so the clock keeps
             // resetting rather than counting down under them mid-drag.
@@ -360,7 +653,15 @@ namespace Dojo.Game.InGame.Controllers
         /// <summary>
         /// The manager was told to walk somewhere, so bring the camera back to watch.
         /// </summary>
-        void OnTravelRequested(TravelEstimate travel) => SetFollowing(true);
+        void OnTravelRequested(TravelEstimate travel)
+        {
+            if (visiting)
+            {
+                EndVisit();
+            }
+
+            SetFollowing(true);
+        }
 
         bool AcquireTarget()
         {
@@ -405,10 +706,20 @@ namespace Dojo.Game.InGame.Controllers
             return true;
         }
 
+        /// <summary>The recentre key, unless it is being typed into a text field (a search, a chat).</summary>
         bool ResumePressed()
         {
             var keyboard = Keyboard.current;
-            return keyboard != null && keyboard[resumeKey].wasPressedThisFrame;
+            return keyboard != null && keyboard[resumeKey].wasPressedThisFrame && !Typing();
+        }
+
+        static bool Typing()
+        {
+            var selected = UnityEngine.EventSystems.EventSystem.current != null
+                ? UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject
+                : null;
+            var field = selected != null ? selected.GetComponent<TMPro.TMP_InputField>() : null;
+            return field != null && field.isFocused;
         }
 
         /// <summary>Blends the view onto the manager, or hands it back to the player.</summary>
@@ -424,6 +735,12 @@ namespace Dojo.Game.InGame.Controllers
 
             if (!follow)
             {
+                // Held on an agent, the view is not handed back to the player.
+                if (held != null)
+                {
+                    return;
+                }
+
                 Release();
                 returnAt = Time.unscaledTime + Mathf.Max(0f, returnDelay);
                 return;

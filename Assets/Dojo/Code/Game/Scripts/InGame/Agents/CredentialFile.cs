@@ -199,7 +199,7 @@ namespace Dojo.Game.InGame.Agents
 
             var roster = ReadSaved() ?? new AgentRoster();
             roster.version = AgentRoster.CurrentVersion;
-            roster.Put(credential.Copy());
+            roster.Put(credential.CopyWithoutWorldDetails());
 
             Write(roster);
         }
@@ -214,7 +214,8 @@ namespace Dojo.Game.InGame.Agents
         /// loaded happened not to mention that entry.
         /// <para>
         /// Only credentials with an area are written, so the file stays a short list of what the
-        /// player has actually painted rather than a copy of the whole roster.
+        /// player has actually done rather than a copy of the whole roster. A department or job is
+        /// not kept here: it belongs to the world it was set in and is saved with that world.
         /// </para>
         /// </remarks>
         public void SaveAreas(AgentRoster all)
@@ -227,7 +228,7 @@ namespace Dojo.Game.InGame.Agents
                 {
                     if (credential != null && credential.HasArea)
                     {
-                        saved.Put(credential.Copy());
+                        saved.Put(credential.CopyWithoutWorldDetails());
                     }
                 }
             }

@@ -39,7 +39,7 @@ namespace Dojo.Framework.UI
         void Confirm(string question, Action onConfirm, Action onCancel = null);
 
         /// <summary>Asks for a line of text.</summary>
-        void Prompt(string question, string suggestion, Action<string> onConfirm, Action onCancel = null);
+        void Prompt(string question, string suggestion, Action<string> onConfirm, Action onCancel = null, string placeholder = null);
 
         /// <summary>Asks the player to pick one of a list.</summary>
         void Choose(string heading, IList<string> options, Action<string> onConfirm, Action onCancel = null);

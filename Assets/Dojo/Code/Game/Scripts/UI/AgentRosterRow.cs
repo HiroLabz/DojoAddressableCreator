@@ -6,8 +6,8 @@ using UnityEngine.UI;
 namespace Dojo.Game.UI
 {
     /// <summary>
-    /// One agent in the roster list: an avatar carrying the agent's initials, its name, what it
-    /// does, and whether it is the one the card below is showing.
+    /// One agent in the roster list: an avatar carrying the agent's picture (its initials when there
+    /// is none), its name, what it does, and whether it is the one the card below is showing.
     /// </summary>
     /// <remarks>
     /// A wide row rather than the square tile <see cref="AgentDisplayUI"/> builds for its strip.
@@ -31,6 +31,12 @@ namespace Dojo.Game.UI
         [Tooltip("Up to two letters taken from the agent's name.")]
         [SerializeField] TextMeshProUGUI initials;
 
+        [Tooltip("The agent's picture, inside the plate. Replaces the initials when there is one.")]
+        [SerializeField] Image picture;
+
+        [Tooltip("The plate behind a picture. A tint would fight the picture's own colours.")]
+        [SerializeField] Color pictureBackdrop = new Color(1f, 1f, 1f, 0.08f);
+
         [Header("Labels")]
         [Tooltip("The agent's name.")]
         [SerializeField] TextMeshProUGUI nameLabel;
@@ -42,7 +48,7 @@ namespace Dojo.Game.UI
         [Tooltip("Shown only on the row the card is showing.")]
         [SerializeField] GameObject selectedState;
 
-        [Tooltip("Marks an agent that has an area painted but not yet committed.")]
+        [Tooltip("Marks an agent that has an area painted but is not in the world yet.")]
         [SerializeField] GameObject draftMarker;
 
         /// <summary>Raised with this row's agent id when the player picks it.</summary>
@@ -68,8 +74,10 @@ namespace Dojo.Game.UI
         }
 
         /// <summary>Fills the row in. Everything arrives together, as the other tiles do.</summary>
-        public void Bind(int agentId, string displayName, string subtitle, bool draft)
+        /// <param name="portrait">The agent's picture, or null to show its initials.</param>
+        public void Bind(int agentId, string displayName, string subtitle, bool draft, Sprite portrait = null)
         {
+            bool pictured = portrait != null && picture != null;
             AgentId = agentId;
 
             if (nameLabel != null)
@@ -82,22 +90,35 @@ namespace Dojo.Game.UI
                 subtitleLabel.text = (subtitle ?? string.Empty).ToUpperInvariant();
             }
 
+            if (picture != null)
+            {
+                picture.sprite = portrait;
+                picture.preserveAspect = true;
+                picture.enabled = pictured;
+            }
+
             if (initials != null)
             {
                 initials.text = InitialsOf(displayName);
+                initials.enabled = !pictured;
             }
 
             if (avatar != null)
             {
-                avatar.color = AgentDisplayUI.TintFor(agentId);
+                avatar.color = pictured ? pictureBackdrop : AgentDisplayUI.TintFor(agentId);
             }
 
+            SetDraft(draft);
+            SetSelected(false);
+        }
+
+        /// <summary>Lights or clears the DRAFT flag, as the agent goes into the world.</summary>
+        public void SetDraft(bool draft)
+        {
             if (draftMarker != null)
             {
                 draftMarker.SetActive(draft);
             }
-
-            SetSelected(false);
         }
 
         /// <summary>Lights the row whose agent the card is showing.</summary>
@@ -123,9 +144,10 @@ namespace Dojo.Game.UI
         /// </summary>
         /// <remarks>
         /// Falls back to the first two characters for a one-word name, and to a dash for no name at
-        /// all — an empty avatar reads as a failed image rather than as a nameless agent.
+        /// all — an empty avatar reads as a failed image rather than as a nameless agent. The Agent
+        /// Passport uses it too, so the two show the same letters.
         /// </remarks>
-        static string InitialsOf(string displayName)
+        public static string InitialsOf(string displayName)
         {
             if (string.IsNullOrWhiteSpace(displayName))
             {

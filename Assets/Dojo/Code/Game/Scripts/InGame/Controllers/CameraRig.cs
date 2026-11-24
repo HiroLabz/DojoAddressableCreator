@@ -143,17 +143,27 @@ namespace Dojo.Game.InGame.Controllers
         public bool InputSuppressed { get; set; }
 
         /// <summary>
-        /// While true, only panning works: the wheel does not zoom and the view does not rotate.
+        /// While true the rig ignores input as it does for <see cref="InputSuppressed"/>, on behalf
+        /// of the camera being held on an agent (<c>MainCinemachineCamera.Hold</c>).
+        /// </summary>
+        /// <remarks>
+        /// A flag of its own rather than <see cref="InputSuppressed"/>, which placement and the area
+        /// painter raise and lower for their own gestures: sharing one bool, either of them lowering
+        /// it would let the player move a camera that is meant to stay put.
+        /// </remarks>
+        public bool Held { get; set; }
+
+        /// <summary>
+        /// Edit phase: panning and turning (right-drag) work, the wheel does not zoom. In a
+        /// <see cref="FixedView"/> it is panning and zoom instead, and no turning.
         /// </summary>
         /// <remarks>
         /// Separate from <see cref="InputSuppressed"/>, which takes the whole rig away. Edit phase
-        /// wants the opposite of that — the player is arranging a room and needs to move around it,
-        /// but a zoom or a swing under them while they are placing furniture is the camera arguing
-        /// with the work.
+        /// wants the opposite of that — the player is arranging a room and needs to move around it
+        /// and look at it from another side — but the wheel is the work's: it turns a piece in hand.
         /// <para>
-        /// A rotation in progress is dropped rather than left to finish, for the same reason
-        /// <see cref="InputSuppressed"/> drops one: resuming a gesture the player has stopped
-        /// thinking about makes the view lurch.
+        /// A turn never starts under a held piece or a paint stroke: both take the rig away through
+        /// <see cref="InputSuppressed"/> while they hold the right button.
         /// </para>
         /// </remarks>
         public bool PanOnly { get; set; }
@@ -168,7 +178,8 @@ namespace Dojo.Game.InGame.Controllers
         /// down, the camera's forward has no part along the floor to pan with, and from the side the
         /// ground is edge-on. Across the screen is what both views want. Zoom is allowed back because
         /// a whole floor seen square-on is the point of these views, and placement and painting
-        /// still take the wheel for themselves through <see cref="InputSuppressed"/>.
+        /// still take the wheel for themselves the way they always have, through
+        /// <see cref="InputSuppressed"/>.
         /// </remarks>
         public bool FixedView { get; set; }
 
@@ -418,7 +429,7 @@ namespace Dojo.Game.InGame.Controllers
                 return;
             }
 
-            if (InputSuppressed)
+            if (InputSuppressed || Held)
             {
                 // Any in-progress gesture is dropped rather than resumed later, so the view does
                 // not lurch when control comes back.
@@ -431,15 +442,21 @@ namespace Dojo.Game.InGame.Controllers
             {
                 // Drag only. A rotation already under way is dropped here rather than allowed to
                 // finish, so the view does not keep swinging after the drawer opened.
-                rotating = false;
-
-                // A fixed view zooms as well: a whole floor seen square-on is the point of it.
                 if (FixedView)
                 {
+                    // A fixed view is fixed: it zooms and pans, and never swings.
+                    rotating = false;
                     HandleZoom(mouse);
+                    HandleDrag(mouse);
+                    return;
                 }
 
+                // Edit's own view pans and turns (right-drag); the wheel stays the work's, for
+                // turning a piece in hand. Placement and the area painter take the right button for
+                // themselves through InputSuppressed while they hold it, so a turn never starts
+                // under a held piece or a paint stroke.
                 HandleDrag(mouse);
+                HandleRotate(mouse);
                 return;
             }
 
@@ -473,7 +490,7 @@ namespace Dojo.Game.InGame.Controllers
                 EnhancedTouchSupport.Enable();
             }
 
-            if (InputSuppressed)
+            if (InputSuppressed || Held)
             {
                 EndTouchGesture();
                 return;

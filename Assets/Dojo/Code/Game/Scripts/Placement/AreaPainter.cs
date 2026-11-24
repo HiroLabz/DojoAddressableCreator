@@ -10,7 +10,9 @@ namespace Dojo.Game.Placement
 {
     /// <summary>
     /// The area gesture: a green brush follows the cursor over the floor, holding the left button
-    /// paints the cells it crosses, and the right button commits the lot as an area.
+    /// paints the cells it crosses, and the right button commits the lot as an area. In
+    /// <see cref="AreaTool.Box"/> the left button drags out a rectangle instead, which selects,
+    /// adds or takes away cells; the right button still saves.
     /// </summary>
     /// <remarks>
     /// The counterpart to <see cref="PlacementController"/> and deliberately not part of it. The
@@ -89,6 +91,15 @@ namespace Dojo.Game.Placement
         bool erasing;
         bool dirty;
 
+        // The box being dragged in AreaTool.Box: the cell it started on, what letting go does with
+        // it, and the cells it covers now. boxing is false until a press lands on the floor's plane.
+        bool boxing;
+        BoxMode boxMode;
+        Vector3Int boxStart;
+        Vector3Int boxEnd;
+        float boxTop;
+        readonly HashSet<Vector3Int> boxCells = new HashSet<Vector3Int>();
+
         /// <summary>True while an area is being painted.</summary>
         public bool IsActive { get; private set; }
 
@@ -97,6 +108,48 @@ namespace Dojo.Game.Placement
         /// where the floor is edge-on and no cursor can land on it.
         /// </summary>
         public bool Blocked { get; set; }
+
+        /// <summary>
+        /// How the left button picks cells: the brush, or a box dragged corner to corner.
+        /// </summary>
+        /// <remarks>
+        /// Switched from the Areas tab while painting. Every session starts on the brush, as it
+        /// starts out of erase mode: a plain box replaces the whole selection, and a player who
+        /// expected to brush should not lose what they were repainting to the last one's choice.
+        /// </remarks>
+        public AreaTool Tool
+        {
+            get { return tool; }
+            set { SetTool(value); }
+        }
+
+        AreaTool tool = AreaTool.Brush;
+
+        /// <summary>Raised whenever the tool changes, however it was changed.</summary>
+        public event Action<AreaTool> ToolChanged;
+
+        void SetTool(AreaTool value)
+        {
+            if (tool == value)
+            {
+                return;
+            }
+
+            tool = value;
+
+            // A stroke or a box half done means nothing under the other tool.
+            painting = false;
+            erasing = false;
+            CancelBox();
+
+            Log("tool is now " + value);
+
+            var handler = ToolChanged;
+            if (handler != null)
+            {
+                handler(value);
+            }
+        }
 
         /// <summary>
         /// While true, the left button erases instead of painting — Ctrl held down permanently.
@@ -345,6 +398,9 @@ namespace Dojo.Game.Placement
             // costs a player their area.
             EraseMode = false;
 
+            // Nor the last one's tool: see Tool.
+            Tool = AreaTool.Brush;
+
             Log("BEGAN, seeded with " + cells.Count + " cell(s); hold the "
                 + "left button to paint, Ctrl (or the Erase Area toggle) to erase, wheel to resize "
                 + "the brush, right-click to commit, Esc to cancel");
@@ -432,6 +488,7 @@ namespace Dojo.Game.Placement
             IsActive = false;
             painting = false;
             erasing = false;
+            CancelBox();
 
             // Erase mode belongs to the session, not to the painter, so it goes out with it —
             // whichever way the session ended. Every exit runs through here, which is why it is
@@ -485,7 +542,10 @@ namespace Dojo.Game.Placement
                 dirty = true;
             }
 
-            Resize(mouse);
+            if (tool == AreaTool.Brush)
+            {
+                Resize(mouse);
+            }
 
             // The right button commits, and it is read before the brush so a click that both
             // finishes a stroke and commits does not paint one last cell after the commit.
@@ -499,7 +559,14 @@ namespace Dojo.Game.Placement
                 return;
             }
 
-            TrackBrush(mouse, keyboard);
+            if (tool == AreaTool.Box)
+            {
+                TrackBox(mouse, keyboard);
+            }
+            else
+            {
+                TrackBrush(mouse, keyboard);
+            }
 
             if (dirty)
             {
@@ -624,6 +691,251 @@ namespace Dojo.Game.Placement
             }
         }
 
+        /// <summary>
+        /// The box tool: a press sets one corner, dragging moves the other, and letting go adds the
+        /// box's floor cells to the selection: in place of it, added to it with Shift, or taken out
+        /// of it with Ctrl+Shift (<see cref="ModeFor"/>). The session stays open; the right button
+        /// saves it, as it does for the brush.
+        /// </summary>
+        /// <remarks>
+        /// While the box is held, the panels show the selection exactly as letting go would leave
+        /// it, and the box itself is shaded over it: blue selects or adds, red takes away.
+        /// <para>
+        /// Either corner may be over empty space, so a box can be drawn from outside a room to
+        /// take in all of it: off the tiles the cursor is dropped onto the viewed floor's own
+        /// height (<see cref="TryCursorOnFloorPlane"/>). Only the floor cells inside the box are
+        /// added, the brush's rule.
+        /// </para>
+        /// </remarks>
+        void TrackBox(Mouse mouse, Keyboard keyboard)
+        {
+            var grid = service.Grid;
+            if (grid == null)
+            {
+                return;
+            }
+
+            Vector3 point;
+            float top;
+            var onPlane = TryCursorOnFloorPlane(mouse, out point, out top);
+
+            if (!boxing)
+            {
+                // No box yet: a one-cell cursor shows where it would start.
+                ShowCellCursor(point, top, onPlane, grid);
+
+                if (mouse.leftButton.wasPressedThisFrame && !OverUI() && onPlane)
+                {
+                    boxing = true;
+                    boxMode = ModeFor(
+                        keyboard != null && (keyboard.leftCtrlKey.isPressed || keyboard.rightCtrlKey.isPressed),
+                        keyboard != null && (keyboard.leftShiftKey.isPressed || keyboard.rightShiftKey.isPressed),
+                        EraseMode);
+                    boxStart = CellAt(point, grid);
+                    boxEnd = boxStart;
+                    boxTop = top;
+                    Log("BOX started at " + boxStart + ", " + boxMode);
+                    UpdateBox(grid);
+                }
+
+                return;
+            }
+
+            if (onPlane)
+            {
+                // Keyed to the storey the box started on, whatever height the cursor found: a box
+                // never spans storeys, and over empty space there is no tile to read one from.
+                var end = CellAt(point, grid);
+                end.z = boxStart.z;
+
+                if (end != boxEnd)
+                {
+                    boxEnd = end;
+                    UpdateBox(grid);
+                }
+            }
+
+            if (!mouse.leftButton.wasReleasedThisFrame)
+            {
+                return;
+            }
+
+            ApplyBox();
+            Log("BOX " + boxMode + " applied: " + cells.Count + " cell(s) selected; right-click to save");
+            Redraw();
+            return;
+        }
+
+        /// <summary>
+        /// What a box does with the selection, from the keys held when it is started: Ctrl+Shift
+        /// takes it away, Shift adds it, and otherwise - Ctrl alone included - it replaces the
+        /// selection. The latched erase mode counts as Ctrl+Shift.
+        /// </summary>
+        public static BoxMode ModeFor(bool ctrl, bool shift, bool eraseLatched)
+        {
+            if (eraseLatched || (ctrl && shift))
+            {
+                return BoxMode.Erase;
+            }
+
+            return shift ? BoxMode.Add : BoxMode.Replace;
+        }
+
+        /// <summary>
+        /// Where the cursor meets the viewed floor: on a tile, at its height, or over empty space,
+        /// on the floor's own level. False only when the camera cannot see the floor's plane at all.
+        /// </summary>
+        bool TryCursorOnFloorPlane(Mouse mouse, out Vector3 point, out float top)
+        {
+            if (TryFloorUnderCursor(mouse, out point, out top))
+            {
+                return true;
+            }
+
+            var level = storeys != null ? storeys.ViewedBase : 0f;
+
+            if (TryCursorOnPlane(mouse, level, out point))
+            {
+                top = level;
+                point.y = level;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>The cell <paramref name="point"/> is in, keyed the way the brush keys its cells.</summary>
+        static Vector3Int CellAt(Vector3 point, PlacementGrid grid)
+        {
+            return grid.OriginFor(point, Vector2Int.one, PlacementGrid.FloorLevel);
+        }
+
+        /// <summary>
+        /// Recomputes the box's floor cells from its two corners, then redraws the area as letting
+        /// go would leave it, with the box outlined over it.
+        /// </summary>
+        void UpdateBox(PlacementGrid grid)
+        {
+            Vector3Int min;
+            Vector2Int size;
+            BoxBounds(boxStart, boxEnd, out min, out size);
+
+            grid.CellsFor(min, size, brush);
+
+            boxCells.Clear();
+            foreach (var cell in brush)
+            {
+                // Floor cells only, the brush's rule: an area is somewhere an agent can stand.
+                float ignored;
+                if (service.TryFloorTopAt(CentreOf(cell), out ignored))
+                {
+                    boxCells.Add(cell);
+                }
+            }
+
+            DrawPanels(PreviewCells());
+
+            var centre = grid.CentreOf(min, size);
+            var width = CellSize();
+            highlight.TrackBox(centre, boxTop, new Vector2(size.x * width, size.y * width), boxMode == BoxMode.Erase);
+        }
+
+        /// <summary>
+        /// The box between two corner cells, either way round: its lowest corner and its size in
+        /// cells, both corners included. The storey key is the first corner's.
+        /// </summary>
+        public static void BoxBounds(Vector3Int a, Vector3Int b, out Vector3Int min, out Vector2Int size)
+        {
+            min = new Vector3Int(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y), a.z);
+            size = new Vector2Int(Mathf.Abs(b.x - a.x) + 1, Mathf.Abs(b.y - a.y) + 1);
+        }
+
+        /// <summary>The selection as letting go of the box would leave it.</summary>
+        IEnumerable<Vector3Int> PreviewCells()
+        {
+            if (boxMode == BoxMode.Replace)
+            {
+                foreach (var cell in boxCells)
+                {
+                    yield return cell;
+                }
+
+                yield break;
+            }
+
+            if (boxMode == BoxMode.Erase)
+            {
+                foreach (var cell in cells)
+                {
+                    if (!boxCells.Contains(cell))
+                    {
+                        yield return cell;
+                    }
+                }
+
+                yield break;
+            }
+
+            foreach (var cell in cells)
+            {
+                yield return cell;
+            }
+
+            foreach (var cell in boxCells)
+            {
+                if (!cells.Contains(cell))
+                {
+                    yield return cell;
+                }
+            }
+        }
+
+        /// <summary>Puts the box's cells in place of the selection, adds them to it, or takes them away.</summary>
+        void ApplyBox()
+        {
+            if (boxMode == BoxMode.Replace)
+            {
+                cells.Clear();
+            }
+
+            foreach (var cell in boxCells)
+            {
+                if (boxMode == BoxMode.Erase)
+                {
+                    cells.Remove(cell);
+                }
+                else
+                {
+                    cells.Add(cell);
+                }
+            }
+
+            boxing = false;
+            boxCells.Clear();
+        }
+
+        /// <summary>Drops a box in progress without applying it, and redraws the area as it is.</summary>
+        void CancelBox()
+        {
+            if (!boxing)
+            {
+                return;
+            }
+
+            boxing = false;
+            boxCells.Clear();
+            dirty = true;
+        }
+
+        /// <summary>A one-cell light under the cursor, before a box is started.</summary>
+        void ShowCellCursor(Vector3 point, float top, bool overFloor, PlacementGrid grid)
+        {
+            var cell = CellAt(point, grid);
+            var centre = grid.CentreOf(cell, Vector2Int.one);
+            var width = CellSize();
+            highlight.Track(centre, top, new Vector2(width, width), Quaternion.identity, overFloor && !EraseMode);
+        }
+
         /// <summary>Lays a panel on every painted cell.</summary>
         /// <remarks>
         /// One panel per cell rather than a merged outline of the region. The cells are what is
@@ -633,11 +945,17 @@ namespace Dojo.Game.Placement
         void Redraw()
         {
             dirty = false;
+            DrawPanels(cells);
+        }
+
+        /// <summary>Lays a panel on each of <paramref name="shown"/> that still has floor under it.</summary>
+        void DrawPanels(IEnumerable<Vector3Int> shown)
+        {
             panels.Clear();
 
             var size = CellSize();
 
-            foreach (var cell in cells)
+            foreach (var cell in shown)
             {
                 var centre = CentreOf(cell);
 
@@ -678,7 +996,7 @@ namespace Dojo.Game.Placement
         float CellSize()
         {
             var grid = service.Grid;
-            return grid != null ? grid.CellSize : 0.25f;
+            return grid != null ? grid.CellSize : PlacementGrid.DefaultStep;
         }
 
         /// <summary>Middle of a cell, lifted to the floor it sits on.</summary>
@@ -846,5 +1164,28 @@ namespace Dojo.Game.Placement
                 Cancel();
             }
         }
+    }
+
+    /// <summary>How the area painter picks cells with the left button.</summary>
+    public enum AreaTool
+    {
+        /// <summary>A square brush, held down and dragged over the floor; the right button finishes.</summary>
+        Brush,
+
+        /// <summary>A box dragged from corner to corner (<see cref="BoxMode"/>); the right button finishes.</summary>
+        Box,
+    }
+
+    /// <summary>What letting go of a box does with the cells already selected.</summary>
+    public enum BoxMode
+    {
+        /// <summary>A plain drag: the box becomes the selection.</summary>
+        Replace,
+
+        /// <summary>Shift+drag: the box is added to the selection.</summary>
+        Add,
+
+        /// <summary>Ctrl+Shift+drag: the box is taken out of the selection.</summary>
+        Erase,
     }
 }

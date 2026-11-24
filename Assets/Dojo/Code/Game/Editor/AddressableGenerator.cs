@@ -850,6 +850,30 @@ namespace Dojo.Game.Editor
                 : normalised;
         }
 
+        /// <summary>
+        /// Runs the generator over a pack folder without its window, as the Builder's Build &amp; Add
+        /// does, and returns what it reports. Shaders are compiled before rendering, so no thumbnail
+        /// comes out in the placeholder colour of a shader still compiling.
+        /// </summary>
+        public static string RunOn(string packFolder)
+        {
+            var window = CreateInstance<AddressableGenerator>();
+            var async = ShaderUtil.allowAsyncCompilation;
+
+            try
+            {
+                ShaderUtil.allowAsyncCompilation = false;
+                window.rootFolder = packFolder;
+                window.Generate();
+                return window.lastResult;
+            }
+            finally
+            {
+                ShaderUtil.allowAsyncCompilation = async;
+                DestroyImmediate(window);
+            }
+        }
+
         void Generate()
         {
             var paths = FindPrefabPaths();

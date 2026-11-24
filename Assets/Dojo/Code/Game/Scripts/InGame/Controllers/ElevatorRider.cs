@@ -84,7 +84,8 @@ namespace Dojo.Game.InGame.Controllers
             }
         }
 
-        void Update()
+        // On the physics tick, not every rendered frame: 3D objects run on FixedUpdate.
+        void FixedUpdate()
         {
             if (IsRiding || agent == null || !agent.enabled || !agent.isOnNavMesh)
             {

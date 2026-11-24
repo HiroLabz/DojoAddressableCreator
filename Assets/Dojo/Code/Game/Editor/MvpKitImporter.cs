@@ -95,7 +95,13 @@ namespace Dojo.Game.Editor
         };
 
         [MenuItem("Tools/Dojo/Content/1. Build MVP Kit Prefabs", false, 1)]
-        public static void BuildAll()
+        public static void BuildAll() => Build(null);
+
+        /// <summary>
+        /// Builds the prefabs of <paramref name="only"/> (model names), or of every model when null.
+        /// Returns how many were built.
+        /// </summary>
+        public static int Build(ICollection<string> only)
         {
             Directory.CreateDirectory(PackFolder + "/Prefabs");
             Directory.CreateDirectory(PackFolder + "/Materials");
@@ -117,7 +123,8 @@ namespace Dojo.Game.Editor
                 var path = AssetDatabase.GUIDToAssetPath(guid);
                 var model = Path.GetFileNameWithoutExtension(path);
 
-                if (Skipped.Contains(model) || Path.GetDirectoryName(path).Replace('\\', '/') != ModelFolder)
+                if (KindOf(model) == KitPieceKind.Skip || Path.GetDirectoryName(path).Replace('\\', '/') != ModelFolder
+                    || (only != null && !only.Contains(model)))
                 {
                     continue;
                 }
@@ -140,6 +147,7 @@ namespace Dojo.Game.Editor
 
             AssetDatabase.SaveAssets();
             Debug.Log("[MVP Kit] Built " + built + " prefab(s): " + report);
+            return built;
         }
 
         public const string MvpScene = "Assets/Scenes/RuntimeMVP.unity";
@@ -193,6 +201,11 @@ namespace Dojo.Game.Editor
                         settings.FindPropertyRelative("saveFile").stringValue = MvpSaveFile;
                         settings.FindPropertyRelative("resetFloor").stringValue = "default/" + PrefabName("LightGrayFloorTile");
 
+                        // The You and Agents tabs, so the default world gets its owner's and agents'
+                        // places: whoever builds it puts them down (the game fills them with the
+                        // player's own).
+                        settings.FindPropertyRelative("characterTabs").boolValue = true;
+
                         var offered = InventoryAddresses();
                         var list = settings.FindPropertyRelative("inventoryOnly");
                         list.arraySize = offered.Count;
@@ -231,7 +244,8 @@ namespace Dojo.Game.Editor
                 addresses.Add("default/" + pair.Value);
             }
 
-            foreach (var file in Directory.GetFiles(PackFolder + "/Rooms", RoomPrefix + "*.json"))
+            // Every room on the pack's list: the kit's own and every room promoted since.
+            foreach (var file in Directory.GetFiles(PackFolder + "/Rooms", "default_room_*.json"))
             {
                 addresses.Add("default/Rooms/" + Path.GetFileNameWithoutExtension(file));
             }
@@ -245,18 +259,40 @@ namespace Dojo.Game.Editor
         /// Nov): the knowledge shelf, for the knowledge base; the supercomputers, which the
         /// integration terminals stand on. Stairs are dropped, and the elevator is the kit's own
         /// now, default_elevator_mvp (Bob, 16 Nov). Take one off and run Set Up MVP Scene.
+        /// <para>
+        /// Empty since 19 Nov: the display shelf holds the books and the server rack is the
+        /// terminal now, so the old shelf and the supercomputers left the list (fd95808). The
+        /// content keeps them.
+        /// </para>
         /// </summary>
-        static readonly string[] Borrowed =
-        {
-            "default/default_knowledge_shelf",
-            "default/default_superComputer",
-            "default/default_superComputer_2",
-            "default/default_superComputer_3",
-        };
+        static readonly string[] Borrowed = { };
 
         /// <summary>The prefab name for a model: default_ and the model name in snake case.</summary>
         public static string PrefabName(string model)
         {
+            var named = NameFor(model);
+
+            // A wall is known by its name ("wall", "partition" or "railing"): a piece built as one
+            // gets "_wall" on the end when its name doesn't already say so.
+            if (KindOf(model) == KitPieceKind.Wall && !RoomOpenings.IsWall(named))
+            {
+                named += "_wall";
+            }
+
+            return named;
+        }
+
+        /// <summary>The name before the wall rule: the settings' own, the kit's renames, or default_ and snake case.</summary>
+        static string NameFor(string model)
+        {
+            var settings = MvpKitSettings.Load(false);
+            var piece = settings != null ? settings.Find(model) : null;
+            if (piece != null && !string.IsNullOrWhiteSpace(piece.prefabName))
+            {
+                var given = piece.prefabName.Trim().ToLowerInvariant().Replace(' ', '_');
+                return given.StartsWith("default_", StringComparison.Ordinal) ? given : "default_" + given;
+            }
+
             string renamed;
             if (Renamed.TryGetValue(model, out renamed))
             {
@@ -283,6 +319,174 @@ namespace Dojo.Game.Editor
             return snake.ToString();
         }
 
+        /// <summary>
+        /// What <paramref name="model"/> is built as: the settings' choice, or worked out from the
+        /// kit's lists and its name when that is Auto.
+        /// </summary>
+        public static KitPieceKind KindOf(string model)
+        {
+            var settings = MvpKitSettings.Load(false);
+            var piece = settings != null ? settings.Find(model) : null;
+            if (piece != null && piece.kind != KitPieceKind.Auto)
+            {
+                return piece.kind;
+            }
+
+            if (Skipped.Contains(model)) return KitPieceKind.Skip;
+            if (Elevators.Contains(model)) return KitPieceKind.Elevator;
+            if (Floors.Contains(model)) return KitPieceKind.Floor;
+            if (model.EndsWith("Chair", StringComparison.Ordinal)) return KitPieceKind.Chair;
+            if (RoomOpenings.IsWall(NameFor(model))) return KitPieceKind.Wall;
+            return KitPieceKind.Furniture;
+        }
+
+        /// <summary>Every model file in the kit's folder, in name order, whatever it is built as.</summary>
+        public static List<string> Models()
+        {
+            var list = new List<string>();
+            foreach (var guid in AssetDatabase.FindAssets("t:Model", new[] { ModelFolder }))
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                if (Path.GetDirectoryName(path).Replace('\\', '/') == ModelFolder)
+                {
+                    list.Add(Path.GetFileNameWithoutExtension(path));
+                }
+            }
+
+            list.Sort(string.CompareOrdinal);
+            return list;
+        }
+
+        /// <summary>Where <paramref name="model"/>'s prefab is, built or not yet.</summary>
+        public static string PrefabPath(string model) => PackFolder + "/Prefabs/" + PrefabName(model) + ".prefab";
+
+        /// <summary>
+        /// Writes the settings' inventory tabs into the pack's items.json, over the Addressable
+        /// Generator's guesses. Returns how many it changed.
+        /// </summary>
+        public static int ApplyCategories()
+        {
+            var settings = MvpKitSettings.Load(false);
+            const string manifest = "Assets/Dojo/Content/Packs/default/items.json";
+            if (settings == null || !File.Exists(manifest))
+            {
+                return 0;
+            }
+
+            var text = File.ReadAllText(manifest);
+            var changed = 0;
+
+            foreach (var piece in settings.pieces)
+            {
+                if (piece == null || string.IsNullOrWhiteSpace(piece.category) || string.IsNullOrEmpty(piece.model))
+                {
+                    continue;
+                }
+
+                var category = piece.category.Trim();
+                var pattern = "(\"category\"\\s*:\\s*\")([^\"]*)(\"\\s*,\\s*\"name\"\\s*:\\s*\""
+                    + System.Text.RegularExpressions.Regex.Escape(PrefabName(piece.model)) + "\")";
+                text = System.Text.RegularExpressions.Regex.Replace(text, pattern, m =>
+                {
+                    if (m.Groups[2].Value == category)
+                    {
+                        return m.Value;
+                    }
+
+                    changed++;
+                    return m.Groups[1].Value + category + m.Groups[3].Value;
+                });
+            }
+
+            if (changed > 0)
+            {
+                File.WriteAllText(manifest, text);
+                AssetDatabase.ImportAsset(manifest);
+            }
+
+            return changed;
+        }
+
+        /// <summary>
+        /// A material for one of a new model's own materials: Dojo/Fade Lit, with the colour, maps
+        /// and glow its file brought in, saved beside the kit's. For a material the kit has no
+        /// hand-made look for.
+        /// </summary>
+        static Material OwnMaterial(Material from, string model)
+        {
+            var name = "mvp_" + model.Replace(" ", string.Empty) + "_" + from.name.Replace(" ", "_");
+            var path = PackFolder + "/Materials/" + name + ".mat";
+            var shader = Shader.Find("Dojo/Fade Lit") ?? Shader.Find("Universal Render Pipeline/Lit");
+            var made = AssetDatabase.LoadAssetAtPath<Material>(path);
+
+            if (made == null)
+            {
+                made = new Material(shader);
+                AssetDatabase.CreateAsset(made, path);
+            }
+            else
+            {
+                made.shader = shader;
+            }
+
+            Texture Map(params string[] names)
+            {
+                foreach (var n in names)
+                {
+                    if (from.HasProperty(n) && from.GetTexture(n) != null) return from.GetTexture(n);
+                }
+
+                return null;
+            }
+
+            Color Colour(Color fallback, params string[] names)
+            {
+                foreach (var n in names)
+                {
+                    if (from.HasProperty(n)) return from.GetColor(n);
+                }
+
+                return fallback;
+            }
+
+            made.SetTexture("_BaseMap", Map("_BaseMap", "_MainTex"));
+            made.SetColor("_BaseColor", Colour(Color.white, "_BaseColor", "_Color"));
+
+            var normal = Map("_BumpMap", "_NormalMap");
+            made.SetTexture("_BumpMap", normal);
+            if (normal != null) made.EnableKeyword("_NORMALMAP"); else made.DisableKeyword("_NORMALMAP");
+
+            var gloss = Map("_MetallicGlossMap");
+            made.SetTexture("_MetallicGlossMap", gloss);
+            if (gloss != null) made.EnableKeyword("_METALLICSPECGLOSSMAP"); else made.DisableKeyword("_METALLICSPECGLOSSMAP");
+            made.SetFloat("_Metallic", from.HasProperty("_Metallic") ? from.GetFloat("_Metallic") : 0f);
+            made.SetFloat("_Smoothness", from.HasProperty("_Smoothness") ? from.GetFloat("_Smoothness")
+                : from.HasProperty("_Glossiness") ? from.GetFloat("_Glossiness") : 0.5f);
+
+            var glowMap = Map("_EmissionMap");
+            var glow = Colour(Color.black, "_EmissionColor");
+            made.SetTexture("_EmissionMap", glowMap);
+            made.SetColor("_EmissionColor", glowMap != null && glow.maxColorComponent <= 0f ? Color.white : glow);
+            if (glowMap != null || glow.maxColorComponent > 0f)
+            {
+                made.EnableKeyword("_EMISSION");
+                made.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+            }
+            else
+            {
+                made.DisableKeyword("_EMISSION");
+            }
+
+            var seeThrough = from.renderQueue >= (int)UnityEngine.Rendering.RenderQueue.Transparent
+                             || (from.HasProperty("_Surface") && from.GetFloat("_Surface") > 0.5f);
+            if (seeThrough) Transparent(made); else Opaque(made);
+
+            EditorUtility.SetDirty(made);
+            AssetDatabase.SaveAssetIfDirty(made);
+            Debug.Log("[MVP Kit] " + model + ": its material '" + from.name + "' became " + path + ", from the model's own textures.");
+            return made;
+        }
+
         /// <summary>Every model in the kit and the prefab it becomes, in name order.</summary>
         public static List<KeyValuePair<string, string>> Pieces()
         {
@@ -293,7 +497,7 @@ namespace Dojo.Game.Editor
                 var path = AssetDatabase.GUIDToAssetPath(guid);
                 var model = Path.GetFileNameWithoutExtension(path);
 
-                if (!Skipped.Contains(model) && Path.GetDirectoryName(path).Replace('\\', '/') == ModelFolder)
+                if (KindOf(model) != KitPieceKind.Skip && Path.GetDirectoryName(path).Replace('\\', '/') == ModelFolder)
                 {
                     list.Add(new KeyValuePair<string, string>(model, PrefabName(model)));
                 }
@@ -411,8 +615,9 @@ namespace Dojo.Game.Editor
 
                         if (!materials.TryGetValue(key, out made))
                         {
-                            Debug.LogWarning("[MVP Kit] " + model + " uses material '" + key + "', which the kit has no look for; it gets the base one.", source);
-                            made = materials["BaseMaterial"];
+                            // A material the kit has no look for: made from the model's own, with the
+                            // textures its file points at, so a new model keeps its colours.
+                            made = from[i] != null ? OwnMaterial(from[i], model) : materials["BaseMaterial"];
                         }
 
                         to[i] = made;
@@ -423,7 +628,9 @@ namespace Dojo.Game.Editor
 
                 var size = bounds.size;
 
-                if (Elevators.Contains(model))
+                var kind = KindOf(model);
+
+                if (kind == KitPieceKind.Elevator)
                 {
                     // Harold's elevator has its doors on +Z; the game's elevators open on -X
                     // (ElevatorPiece), where the manager stands to ride. A quarter turn about Y.
@@ -439,18 +646,18 @@ namespace Dojo.Game.Editor
                 box.center = new Vector3(0f, size.y * 0.5f, 0f);
                 box.size = size;
 
-                if (Floors.Contains(model))
+                if (kind == KitPieceKind.Floor)
                 {
                     root.AddComponent<FloorPiece>();
                 }
 
-                if (Elevators.Contains(model))
+                if (kind == KitPieceKind.Elevator)
                 {
                     root.AddComponent<ElevatorPiece>();
                 }
 
                 string seat = null;
-                if (model.EndsWith("Chair", StringComparison.Ordinal))
+                if (kind == KitPieceKind.Chair)
                 {
                     seat = AddSeat(root, bounds.size);
                 }

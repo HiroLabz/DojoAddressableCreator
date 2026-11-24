@@ -1525,6 +1525,8 @@ MonoBehaviour:
   portrait: {fileID: 438460027}
   placeAgentButton: {fileID: 1940843367}
   areaDropdown: {fileID: 1744065066}
+  departmentDropdown: {fileID: 0}
+  roleButton: {fileID: 0}
   tileSize: {x: 84, y: 84}
   tileColour: {r: 0.16, g: 0.18, b: 0.22, a: 0.9}
   tileSelectedColour: {r: 0.35, g: 1, b: 0.55, a: 0.9}
@@ -6695,6 +6697,15 @@ MonoBehaviour:
   newAreaButton: {fileID: 1491897617}
   newAreaLabel: {fileID: 1366214582}
   hintLabel: {fileID: 435954353}
+  toolRow: {fileID: 0}
+  brushToolButton: {fileID: 0}
+  boxToolButton: {fileID: 0}
+  toolIdle: {fileID: 0}
+  toolSelected: {fileID: 0}
+  brushHint: Drag to paint on the floor you're viewing. Ctrl-drag rubs out, the wheel
+    sizes the brush. Right-click to finish, Esc to cancel.
+  boxHint: Drag a box to select. Shift-drag adds to it, Ctrl+Shift-drag takes it
+    away. Right-click to save, Esc to cancel.
   listContent: {fileID: 1061088393}
   rowPrefab: {fileID: 5902022622800401592, guid: 9facb2e4ec4dd564fb9efc80861bfc77, type: 3}
   emptyState: {fileID: 1390971677}
@@ -7623,7 +7634,7 @@ MonoBehaviour:
   key: {fileID: 1922898491}
   title: {fileID: 1960583777}
   details: {fileID: 1525916934}
-  tag: {fileID: 1917119237}
+  hereTag: {fileID: 1917119237}
 --- !u!1 &487998422
 GameObject:
   m_ObjectHideFlags: 0
@@ -9390,6 +9401,7 @@ MonoBehaviour:
   cardSubtitleLabel: {fileID: 911575176}
   cardCellsLabel: {fileID: 578567315}
   cardDraftMarker: {fileID: 1190684917}
+  cardPicture: {fileID: 0}
 --- !u!114 &552676930
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11797,10 +11809,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1674209557}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 532.32996, y: -8}
-  m_SizeDelta: {x: 1016.66, y: 17.16}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &729084155
 MonoBehaviour:
@@ -25957,11 +25969,13 @@ MonoBehaviour:
     managerPrefab: {fileID: 3520603674932339380, guid: 8486410d807da8848984101067b55772, type: 3}
     agents: 1
     manager: 1
-    characterTabs: 0
+    characterTabs: 1
     resetFloor: default/default_light_gray_floor_tile
     autoSave: 1
     autoSaveQuietSeconds: 1
     maxFloors: 5
+    autoFloorAboveElevator: 0
+    elevatorLandingTile: default/default_light_gray_floor_tile
     defaultWorld: default/World/world_mvp
     saveFile: world_mvp.json
     inventoryOnly:
@@ -25979,6 +25993,7 @@ MonoBehaviour:
     - default/default_divider_wall_small
     - default/default_dual_monitor
     - default/default_dual_workstation_desk
+    - default/default_elevator_mvp
     - default/default_entry_portal_wall
     - default/default_ergonomic_office_chair
     - default/default_front_counter
@@ -26009,23 +26024,23 @@ MonoBehaviour:
     - default/default_triple_monitor
     - default/default_wood_floor_tile
     - default/default_work_station_return_table
+    - default/Rooms/default_room_mvp_accounting
     - default/Rooms/default_room_mvp_conference_room
+    - default/Rooms/default_room_mvp_customer_success
+    - default/Rooms/default_room_mvp_customer_support
     - default/Rooms/default_room_mvp_dev_lab
+    - default/Rooms/default_room_mvp_finance
+    - default/Rooms/default_room_mvp_hr
     - default/Rooms/default_room_mvp_it_and_security
     - default/Rooms/default_room_mvp_legal
+    - default/Rooms/default_room_mvp_marketing
     - default/Rooms/default_room_mvp_operations
     - default/Rooms/default_room_mvp_product_and_development
     - default/Rooms/default_room_mvp_reception
-    - default/Rooms/default_room_mvp_research
-    - default/default_elevator_mvp
-    - default/Rooms/default_room_mvp_sales
-    - default/Rooms/default_room_mvp_marketing
-    - default/Rooms/default_room_mvp_customer_support
-    - default/Rooms/default_room_mvp_customer_success
-    - default/Rooms/default_room_mvp_finance
-    - default/Rooms/default_room_mvp_accounting
-    - default/Rooms/default_room_mvp_hr
     - default/Rooms/default_room_mvp_recruitment
+    - default/Rooms/default_room_mvp_research
+    - default/Rooms/default_room_mvp_sales
+    retired: []
 --- !u!4 &1510082292
 Transform:
   m_ObjectHideFlags: 0
@@ -29203,7 +29218,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 308, y: -12}
-  m_SizeDelta: {x: 1064.6599, y: 33.16}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1674209558
 MonoBehaviour:
@@ -37516,7 +37531,10 @@ MonoBehaviour:
     confirmation: {fileID: 144633305056332694, guid: 8da25dd076bf26547bfe9fd406358762, type: 3}
     threeWay: {fileID: 3343452959666869116, guid: 96dcdd9a481ef2d4b88f43106e1a39db, type: 3}
     prompt: {fileID: 4390365765025291212, guid: 701e593b1b50c7f45a8f8c931eb71ab1, type: 3}
+    chooser: {fileID: 3508252916732401999, guid: 632911c947c6ab14f814b34bfb56e4ba, type: 3}
     department: {fileID: 1221704549532944985, guid: 02b894ba9e2a96a44b2c7c9e73ac9c3a, type: 3}
+    business: {fileID: 0}
+    agentAssignment: {fileID: 0}
   contentSettings:
     remoteRoot: 
     contentKeys:

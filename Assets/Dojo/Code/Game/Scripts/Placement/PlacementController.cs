@@ -181,7 +181,14 @@ namespace Dojo.Game.Placement
 
         // Last pixel a drag line was written for, so the log follows mouse movement rather than
         // frame rate: a stationary cursor would otherwise fill the console at 60 lines a second.
-        Vector2 lastLoggedPixel;
+        Vector3Int lastLoggedCell;
+        PlacementRejection lastLoggedRejection;
+        bool loggedThisDrag;
+
+        /// <summary>Whether a drag line says something new: the first of a drag, another cell, or another reason.</summary>
+        public static bool DragLogWorthy(Vector3Int cell, PlacementRejection rejection, Vector3Int lastCell,
+            PlacementRejection lastRejection, bool loggedAlready)
+            => !loggedAlready || cell != lastCell || rejection != lastRejection;
 
         /// <summary>True while a piece is being moved or is awaiting a commit.</summary>
         public bool IsBusy => state != State.Idle;
@@ -544,9 +551,11 @@ namespace Dojo.Game.Placement
         }
 
         /// <summary>
-        /// Reports which object is in hand and where it is, once per actual mouse movement. Names
-        /// alone are ambiguous here — the scene holds 25 objects called <c>(Prb)OfficeChair</c> —
-        /// so the instance id goes out with it to identify exactly which one is moving.
+        /// Reports which object is in hand and where it is, once per cell it moves to (or a change
+        /// in why it can't go there) - not once per mouse movement, which flooded the Console with
+        /// 999+ lines (QA issue 3). Names alone are ambiguous here — the scene holds 25 objects
+        /// called <c>(Prb)OfficeChair</c> — so the instance id goes out with it to identify
+        /// exactly which one is moving.
         /// </summary>
         void LogDragMove(Mouse mouse, Vector3 cursorWorld)
         {
@@ -556,12 +565,14 @@ namespace Dojo.Game.Placement
             }
 
             var pixel = CursorPixel(mouse);
-            if ((pixel - lastLoggedPixel).sqrMagnitude < 1f)
+            if (!DragLogWorthy(previewOrigin, previewRejection, lastLoggedCell, lastLoggedRejection, loggedThisDrag))
             {
                 return;
             }
 
-            lastLoggedPixel = pixel;
+            lastLoggedCell = previewOrigin;
+            lastLoggedRejection = previewRejection;
+            loggedThisDrag = true;
 
             Log("drag '" + held.gameObject.name + "' id=" + EntityLogId(held)
                 + " pos=" + held.transform.position.ToString("F3")
@@ -598,7 +609,7 @@ namespace Dojo.Game.Placement
             heldKeepsOwnHeight = piece.SupportedBy == null;
 
             // Cleared so the first movement of this drag always reports, however small.
-            lastLoggedPixel = Vector2.zero;
+            loggedThisDrag = false;
 
             GatherRiders(piece);
 
@@ -824,7 +835,7 @@ namespace Dojo.Game.Placement
             // A piece pulled out of a list is held by its middle: there is no grab point on the
             // model to preserve, because the player grabbed a thumbnail.
             grabOffset = Vector3.zero;
-            lastLoggedPixel = Vector2.zero;
+            loggedThisDrag = false;
 
             SetManagerSuppressed(true);
 

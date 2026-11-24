@@ -499,7 +499,12 @@ namespace Dojo.Game.Placement
         /// True when the openings keep every rule of the room file format. Otherwise
         /// <paramref name="problem"/> says which rule failed, and for which opening.
         /// </summary>
-        public static bool Validate(List<Rect> tiles, List<Wall> walls, List<Opening> openings, out string problem)
+        /// <param name="oneOfEach">
+        /// True (a room file): exactly one entrance and one exit (rule 3). False (a room placed in a
+        /// world, which keeps only its entrances): at most one of each, and none is not a failure.
+        /// </param>
+        public static bool Validate(List<Rect> tiles, List<Wall> walls, List<Opening> openings, out string problem,
+            bool oneOfEach = true)
         {
             var failures = new List<string>();
             var entrances = 0;
@@ -564,7 +569,7 @@ namespace Dojo.Game.Placement
 
             // One of each, exactly: Room-File-Format.md rule 3, as of version 2 (version 1 asked only
             // for an entrance). They may share a spot - see Clash.
-            if (exits == 0)
+            if (exits == 0 && oneOfEach)
             {
                 failures.Insert(0, "The room has no exit (rule 3). Use EXIT on a wall of the floor's edge, on a marked gap, or on the entrance to share its spot.");
             }
@@ -573,7 +578,7 @@ namespace Dojo.Game.Placement
                 failures.Insert(0, "The room has " + exits + " exits; a room has exactly one (rule 3). Take the others off with EXIT.");
             }
 
-            if (entrances == 0)
+            if (entrances == 0 && oneOfEach)
             {
                 failures.Insert(0, "The room has no entrance (rule 3). Use ENTRANCE on a wall of the floor's edge, or on a marked gap.");
             }

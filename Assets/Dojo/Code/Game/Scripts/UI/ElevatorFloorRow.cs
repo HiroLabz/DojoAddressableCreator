@@ -4,6 +4,7 @@ using Dojo.Game.Placement;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Dojo.Game.UI
@@ -63,7 +64,8 @@ namespace Dojo.Game.UI
         [SerializeField] TMP_Text details;
 
         [Tooltip("YOU ARE HERE or HEADING THERE, on the right.")]
-        [SerializeField] TMP_Text tag;
+        [FormerlySerializedAs("tag")]
+        [SerializeField] TMP_Text hereTag;
 
         static readonly Color Cyan = Rgb(103, 232, 249);
         static readonly Color Green = Rgb(93, 227, 164);
@@ -73,6 +75,13 @@ namespace Dojo.Game.UI
 
         Look look;
         bool hovered;
+
+        // A word on the right that is its own button (the Departments panel's LOCK), in place of
+        // YOU ARE HERE. Made the first time it is asked for; the elevator never asks.
+        string actionWord = string.Empty;
+        Color actionColour;
+        Action actionPressed;
+        Button actionButton;
 
         // Where the name sits over the second line, kept so a row used for an area and then a
         // floor puts it back.
@@ -120,6 +129,11 @@ namespace Dojo.Game.UI
             if (button != null)
             {
                 button.onClick.RemoveListener(Press);
+            }
+
+            if (actionButton != null)
+            {
+                actionButton.onClick.RemoveListener(PressAction);
             }
         }
 
@@ -203,6 +217,39 @@ namespace Dojo.Game.UI
                 rect.offsetMax = titleOffsetMax;
                 title.alignment = titleAlignment;
             }
+        }
+
+        /// <summary>
+        /// Puts a word on the right that does something of its own when pressed - LOCK, UNLOCK -
+        /// apart from picking the row. An empty word takes it away; a null press shows the word
+        /// without it being pressable (LOCKING...).
+        /// </summary>
+        public void SetAction(string word, Color colour, Action pressed)
+        {
+            actionWord = word ?? string.Empty;
+            actionColour = colour;
+            actionPressed = pressed;
+
+            if (actionWord.Length > 0 && actionButton == null && hereTag != null)
+            {
+                hereTag.raycastTarget = true;
+                actionButton = hereTag.gameObject.AddComponent<Button>();
+                actionButton.transition = Selectable.Transition.None;
+                actionButton.targetGraphic = hereTag;
+                actionButton.onClick.AddListener(PressAction);
+            }
+
+            if (actionButton != null)
+            {
+                actionButton.interactable = actionPressed != null;
+            }
+
+            Paint();
+        }
+
+        void PressAction()
+        {
+            actionPressed?.Invoke();
         }
 
         /// <summary>Changes only how it stands - the row picked becomes where he is heading.</summary>
@@ -289,26 +336,32 @@ namespace Dojo.Game.UI
                 details.color = look == Look.Here ? new Color(170f / 255f, 240f / 255f, 210f / 255f, 0.75f) : Mute;
             }
 
-            if (tag != null)
+            if (hereTag != null && actionWord.Length > 0)
+            {
+                hereTag.text = actionWord;
+                hereTag.color = actionColour;
+                hereTag.gameObject.SetActive(true);
+            }
+            else if (hereTag != null)
             {
                 switch (look)
                 {
                     case Look.Here:
-                        tag.text = "YOU ARE HERE";
-                        tag.color = Green;
+                        hereTag.text = "YOU ARE HERE";
+                        hereTag.color = Green;
                         break;
 
                     case Look.Heading:
-                        tag.text = "HEADING THERE";
-                        tag.color = Cyan;
+                        hereTag.text = "HEADING THERE";
+                        hereTag.color = Cyan;
                         break;
 
                     default:
-                        tag.text = string.Empty;
+                        hereTag.text = string.Empty;
                         break;
                 }
 
-                tag.gameObject.SetActive(tag.text.Length > 0);
+                hereTag.gameObject.SetActive(hereTag.text.Length > 0);
             }
         }
 

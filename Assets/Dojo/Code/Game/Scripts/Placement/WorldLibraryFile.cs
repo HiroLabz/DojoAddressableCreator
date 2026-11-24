@@ -1,5 +1,6 @@
 using System.IO;
 using UnityEngine;
+using VContainer;
 
 namespace Dojo.Game.Placement
 {
@@ -20,9 +21,25 @@ namespace Dojo.Game.Placement
 
         readonly bool prettyPrint;
 
+        /// <summary>A file named by the caller instead of the open scene, for editor tools.</summary>
+        readonly string named;
+
+        // The one the game's container builds it with: the other is the editor tools', and takes a
+        // file name the container has no way to give.
+        [Inject]
         public WorldLibraryFile(WorldSettings settings)
         {
             prettyPrint = settings == null || settings.PrettyPrint;
+        }
+
+        /// <summary>
+        /// The library in <paramref name="fileName"/>, whatever scene was last open: for the editor's
+        /// tools, which run outside Play with no scene settings to ask (Tools ▸ Dojo ▸ Content ▸ Builder).
+        /// </summary>
+        public WorldLibraryFile(string fileName, bool prettyPrint = true)
+        {
+            named = string.IsNullOrWhiteSpace(fileName) ? null : fileName.Trim();
+            this.prettyPrint = prettyPrint;
         }
 
         /// <summary>
@@ -33,7 +50,7 @@ namespace Dojo.Game.Placement
         /// not something a scene gets to choose.
         /// </remarks>
         public string FullPath
-            => Path.Combine(Application.persistentDataPath, FileName).Replace('\\', '/');
+            => Path.Combine(Application.persistentDataPath, named ?? FileName).Replace('\\', '/');
 
         /// <summary>True when there is something to load.</summary>
         public bool Exists => File.Exists(FullPath);

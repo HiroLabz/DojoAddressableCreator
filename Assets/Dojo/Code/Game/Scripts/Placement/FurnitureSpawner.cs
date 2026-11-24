@@ -1,3 +1,4 @@
+using Dojo.Game.InGame.Terminals;
 using UnityEngine;
 using UnityEngine.AI;
 using VContainer;
@@ -291,11 +292,23 @@ namespace Dojo.Game.Placement
         /// one that complains every frame that nothing can hear it. The same choice the inventory
         /// tiles already make for themselves — a thing built at runtime is never in the scene when
         /// the LifetimeScope enumerates it, so this is the only way it can be injected.
+        /// <para>
+        /// That holds for prefabs compiled into the game. A prefab from a downloaded pack is built
+        /// by <see cref="ContentContainer"/> instead, which offers presentation services only, so
+        /// a tampered pack cannot reach sign-in, chat or grants through a piece (vision §64).
+        /// </para>
         /// </remarks>
         static GameObject Build(GameObject prefab, Vector3 position, IObjectResolver resolver)
-            => resolver != null
-                ? resolver.Instantiate(prefab, position, Quaternion.identity)
-                : Object.Instantiate(prefab, position, Quaternion.identity);
+        {
+            if (resolver == null)
+            {
+                return Object.Instantiate(prefab, position, Quaternion.identity);
+            }
+
+            // The game builds a downloaded pack's prefab through its ContentContainer; the creator
+            // has none, so every piece is built here.
+            return resolver.Instantiate(prefab, position, Quaternion.identity);
+        }
 
         /// <summary>Puts a whole hierarchy on one layer.</summary>
         public static void SetLayer(GameObject root, int layer)

@@ -86,7 +86,8 @@ namespace Dojo.Game.Managers
             Func<ISaveAsDialog> saveAs,
             Func<ILoadWorldDialog> loadWorld,
             Func<ISaveWorldDialog> saveWorld,
-            Func<IShopDialog> shop)
+            Func<IShopDialog> shop,
+            Func<IChoiceDialog> choice)
         {
             Learn(confirm);
             Learn(prompt);
@@ -95,6 +96,7 @@ namespace Dojo.Game.Managers
             Learn(loadWorld);
             Learn(saveWorld);
             Learn(shop);
+            Learn(choice);
         }
 
         void Awake()
@@ -196,13 +198,13 @@ namespace Dojo.Game.Managers
         }
 
         /// <inheritdoc />
-        public void Prompt(string question, string suggestion, Action<string> onConfirm, Action onCancel = null)
+        public void Prompt(string question, string suggestion, Action<string> onConfirm, Action onCancel = null, string placeholder = null)
         {
             var dialog = OpenDialog<IPromptDialog>();
 
             if (dialog != null)
             {
-                dialog.Ask(question, suggestion, onConfirm, onCancel);
+                dialog.Ask(question, suggestion, onConfirm, onCancel, placeholder);
             }
         }
 

@@ -40,6 +40,9 @@ namespace Dojo.Game.UI
         RoomEditor editor;
         RoomCatalog catalog;
         IDialogManager dialogs;
+
+        /// <summary>The styled popups the room dialogs ask with, as in the game (fcfe344); the old dialogs without them.</summary>
+        Dojo.Game.Managers.PopupPrefabs popups;
         RoomOpeningTool openings;
 
         // What this bar put away when a room started being made, to bring back when it ends.
@@ -48,11 +51,12 @@ namespace Dojo.Game.UI
 
         [Inject]
         public void Construct(RoomEditor roomEditor, RoomCatalog roomCatalog, IDialogManager dialogManager,
-            PlacementController placementController)
+            PlacementController placementController, Dojo.Game.Managers.PopupPrefabs popupPrefabs)
         {
             editor = roomEditor;
             catalog = roomCatalog;
             dialogs = dialogManager;
+            popups = popupPrefabs;
 
             // Here rather than in Awake: the bar starts switched off, so Awake waits for the first
             // room, and the tool has to be listening before then.
@@ -192,7 +196,8 @@ namespace Dojo.Game.UI
                 made.Add(editor.EditingName);
             }
 
-            dialogs.SaveAs("Save room", made, name =>
+            PopupAsk.SaveAs(popups, dialogs, "Save room", "What is this room called?", made,
+                editor.EditingName ?? string.Empty, null, name =>
             {
                 // As the game asks of a placed room: which department it belongs to. Its answer is
                 // written onto the room's own area, so the room file carries it.
@@ -280,7 +285,7 @@ namespace Dojo.Game.UI
                 openings.Stop();
             }
 
-            dialogs.Choose("Load room", names, chosen =>
+            PopupAsk.Choose(popups, dialogs, "Load room", "Which room do you want to open?", names, "LOAD", chosen =>
             {
                 var entry = rooms.Find(r => r.name == chosen);
                 string problem = null;
@@ -308,8 +313,9 @@ namespace Dojo.Game.UI
                 return;
             }
 
-            dialogs.Confirm("Leave without saving? What has been built here is thrown away, and the world comes back as it was.",
-                editor.Cancel);
+            PopupAsk.Confirm(popups, dialogs, "Leave without saving?",
+                "What has been built here is thrown away, and the world comes back as it was.", "LEAVE",
+                MessagePopup.Tone.Alert, editor.Cancel);
         }
 
         /// <summary>

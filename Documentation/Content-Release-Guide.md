@@ -39,6 +39,7 @@ Harold puts new 3D assets on the creator branch `development/bob/3dDump`. It's a
 
 ## Content tools
 Everything for making content is under **Tools ▸ Dojo ▸ Content**:
+- **Builder (World, Assets, Rooms)**: one window for building the default world from scratch, adding new pieces to the kit and promoting rooms. See `World-Builder-Guide.md`.
 - **1. Build MVP Kit Prefabs** and **2. Update MVP Scene Inventory**: Harold's models into the default pack, and the MVP scene's inventory list.
 - **3. Export World To Pack**: the world last saved becomes `default/World/world_mvp`, the world new players start in.
 - **Rooms ▸**: Mark Room Openings, Check Room Openings, Promote Room To Pack, Generate Room Thumbnails.
