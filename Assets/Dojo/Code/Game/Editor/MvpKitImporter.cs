@@ -201,6 +201,11 @@ namespace Dojo.Game.Editor
                         settings.FindPropertyRelative("saveFile").stringValue = MvpSaveFile;
                         settings.FindPropertyRelative("resetFloor").stringValue = "default/" + PrefabName("LightGrayFloorTile");
 
+                        // The You and Agents tabs, so the default world gets its owner's and agents'
+                        // places: whoever builds it puts them down (the game fills them with the
+                        // player's own).
+                        settings.FindPropertyRelative("characterTabs").boolValue = true;
+
                         var offered = InventoryAddresses();
                         var list = settings.FindPropertyRelative("inventoryOnly");
                         list.arraySize = offered.Count;

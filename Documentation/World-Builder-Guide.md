@@ -23,6 +23,7 @@ The game enforces these while you build, and **Check rules** looks for them befo
    - **Rooms:** place them from the inventory's **Rooms** tab.
    - **Areas and departments:** paint them from the inventory's **Areas** tab.
    - **Floors and elevator:** add more floors with **+ ADD FLOOR**, and an elevator to link them.
+   - **People:** put the owner down from the **You** tab, and up to four agents from the **Agents** tab (Sidekick Supreme and Sample Agents 2 to 4). These are only *places*: in the game, the player's own owner and agents stand in them, in order. Without an owner's place nobody is seated as the owner; with no agent places, no agents are placed.
 4. The world saves itself as you go. You can also use **SAVE WORLD** in the in-game menu.
 5. Stop Play. Back in the Builder, pick the world under **Saved worlds**, then:
    - **Check rules** lists anything off the grid, off the floor or overlapping, any wall on top of something, and any piece whose prefab is missing.

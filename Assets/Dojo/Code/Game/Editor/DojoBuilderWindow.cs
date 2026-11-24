@@ -86,7 +86,8 @@ namespace Dojo.Game.Editor
 
             EditorGUILayout.HelpBox(
                 "1. Start a world: from scratch, or from a copy of the default world.\n" +
-                "2. Play it: it opens in RuntimeMVP. Build it from the inventory like a building game; it saves itself as you go.\n" +
+                "2. Play it: it opens in RuntimeMVP. Build it from the inventory like a building game; it saves itself as you go. " +
+                "Put the owner down from the You tab and the agents from the Agents tab: the game puts the player's own in those places.\n" +
                 "3. Stop Play, pick it below and Make Default World. New players start in it once the content is published.",
                 MessageType.None);
 

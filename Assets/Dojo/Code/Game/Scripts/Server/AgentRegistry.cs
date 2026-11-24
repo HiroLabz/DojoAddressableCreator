@@ -56,14 +56,60 @@ namespace Dojo.Game.Server
 
         AgentRoster shipped;
 
+        /// <summary>
+        /// How many agents the creator offers with no platform: enough to place every agent place
+        /// the default world has (four), whatever the shipped sample roster holds.
+        /// </summary>
+        public const int OfflineAgentCount = 4;
+
         IReadOnlyList<AgentCredential> Shipped()
         {
             if (shipped == null && file != null)
             {
                 shipped = file.ReadCatalogue();
+                PadWithSamples(shipped);
             }
 
             return shipped != null && shipped.agents != null ? shipped.agents : None;
+        }
+
+        /// <summary>
+        /// Tops the offline roster up to <see cref="OfflineAgentCount"/> with sample agents copied from
+        /// the first: "Sample Agent 2", "3" and so on, each with its own id. In memory only - the
+        /// shipped roster is content the game downloads, and must not carry made-up agents.
+        /// </summary>
+        /// <remarks>
+        /// So the person building the default world can put an agent in every place the world will
+        /// have. The game fills those places with the player's own agents, in order
+        /// (<c>DefaultWorld.FitTo</c>), so who stood in them here doesn't travel.
+        /// </remarks>
+        static void PadWithSamples(AgentRoster roster)
+        {
+            if (roster == null || roster.agents == null || roster.agents.Count == 0)
+            {
+                return;
+            }
+
+            var model = roster.agents[0];
+            var next = 1;
+            foreach (var agent in roster.agents)
+            {
+                if (agent != null && agent.id >= next)
+                {
+                    next = agent.id + 1;
+                }
+            }
+
+            while (roster.agents.Count < OfflineAgentCount)
+            {
+                var copy = JsonUtility.FromJson<AgentCredential>(JsonUtility.ToJson(model));
+                copy.id = next++;
+                copy.name = "Sample Agent " + (roster.agents.Count + 1);
+                copy.hiroAgentId = "sample-agent-" + copy.id;
+                copy.hiroSlug = "sample-" + copy.id;
+                copy.area = new List<Vector3>();
+                roster.agents.Add(copy);
+            }
         }
 
         public AgentCredential Find(int id)

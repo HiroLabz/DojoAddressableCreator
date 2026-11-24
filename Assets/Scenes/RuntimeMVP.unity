@@ -25969,7 +25969,7 @@ MonoBehaviour:
     managerPrefab: {fileID: 3520603674932339380, guid: 8486410d807da8848984101067b55772, type: 3}
     agents: 1
     manager: 1
-    characterTabs: 0
+    characterTabs: 1
     resetFloor: default/default_light_gray_floor_tile
     autoSave: 1
     autoSaveQuietSeconds: 1
@@ -25993,6 +25993,7 @@ MonoBehaviour:
     - default/default_divider_wall_small
     - default/default_dual_monitor
     - default/default_dual_workstation_desk
+    - default/default_elevator_mvp
     - default/default_entry_portal_wall
     - default/default_ergonomic_office_chair
     - default/default_front_counter
@@ -26023,23 +26024,22 @@ MonoBehaviour:
     - default/default_triple_monitor
     - default/default_wood_floor_tile
     - default/default_work_station_return_table
+    - default/Rooms/default_room_mvp_accounting
     - default/Rooms/default_room_mvp_conference_room
+    - default/Rooms/default_room_mvp_customer_success
+    - default/Rooms/default_room_mvp_customer_support
     - default/Rooms/default_room_mvp_dev_lab
+    - default/Rooms/default_room_mvp_finance
+    - default/Rooms/default_room_mvp_hr
     - default/Rooms/default_room_mvp_it_and_security
     - default/Rooms/default_room_mvp_legal
+    - default/Rooms/default_room_mvp_marketing
     - default/Rooms/default_room_mvp_operations
     - default/Rooms/default_room_mvp_product_and_development
     - default/Rooms/default_room_mvp_reception
-    - default/Rooms/default_room_mvp_research
-    - default/default_elevator_mvp
-    - default/Rooms/default_room_mvp_sales
-    - default/Rooms/default_room_mvp_marketing
-    - default/Rooms/default_room_mvp_customer_support
-    - default/Rooms/default_room_mvp_customer_success
-    - default/Rooms/default_room_mvp_finance
-    - default/Rooms/default_room_mvp_accounting
-    - default/Rooms/default_room_mvp_hr
     - default/Rooms/default_room_mvp_recruitment
+    - default/Rooms/default_room_mvp_research
+    - default/Rooms/default_room_mvp_sales
     retired: []
 --- !u!4 &1510082292
 Transform:
