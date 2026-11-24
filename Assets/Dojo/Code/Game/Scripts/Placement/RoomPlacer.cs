@@ -1054,8 +1054,36 @@ namespace Dojo.Game.Placement
             Dojo.Game.UI.AreaDepartmentPrompt departments;
             if (unassigned.Count > 0 && resolver != null && resolver.TryResolve(out departments))
             {
-                departments.Ask("the " + plan.Entry.name, unassigned);
+                departments.Ask(DepartmentTitle(plan.Entry.name, AreaNames(unassigned)), unassigned);
             }
+        }
+
+        /// <summary>
+        /// What the Department popup calls a placed room's areas: the area by its own name when the
+        /// room brought one ("'Reception 2'", as the Areas panel names it), so a numbered name says
+        /// which; the room's name when it brought several. As in dojo-game-app (741ef32, QA issue 7).
+        /// </summary>
+        public static string DepartmentTitle(string roomName, IReadOnlyList<string> areaNames)
+        {
+            if (areaNames != null && areaNames.Count == 1 && !string.IsNullOrWhiteSpace(areaNames[0]))
+            {
+                return "'" + areaNames[0] + "'";
+            }
+
+            return "the " + roomName;
+        }
+
+        List<string> AreaNames(IReadOnlyList<int> ids)
+        {
+            var names = new List<string>();
+
+            foreach (var id in ids)
+            {
+                var area = blockAreas != null ? blockAreas.Find(id) : null;
+                names.Add(area != null ? area.Name : string.Empty);
+            }
+
+            return names;
         }
 
         /// <summary>

@@ -52,8 +52,10 @@ namespace Dojo.Game.UI
 
         [Inject]
         public void Construct(RoomCatalog roomCatalog, RoomPlacer roomPlacer, Storeys floors,
-            PlacementController placementController, RoomEditor roomEditor, IDialogManager dialogManager)
+            PlacementController placementController, RoomEditor roomEditor, IDialogManager dialogManager,
+            Dojo.Game.Managers.PopupPrefabs popupPrefabs)
         {
+            popups = popupPrefabs;
             catalog = roomCatalog;
             placer = roomPlacer;
             storeys = floors;
@@ -72,6 +74,9 @@ namespace Dojo.Game.UI
 
         RoomEditor editor;
         IDialogManager dialogs;
+
+        /// <summary>The styled popups the room dialogs ask with, as in the game (fcfe344); the old dialogs without them.</summary>
+        Dojo.Game.Managers.PopupPrefabs popups;
 
         /// <summary>
         /// Deletes a room the player made, after asking: its file and area, its thumbnail, and
@@ -114,8 +119,9 @@ namespace Dojo.Game.UI
                 return;
             }
 
-            dialogs.Confirm("Promote '" + room.name + "' to the pack? It becomes one of the default rooms: it ships "
-                + "with the pack, is kept by a reset that keeps promoted rooms, and can no longer be deleted here.", Promote);
+            PopupAsk.Confirm(popups, dialogs, "Promote '" + room.name + "'?", "It becomes one of the default rooms: it ships "
+                + "with the pack, is kept by a reset that keeps promoted rooms, and can no longer be deleted here.", "PROMOTE",
+                MessagePopup.Tone.Info, Promote);
         }
 
         /// <summary>
@@ -190,8 +196,8 @@ namespace Dojo.Game.UI
                 return;
             }
 
-            dialogs.Confirm("Delete '" + room.name + "'? Its file, area and thumbnail are removed for good. "
-                + "Worlds it was placed in keep their copy.", Delete);
+            PopupAsk.Confirm(popups, dialogs, "Delete '" + room.name + "'?", "Its file, area and thumbnail are removed for good. "
+                + "Worlds it was placed in keep their copy.", "DELETE", MessagePopup.Tone.Alert, Delete);
         }
 
         void Awake()
