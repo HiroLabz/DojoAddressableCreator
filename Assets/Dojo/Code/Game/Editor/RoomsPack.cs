@@ -23,6 +23,10 @@ namespace Dojo.Game.Editor
     /// A built game only finds rooms through <c>rooms.json</c>, so a room made in the editor reaches
     /// players once it is promoted: renamed into the pack's naming and added to the index.
     /// </para>
+    /// <para>
+    /// What the floors' folder shares with this - the group made from <c>Content_Shared</c>, the
+    /// sprite import, the file an index address names - lives in <see cref="ContentPackFolder"/>.
+    /// </para>
     /// </remarks>
     public static class RoomsPack
     {
@@ -35,9 +39,6 @@ namespace Dojo.Game.Editor
         /// <summary>The group the pack's rooms build into, apart from the rest of the pack.</summary>
         public const string GroupName = "Content_Rooms";
 
-        /// <summary>Whose settings a new <see cref="GroupName"/> is made with.</summary>
-        const string TemplateGroup = "Content_Shared";
-
         const string PackRoomPrefix = "default_room_";
         const string MadeRoomPrefix = "room_";
 
@@ -49,86 +50,14 @@ namespace Dojo.Game.Editor
 
         // ── The group ───────────────────────────────────────────────────────────────────────
 
-        /// <summary>
-        /// <see cref="GroupName"/>, made the first time it is asked for with exactly the settings
-        /// <c>Content_Shared</c> has - bundled by label, built and loaded from the same paths - so
-        /// rooms get bundles of their own and nothing else about delivery changes.
-        /// </summary>
+        /// <summary><see cref="GroupName"/>, made on first need with <c>Content_Shared</c>'s settings (<see cref="ContentPackFolder.EnsureGroup"/>).</summary>
         public static AddressableAssetGroup EnsureGroup(AddressableAssetSettings settings)
-        {
-            if (settings == null)
-            {
-                return null;
-            }
-
-            var template = settings.FindGroup(TemplateGroup);
-            var group = settings.FindGroup(GroupName);
-
-            if (group != null)
-            {
-                // A group made before every schema was copied - an earlier failed run - is given
-                // the ones it is missing, so it ends up with all of the template's settings.
-                if (template != null)
-                {
-                    foreach (var schema in new List<AddressableAssetGroupSchema>(template.Schemas))
-                    {
-                        if (schema != null && !group.HasSchema(schema.GetType()))
-                        {
-                            group.AddSchema(schema, false);
-                            Debug.Log("[RoomsPack] Gave " + GroupName + " the " + schema.GetType().Name
-                                + " it was missing, from " + TemplateGroup + ".", group);
-                        }
-                    }
-                }
-
-                return group;
-            }
-
-            if (template == null)
-            {
-                Debug.LogError("[RoomsPack] There is no " + TemplateGroup + " group to copy " + GroupName
-                    + "'s settings from, so it was not made.");
-                return null;
-            }
-
-            // A copy of the list, not the template's own: adding a schema to the new group raises
-            // events that touch the template's list while CreateGroup is still walking it.
-            group = settings.CreateGroup(GroupName, false, false, true,
-                new List<AddressableAssetGroupSchema>(template.Schemas));
-            Debug.Log("[RoomsPack] Made the " + GroupName + " group, with " + TemplateGroup + "'s settings.", group);
-
-            return group;
-        }
+            => ContentPackFolder.EnsureGroup(settings, GroupName);
 
         // ── Thumbnails ──────────────────────────────────────────────────────────────────────
 
-        /// <summary>
-        /// Imports a thumbnail as one sprite with alpha and no mipmaps: what the Rooms tab's cards
-        /// draw, and what the content service hands back when a card asks for a sprite.
-        /// </summary>
-        public static void ImportAsSprite(string assetPath)
-        {
-            var importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
-
-            if (importer == null)
-            {
-                return;
-            }
-
-            if (importer.textureType == TextureImporterType.Sprite
-                && importer.spriteImportMode == SpriteImportMode.Single
-                && importer.alphaIsTransparency
-                && !importer.mipmapEnabled)
-            {
-                return;
-            }
-
-            importer.textureType = TextureImporterType.Sprite;
-            importer.spriteImportMode = SpriteImportMode.Single;
-            importer.alphaIsTransparency = true;
-            importer.mipmapEnabled = false;
-            importer.SaveAndReimport();
-        }
+        /// <summary>Imports a thumbnail as one sprite with alpha and no mipmaps (<see cref="ContentPackFolder.ImportAsSprite"/>).</summary>
+        public static void ImportAsSprite(string assetPath) => ContentPackFolder.ImportAsSprite(assetPath);
 
         // ── Checking the index ──────────────────────────────────────────────────────────────
 
@@ -216,36 +145,10 @@ namespace Dojo.Game.Editor
 
         /// <summary>The file an address under the Rooms folder names, or null when it is not one.</summary>
         static string FileFor(string roomsFolder, string prefix, string address, string extension)
-        {
-            if (string.IsNullOrEmpty(address) || !address.StartsWith(prefix, StringComparison.Ordinal))
-            {
-                return null;
-            }
-
-            return roomsFolder + "/" + address.Substring(prefix.Length) + (extension ?? string.Empty);
-        }
+            => ContentPackFolder.FileFor(roomsFolder, prefix, address, extension);
 
         /// <summary>Whether an image of that name exists, whatever its extension.</summary>
-        static bool IconExists(string withoutExtension)
-        {
-            var folder = Path.GetDirectoryName(withoutExtension);
-            var name = Path.GetFileName(withoutExtension);
-
-            if (string.IsNullOrEmpty(folder) || !Directory.Exists(folder))
-            {
-                return false;
-            }
-
-            foreach (var file in Directory.GetFiles(folder, name + ".*"))
-            {
-                if (!file.EndsWith(".meta", StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
+        static bool IconExists(string withoutExtension) => ContentPackFolder.IconExists(withoutExtension);
 
         // ── Promoting a made room ───────────────────────────────────────────────────────────
 

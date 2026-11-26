@@ -1,0 +1,10 @@
+{
+    "floors": [
+        {
+            "name": "Example",
+            "address": "default/Floors/default_floor_example",
+            "icon": "default/Floors/Thumbnails/floor_example",
+            "tag": "default"
+        }
+    ]
+}

@@ -1,6 +1,6 @@
 # World builder guide
 
-How to build the default world and add new pieces to the MVP kit in DojoAddressableCreator. Everything is in one window: **Tools ▸ Dojo ▸ Content ▸ Builder (World, Assets, Rooms)**.
+How to build the default world and add new pieces to the MVP kit in DojoAddressableCreator. Everything is in one window: **Tools ▸ Dojo ▸ Content ▸ Builder (World, Assets, Rooms, Floors)**.
 
 ## The rules
 The game enforces these while you build, and **Check rules** looks for them before a world becomes the default.
@@ -63,3 +63,12 @@ A model whose materials aren't in the kit gets a material made from its own text
 3. Press **Promote** to make it part of the pack. It ships with the content and appears in RuntimeMVP's inventory.
 
 **Generate room thumbnails** and **Check room openings** are on the same tab.
+
+## Floor layouts
+A floor layout is a whole floor shipped in the pack, built on the Rooms system: a one-floor world file in `Assets/Process/default/Floors`, the same shape as a room file. The pack's layouts are `default_floor_<name>.json`, listed in `floors.json` in the order the tab shows them, with a thumbnail at `Thumbnails/floor_<name>.png`; they build into their own `Content_Floors` group when the Addressable Generator runs on the pack.
+
+1. Builder ▸ **Floors** tab lists the pack's layouts and warns when `floors.json` does not match the files.
+2. **Generate floor thumbnails** renders every layout's picture from its file (no prefab is needed).
+3. A layout made in the floor editor is `floor_<name>.json`; **Promote** puts it in the pack and on the list.
+
+The floor editor, the inventory's LAYOUTS tab and placing a layout follow (ClickUp 14ze67xgf0v, 14ze67xgf0x); the plan is in `Documentation/Tasks/Floor-Creator-Notes.md`.

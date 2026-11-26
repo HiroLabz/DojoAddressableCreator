@@ -267,6 +267,12 @@ namespace Dojo.Game.Systems
             builder.Register<CustomRooms>(Lifetime.Singleton);
             builder.Register<RoomEditor>(Lifetime.Singleton);
 
+            // Floor layouts, the same two halves as rooms: which layouts the packs offer, and the
+            // ones made here, kept on disk. The floor editor and the LAYOUTS tab come after
+            // (ClickUp 14ze67xgf0v).
+            builder.Register<FloorLayoutCatalog>(Lifetime.Singleton);
+            builder.Register<CustomFloorLayouts>(Lifetime.Singleton);
+
             // Writes the selected world back whenever anything in it changes. Registered here
             // rather than on the root, because it is only meaningful where there is a world root
             // to save — the same condition this whole method already sits behind.

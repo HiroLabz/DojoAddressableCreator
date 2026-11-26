@@ -779,6 +779,23 @@ namespace Dojo.Game.Editor
         const string RoomsFolderName = "Rooms";
 
         /// <summary>
+        /// A pack folder that builds into a group of its own and carries an index this tool
+        /// checks: Rooms and Floors today. One row each, so another kind of content is one more row.
+        /// </summary>
+        sealed class IndexedFolder
+        {
+            public string Name;
+            public Func<AddressableAssetSettings, AddressableAssetGroup> EnsureGroup;
+            public Func<string, string, List<string>> CheckIndex;
+        }
+
+        static readonly IndexedFolder[] IndexedFolders =
+        {
+            new IndexedFolder { Name = RoomsFolderName, EnsureGroup = RoomsPack.EnsureGroup, CheckIndex = RoomsPack.CheckIndex },
+            new IndexedFolder { Name = "Floors", EnsureGroup = FloorsPack.EnsureGroup, CheckIndex = FloorsPack.CheckIndex },
+        };
+
+        /// <summary>
         /// Takes out every entry for a file under the Rooms folder's <c>Editor/</c>, and any left at
         /// an address the room prefabs used to have: what only editor tools read stays out of the
         /// download, wherever an earlier run filed it.
@@ -1110,35 +1127,39 @@ namespace Dojo.Game.Editor
             var groupsUsed = new List<string>();
             var report = "\n\nOther folders:";
 
-            var roomWarnings = new List<string>();
+            var indexWarnings = new List<string>();
 
             foreach (var folder in folders)
             {
                 var name = Path.GetFileName(folder);
 
-                // The pack's rooms build into a group of their own, made on first need with
-                // Content_Shared's settings. Before GroupFor, so it finds the group.
-                var isRooms = string.Equals(name, RoomsFolderName, StringComparison.OrdinalIgnoreCase);
-                if (isRooms)
+                // The pack's rooms and floor layouts build into a group of their own, made on
+                // first need with Content_Shared's settings. Before GroupFor, so it finds the group.
+                var indexed = Array.Find(IndexedFolders, f => string.Equals(name, f.Name, StringComparison.OrdinalIgnoreCase));
+                if (indexed != null)
                 {
-                    RoomsPack.EnsureGroup(settings);
+                    indexed.EnsureGroup(settings);
                     ReleaseEditorOnlyEntries(settings, folder, problems);
-                    roomWarnings.AddRange(RoomsPack.CheckIndex(folder, Prefix));
+
+                    foreach (var warning in indexed.CheckIndex(folder, Prefix))
+                    {
+                        indexWarnings.Add(name + " - " + warning);
+                    }
                 }
 
                 var group = GroupFor(settings, name);
                 var assets = FindExtraAssets(folder);
 
-                if (isRooms)
+                if (indexed != null)
                 {
-                    // Every room thumbnail is drawn as a sprite; one saved as a plain texture would
-                    // resolve as nothing when a card asks for one.
+                    // Every room and layout thumbnail is drawn as a sprite; one saved as a plain
+                    // texture would resolve as nothing when a card asks for one.
                     foreach (var assetPath in assets)
                     {
                         if (assetPath.StartsWith(folder + "/Thumbnails/", StringComparison.OrdinalIgnoreCase)
                             && assetPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
                         {
-                            RoomsPack.ImportAsSprite(assetPath);
+                            ContentPackFolder.ImportAsSprite(assetPath);
                         }
                     }
                 }
@@ -1158,9 +1179,9 @@ namespace Dojo.Game.Editor
                     var bare = AddressForExtra(folder, assetPath, false);
                     var address = claims[bare] > 1 ? AddressForExtra(folder, assetPath, true) : bare;
 
-                    // Rooms are taken into their own group even when an earlier run filed them
-                    // elsewhere; every other folder's entries keep whatever group they are in.
-                    if (Assign(settings, assetPath, address, group, problems, isRooms))
+                    // Rooms and layouts are taken into their own group even when an earlier run
+                    // filed them elsewhere; every other folder's entries keep whatever group they are in.
+                    if (Assign(settings, assetPath, address, group, problems, indexed != null))
                     {
                         registered++;
                     }
@@ -1186,13 +1207,13 @@ namespace Dojo.Game.Editor
                 report += BundlingWarning(settings, group);
             }
 
-            // Said, never fixed: rooms.json's order is a choice, so it is not rewritten here.
-            if (roomWarnings.Count > 0)
+            // Said, never fixed: an index's order is a choice, so it is not rewritten here.
+            if (indexWarnings.Count > 0)
             {
-                report += "\n\nRooms - rooms.json does not match the files (" + roomWarnings.Count + "), not rewritten:\n  "
-                    + string.Join("\n  ", roomWarnings);
+                report += "\n\nIndexes do not match the files (" + indexWarnings.Count + "), not rewritten:\n  "
+                    + string.Join("\n  ", indexWarnings);
 
-                foreach (var warning in roomWarnings)
+                foreach (var warning in indexWarnings)
                 {
                     Debug.LogWarning("[AddressableGenerator] " + warning);
                 }

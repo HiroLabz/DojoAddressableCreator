@@ -2,7 +2,9 @@
 
 Ticket: [Hiro Dojo] Addressable Creator: floor creator for the design team (floor layouts, built on the Rooms system) (ClickUp 14ze67xgf0v, Bob, 25 Nov 2026). The game twin is 14ze67xgf0x and waits on this; Rold's ten layouts (14ze67xgf0y) wait on this too. Design for approval: https://claude.ai/artifact/GhQLLbQN28cD7HHxFym2yp (shared with Bob 25 Nov).
 
-This is the build plan, written before Bob's approval of the design so the build can start the day he says yes. Nothing here is built. Where the design changes, only the "Inventory" and "Editor bar" rows move.
+This is the build plan, written before Bob's approval of the design so the build can start the day he says yes. Where the design changes, only the "Inventory" and "Editor bar" rows move.
+
+**Status, 26 Nov:** the first PR (data and pipeline) is built on `jacob/floor_creator_data`: `CustomFloorLayouts`, `FloorLayoutCatalog`, `FloorsPack`, `FloorThumbnails`, the generator's folder table, the Builder's Floors tab, `floors.json` with one example layout. The store is a trimmed copy of `CustomRooms`, not a shared base class: the refactor would have touched most of the rooms' store for two callers, so the rooms' behaviour stays untouched and the duplication is said here. The editor (PR 2) and the LAYOUTS tab (PR 3) wait on the design approval.
 
 ## What Bob decided (25 Nov)
 
