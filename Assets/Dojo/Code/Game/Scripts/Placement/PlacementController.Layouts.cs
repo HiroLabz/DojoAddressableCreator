@@ -197,6 +197,7 @@ namespace Dojo.Game.Placement
 
             layoutFits = !FloorLayoutPlacer.OverlapsFloor(layoutTiles, layoutFloorTiles, layoutOffset, layoutSteps);
             layoutBlocker = layoutFits ? null : "the floor already there";
+            FloorLayoutPlacer.Tint(layoutFits);
 
             if (layoutGhost != null)
             {

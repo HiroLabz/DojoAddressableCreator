@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Dojo.Framework.Events;
 using Dojo.Game.Events;
 using UnityEngine;
+using UnityEngine.Rendering;
 using VContainer;
 
 namespace Dojo.Game.Placement
@@ -177,14 +178,55 @@ namespace Dojo.Game.Placement
             return false;
         }
 
+        /// <summary>Green while the plan may be laid where it is, red where it may not: the whole ghost reads as "being placed".</summary>
+        static readonly Color GhostValid = new Color(0.35f, 1f, 0.55f, 0.6f);
+        static readonly Color GhostInvalid = new Color(1f, 0.33f, 0.33f, 0.6f);
+        static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+        static Material ghostMaterial;
+
+        /// <summary>
+        /// One translucent unlit material every piece of the ghost wears, so the plan in hand is lit
+        /// as a whole rather than looking like furniture already standing (Jacob, 26 Nov). Made the
+        /// way <see cref="PlacementHighlight"/> makes its panel's.
+        /// </summary>
+        static Material GhostMaterial()
+        {
+            if (ghostMaterial != null)
+            {
+                return ghostMaterial;
+            }
+
+            var shader = Shader.Find("Universal Render Pipeline/Unlit");
+            var mat = new Material(shader) { name = "FloorLayoutGhost" };
+            mat.SetFloat("_Surface", 1f);
+            mat.SetFloat("_Blend", 0f);
+            mat.SetFloat("_ZWrite", 0f);
+            mat.SetFloat("_SrcBlend", (float)BlendMode.SrcAlpha);
+            mat.SetFloat("_DstBlend", (float)BlendMode.OneMinusSrcAlpha);
+            mat.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            mat.DisableKeyword("_ALPHATEST_ON");
+            mat.renderQueue = (int)RenderQueue.Transparent;
+            mat.SetColor(BaseColorId, GhostValid);
+            ghostMaterial = mat;
+            return mat;
+        }
+
+        /// <summary>Colours the ghost green where the plan may be laid, red where it may not.</summary>
+        public static void Tint(bool fits)
+        {
+            GhostMaterial().SetColor(BaseColorId, fits ? GhostValid : GhostInvalid);
+        }
+
         /// <summary>
         /// The layout as it will look, built from the same prefabs through the same spawner as the
-        /// real thing, on <paramref name="layer"/> and obstructing nothing. Its root is the layout's
-        /// origin. Not under any floor, so a save never mistakes the ghost for pieces of the world.
+        /// real thing, on <paramref name="layer"/> and obstructing nothing, every piece in the
+        /// ghost's translucent colour. Its root is the layout's origin. Not under any floor, so a
+        /// save never mistakes the ghost for pieces of the world.
         /// </summary>
         public Transform BuildGhost(Plan plan, int layer)
         {
             var root = new GameObject("FloorLayoutGhost (" + plan.Entry.name + ")").transform;
+            var ghost = GhostMaterial();
 
             foreach (var floor in plan.Save.floors)
             {
@@ -212,6 +254,22 @@ namespace Dojo.Game.Placement
                     piece.SetRotationSteps(saved.rotationSteps);
                     piece.transform.localScale = saved.scale;
                     piece.Lift();
+
+                    foreach (var renderer in piece.GetComponentsInChildren<Renderer>(true))
+                    {
+                        if (renderer is ParticleSystemRenderer || renderer is LineRenderer)
+                        {
+                            continue;
+                        }
+
+                        var materials = renderer.sharedMaterials;
+                        for (var i = 0; i < materials.Length; i++)
+                        {
+                            materials[i] = ghost;
+                        }
+
+                        renderer.sharedMaterials = materials;
+                    }
                 }
             }
 
