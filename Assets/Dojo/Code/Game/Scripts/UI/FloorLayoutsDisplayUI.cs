@@ -316,7 +316,7 @@ namespace Dojo.Game.UI
             {
                 if (card != null)
                 {
-                    card.SetSelected(inHand != null && card.Layout == inHand);
+                    card.SetSelected(inHand != null && card.Layout != null && card.Layout.address == inHand.address);
                 }
             }
 
