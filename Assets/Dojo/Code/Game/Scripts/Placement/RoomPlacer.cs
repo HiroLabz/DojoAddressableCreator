@@ -942,7 +942,7 @@ namespace Dojo.Game.Placement
         /// collider, and a switched-off collider reports a zero-sized box at the world origin, which
         /// would stretch the piece's footprint all the way back to the middle of the map.
         /// </remarks>
-        static bool TrySolidBounds(GameObject root, out Bounds bounds)
+        public static bool TrySolidBounds(GameObject root, out Bounds bounds)
         {
             bounds = new Bounds();
             var found = false;

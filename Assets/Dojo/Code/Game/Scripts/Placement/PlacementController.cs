@@ -48,6 +48,9 @@ namespace Dojo.Game.Placement
             /// piece; see <c>PlacementController.Rooms.cs</c>.
             /// </summary>
             Room,
+
+            /// <summary>A floor layout from the FLOORS tab is following the cursor as a ghost; never refused.</summary>
+            Layout,
         }
 
         [Header("Wiring")]
@@ -353,6 +356,10 @@ namespace Dojo.Game.Placement
 
                 case State.Room:
                     TickRoom(mouse);
+                    break;
+
+                case State.Layout:
+                    TickLayout(mouse);
                     break;
             }
         }

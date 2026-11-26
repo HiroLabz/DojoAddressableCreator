@@ -257,7 +257,7 @@ namespace Dojo.Game.Editor
             SetText(go.transform, "Title", "FLOORS");
             SetText(go.transform, "Subtitle", "1F · 0 LAYOUTS");
             SetText(go.transform, "CreateLayout/Label", "+ CREATE LAYOUT");
-            SetText(go.transform, "Hint", "Whole floors for the pack. EDIT opens a layout in the floor editor; laying one on this floor comes next.");
+            SetText(go.transform, "Hint", "Click a layout, then click on the floor to lay it; what is already there stays and the pieces over it are skipped. Scroll or middle-click turns it; right-click or Esc puts it back.");
             SetText(go.transform, "Status", string.Empty);
             SetText(go.transform, "List/Empty/Label", "No floor layouts yet.\n+ CREATE LAYOUT makes the first.");
 

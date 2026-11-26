@@ -77,4 +77,10 @@ A floor layout is a whole floor shipped in the pack, built on the Rooms system: 
 6. **SAVE LAYOUT** asks for a name. Pieces outside the frame are counted and, if you agree, dropped. **CANCEL** throws it away and brings the world back. **CLEAR** empties the floor.
 7. The card shows the layout with its thumbnail and size in tiles. **EDIT** opens it again; **DELETE** and **PROMOTE** are the same as a room's.
 
-Placing a layout on a floor comes next (ClickUp 14ze67xgf0v, 14ze67xgf0x); the plan is in `Documentation/Tasks/Floor-Creator-Notes.md`. The floor editor is built into RuntimeMVP by **Tools ▸ Dojo ▸ Build Floor Editor**, from the room editor's own objects.
+### Laying a layout on a floor
+8. Inventory ▸ **FLOORS**, click a card: the layout follows the cursor as a ghost, snapped to the grid and lined up with the floor's tiles. Scroll or middle-click turns it; right-click or Esc puts it back. A left click lays it.
+9. A layout is never refused. Whatever is already on the floor stays exactly where it is: a piece of the layout whose spot is taken is left out (the ghost hides it, and the panel counts them), and the rest is laid. Rooms inside a layout come back as rooms.
+
+**Naming note (for Bob, QA and the design team):** the rail has two neighbouring tabs that read almost the same, **FLOOR** (single floor tiles) and **FLOORS** (whole floor layouts, Bob's name for the new tab). If it reads badly in testing, the tiles' tab could become TILES, or the new one go back to LAYOUTS; it is one string in the builder.
+
+The floor editor and the FLOORS tab are built into RuntimeMVP by **Tools ▸ Dojo ▸ Build Floor Editor**, from the room editor's own objects. The plan is in `Documentation/Tasks/Floor-Creator-Notes.md`; the game's own floor creator is ClickUp 14ze67xgf0x.
