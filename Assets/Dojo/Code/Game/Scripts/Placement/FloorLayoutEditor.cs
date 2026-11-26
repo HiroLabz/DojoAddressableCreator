@@ -104,6 +104,14 @@ namespace Dojo.Game.Placement
                 return false;
             }
 
+            // Saving is only ever suspended by an editor holding the world: the room editor, here.
+            // Two editors nested would each keep the other's work as "the world".
+            if (world.SavingSuspended)
+            {
+                Debug.LogWarning("[Floors] The world is held by the room editor, so a floor layout cannot be made now. Save or cancel the room first.");
+                return false;
+            }
+
             kept = world.Capture();
             keptName = world.OpenWorldName;
             keptFloor = storeys.Viewed;
@@ -525,11 +533,20 @@ namespace Dojo.Game.Placement
                 return layout;
             }
 
+            // Centred on the floor tiles when there are any, so they stay symmetric about the
+            // origin and the frame fits them in whole tiles; a wall on one edge would otherwise
+            // pull the centre off the tile lattice. On everything, for a layout with no tiles.
             var min = new Vector2(float.MaxValue, float.MaxValue);
             var max = new Vector2(float.MinValue, float.MinValue);
+            var anyTile = ground.pieces.Exists(p => p.isFloor);
 
             foreach (var piece in ground.pieces)
             {
+                if (anyTile && !piece.isFloor)
+                {
+                    continue;
+                }
+
                 min = Vector2.Min(min, new Vector2(piece.position.x, piece.position.z));
                 max = Vector2.Max(max, new Vector2(piece.position.x, piece.position.z));
             }
@@ -567,9 +584,9 @@ namespace Dojo.Game.Placement
         }
 
         /// <summary>
-        /// The frame that fits a layout: its ground floor's pieces, measured by their positions
-        /// plus half a tile, rounded up to whole tiles and kept within the limits. The default for
-        /// a layout with nothing on its ground floor.
+        /// The frame that fits a layout: its ground floor's pieces, a floor tile reaching half a
+        /// tile past its centre and anything else half a cell, rounded up to whole tiles and kept
+        /// within the limits. The default for a layout with nothing on its ground floor.
         /// </summary>
         public static void FitSize(WorldSave layout, out int columns, out int rows)
         {
@@ -583,8 +600,11 @@ namespace Dojo.Game.Placement
                 return;
             }
 
-            var min = new Vector2(float.MaxValue, float.MaxValue);
-            var max = new Vector2(float.MinValue, float.MinValue);
+            // The frame is centred on the origin, so it reaches as far as the furthest piece on
+            // either side: a tile's own half width past its centre, a wall on a tile's edge no more
+            // than half a cell.
+            var reachX = 0f;
+            var reachZ = 0f;
 
             foreach (var piece in source.pieces)
             {
@@ -593,14 +613,10 @@ namespace Dojo.Game.Placement
                     continue;
                 }
 
-                min = Vector2.Min(min, new Vector2(piece.position.x, piece.position.z));
-                max = Vector2.Max(max, new Vector2(piece.position.x, piece.position.z));
+                var reach = piece.isFloor ? Tile * 0.5f : Snap * 0.5f;
+                reachX = Mathf.Max(reachX, Mathf.Abs(piece.position.x) + reach);
+                reachZ = Mathf.Max(reachZ, Mathf.Abs(piece.position.z) + reach);
             }
-
-            // The frame is centred on the origin, so it reaches as far as the furthest piece on
-            // either side, plus the half tile a tile at the edge still covers.
-            var reachX = Mathf.Max(Mathf.Abs(min.x), Mathf.Abs(max.x)) + Tile * 0.5f;
-            var reachZ = Mathf.Max(Mathf.Abs(min.y), Mathf.Abs(max.y)) + Tile * 0.5f;
 
             columns = Mathf.Clamp(Mathf.CeilToInt(reachX * 2f / Tile - 0.001f), MinSize, MaxSize);
             rows = Mathf.Clamp(Mathf.CeilToInt(reachZ * 2f / Tile - 0.001f), MinSize, MaxSize);
@@ -660,6 +676,9 @@ namespace Dojo.Game.Placement
         {
             if (frameObject != null)
             {
+                // Switched off first: Destroy waits for the end of the frame, and the thumbnail
+                // and anything that looks for the frame must not find it meanwhile.
+                frameObject.SetActive(false);
                 UnityEngine.Object.Destroy(frameObject);
                 frameObject = null;
                 frameLine = null;

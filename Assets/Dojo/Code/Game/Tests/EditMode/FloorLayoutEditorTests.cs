@@ -90,6 +90,12 @@ namespace Dojo.Game.Tests.EditMode
             Assert.That(columns, Is.EqualTo(8));
             Assert.That(rows, Is.EqualTo(6));
 
+            // A wall line on the far edge of the last row - the example layout's - adds no row.
+            pieces.Add(Piece(0f, 2.5f * Tile + 0.45f, floor: false));
+            FloorLayoutEditor.FitSize(Built(pieces.ToArray()), out columns, out rows);
+            Assert.That(columns, Is.EqualTo(8));
+            Assert.That(rows, Is.EqualTo(6), "a wall on the edge is not a tile past it");
+
             FloorLayoutEditor.FitSize(Built(Piece(0f, 0f)), out columns, out rows);
             Assert.That(columns, Is.EqualTo(FloorLayoutEditor.MinSize), "one tile still gets the smallest frame");
             Assert.That(rows, Is.EqualTo(FloorLayoutEditor.MinSize));
@@ -113,6 +119,24 @@ namespace Dojo.Game.Tests.EditMode
             Assert.That(layout.floors[0].pieces[1].position.x, Is.EqualTo(0f).Within(0.001f));
             Assert.That(layout.floors[0].pieces[2].position.x, Is.EqualTo(Tile).Within(0.001f));
             Assert.That(outside, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void ToLayout_CentresOnTheFloorTiles_NotOnAWallAtTheEdge()
+        {
+            // Tiles from -1 to +1 tile, and a wall line just past the last row: the tiles decide.
+            var built = Built(Piece(0f, -Tile), Piece(0f, 0f), Piece(0f, Tile), Piece(0f, Tile + 0.45f, floor: false));
+
+            Vector3 shift;
+            int outside;
+            var layout = FloorLayoutEditor.ToLayout(built, FloorLayoutEditor.FrameFor(24, 24), false, out shift, out outside);
+
+            Assert.That(shift, Is.EqualTo(Vector3.zero));
+            Assert.That(layout.floors[0].pieces[3].position.z, Is.EqualTo(Tile + 0.45f).Within(0.001f));
+
+            int columns, rows;
+            FloorLayoutEditor.FitSize(layout, out columns, out rows);
+            Assert.That(rows, Is.EqualTo(FloorLayoutEditor.MinSize), "three tiles and an edge wall fit the smallest frame");
         }
 
         [Test]
