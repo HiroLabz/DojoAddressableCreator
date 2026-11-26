@@ -103,7 +103,8 @@ namespace Dojo.Game.Editor
                 var name = Path.GetFileNameWithoutExtension(path);
 
                 // Only the pack's own layouts are addressed; a made layout's picture is read from disk.
-                if (File.Exists(LayoutFolder + "/" + CustomFloorLayouts.PackFilePrefix + name.Substring(CustomFloorLayouts.FilePrefix.Length) + ".json")
+                if (name.StartsWith(CustomFloorLayouts.FilePrefix, System.StringComparison.Ordinal)
+                    && File.Exists(LayoutFolder + "/" + CustomFloorLayouts.PackFilePrefix + name.Substring(CustomFloorLayouts.FilePrefix.Length) + ".json")
                     && FloorsPack.Register(path, Pack + "/Floors/Thumbnails/" + name))
                 {
                     registered++;

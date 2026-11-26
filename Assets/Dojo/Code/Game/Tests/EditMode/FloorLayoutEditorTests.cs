@@ -24,6 +24,9 @@ namespace Dojo.Game.Tests.EditMode
             return built;
         }
 
+        static WorldSave.SavedBlockArea Area(int id, params Vector3[] cells)
+            => new WorldSave.SavedBlockArea { id = id, name = "Area " + id, area = new List<Vector3>(cells), areaCellSize = PlacementGrid.Step };
+
         static WorldSave.SavedRoom Room(string id, int floor, Vector3 position, float entranceX, float entranceZ)
         {
             var room = new WorldSave.SavedRoom { id = id, name = id, address = "default/Rooms/" + id, floor = floor, position = position };
@@ -158,29 +161,44 @@ namespace Dojo.Game.Tests.EditMode
         }
 
         [Test]
-        public void ToLayout_CountsPiecesOutsideTheFrame_AndDropsThemOnlyWhenAsked_WithTheirEmptiedRoom()
+        public void ToLayout_CountsPiecesOutsideTheFrame_AndDropsThemOnlyWhenAsked_WithTheirEmptiedRoom_AndItsAreas()
         {
             var frame = FloorLayoutEditor.FrameFor(4, 4);
-            var built = Built(Piece(0f, 0f), Piece(5f * Tile, 0f, "r2"));
-            built.rooms.Add(Room("r2", 0, new Vector3(5f * Tile, 0f, 0f), 5f * Tile, -0.6f));
+
+            // A piece at the origin and one five tiles out with its room; the room's area (9), an
+            // area straddling the frame's edge (10) and one wholly outside it (11).
+            System.Func<WorldSave> make = () =>
+            {
+                var world = Built(Piece(0f, 0f), Piece(5f * Tile, 0f, "r2"));
+                var room = Room("r2", 0, new Vector3(5f * Tile, 0f, 0f), 5f * Tile, -0.6f);
+                room.areaIds.Add(9);
+                world.rooms.Add(room);
+                world.FloorAt(0).blockAreas.Add(Area(9, new Vector3(5f * Tile, 0f, 0f)));
+                world.FloorAt(0).blockAreas.Add(Area(10, Vector3.zero, new Vector3(5f * Tile, 0f, 0f)));
+                world.FloorAt(0).blockAreas.Add(Area(11, new Vector3(0f, 0f, 5f * Tile)));
+                return world;
+            };
 
             Vector3 shift;
             int outside;
-            var kept = FloorLayoutEditor.ToLayout(built, frame, false, out shift, out outside);
+            var kept = FloorLayoutEditor.ToLayout(make(), frame, false, out shift, out outside);
 
             Assert.That(outside, Is.EqualTo(1));
             Assert.That(kept.floors[0].pieces.Count, Is.EqualTo(2), "nothing dropped until asked");
             Assert.That(kept.rooms.Count, Is.EqualTo(1));
 
-            built = Built(Piece(0f, 0f), Piece(5f * Tile, 0f, "r2"));
-            built.rooms.Add(Room("r2", 0, new Vector3(5f * Tile, 0f, 0f), 5f * Tile, -0.6f));
-
-            var dropped = FloorLayoutEditor.ToLayout(built, frame, true, out shift, out outside);
+            var dropped = FloorLayoutEditor.ToLayout(make(), frame, true, out shift, out outside);
 
             Assert.That(outside, Is.EqualTo(1));
             Assert.That(dropped.floors[0].pieces.Count, Is.EqualTo(1));
             Assert.That(dropped.rooms, Is.Empty, "a room with none of its pieces left goes with them");
             Assert.That(shift, Is.EqualTo(Vector3.zero), "the one piece left is at the origin already");
+
+            var areas = dropped.floors[0].blockAreas;
+            Assert.That(areas.Count, Is.EqualTo(1), "the dropped room's area and the area outside the frame go too");
+            Assert.That(areas[0].id, Is.EqualTo(10));
+            Assert.That(areas[0].area.Count, Is.EqualTo(1), "only its cells inside the frame");
+            Assert.That(areas[0].area[0], Is.EqualTo(Vector3.zero));
         }
 
         [Test]
