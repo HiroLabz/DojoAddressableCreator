@@ -1,0 +1,1305 @@
+{
+    "version": 2,
+    "worlds": [
+        {
+            "name": "Floor_Example",
+            "savedUtc": "2026-11-26T00:00:00.0000000Z",
+            "floors": [
+                {
+                    "index": 0,
+                    "pieces": [
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -4.2,
+                                "y": 0.0,
+                                "z": -3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -3.0,
+                                "y": 0.0,
+                                "z": -3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.0,
+                                "z": -3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -0.6,
+                                "y": 0.0,
+                                "z": -3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 0.6,
+                                "y": 0.0,
+                                "z": -3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.0,
+                                "z": -3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 3.0,
+                                "y": 0.0,
+                                "z": -3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 4.2,
+                                "y": 0.0,
+                                "z": -3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -4.2,
+                                "y": 0.0,
+                                "z": -1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -3.0,
+                                "y": 0.0,
+                                "z": -1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.0,
+                                "z": -1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -0.6,
+                                "y": 0.0,
+                                "z": -1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 0.6,
+                                "y": 0.0,
+                                "z": -1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.0,
+                                "z": -1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 3.0,
+                                "y": 0.0,
+                                "z": -1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 4.2,
+                                "y": 0.0,
+                                "z": -1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -4.2,
+                                "y": 0.0,
+                                "z": -0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -3.0,
+                                "y": 0.0,
+                                "z": -0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.0,
+                                "z": -0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -0.6,
+                                "y": 0.0,
+                                "z": -0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 0.6,
+                                "y": 0.0,
+                                "z": -0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.0,
+                                "z": -0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 3.0,
+                                "y": 0.0,
+                                "z": -0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 4.2,
+                                "y": 0.0,
+                                "z": -0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -4.2,
+                                "y": 0.0,
+                                "z": 0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -3.0,
+                                "y": 0.0,
+                                "z": 0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.0,
+                                "z": 0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -0.6,
+                                "y": 0.0,
+                                "z": 0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 0.6,
+                                "y": 0.0,
+                                "z": 0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.0,
+                                "z": 0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 3.0,
+                                "y": 0.0,
+                                "z": 0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 4.2,
+                                "y": 0.0,
+                                "z": 0.6
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -4.2,
+                                "y": 0.0,
+                                "z": 1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -3.0,
+                                "y": 0.0,
+                                "z": 1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.0,
+                                "z": 1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -0.6,
+                                "y": 0.0,
+                                "z": 1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 0.6,
+                                "y": 0.0,
+                                "z": 1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.0,
+                                "z": 1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 3.0,
+                                "y": 0.0,
+                                "z": 1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 4.2,
+                                "y": 0.0,
+                                "z": 1.8
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -4.2,
+                                "y": 0.0,
+                                "z": 3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -3.0,
+                                "y": 0.0,
+                                "z": 3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.0,
+                                "z": 3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": -0.6,
+                                "y": 0.0,
+                                "z": 3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 0.6,
+                                "y": 0.0,
+                                "z": 3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.0,
+                                "z": 3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 3.0,
+                                "y": 0.0,
+                                "z": 3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_wood_floor_tile",
+                            "name": "default/default_wood_floor_tile",
+                            "position": {
+                                "x": 4.2,
+                                "y": 0.0,
+                                "z": 3.0
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": true
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": -4.2,
+                                "y": 0.05,
+                                "z": 3.45
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": -3.0,
+                                "y": 0.05,
+                                "z": 3.45
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": -1.8,
+                                "y": 0.05,
+                                "z": 3.45
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": -0.6,
+                                "y": 0.05,
+                                "z": 3.45
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": 0.6,
+                                "y": 0.05,
+                                "z": 3.45
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": 1.8,
+                                "y": 0.05,
+                                "z": 3.45
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": 3.0,
+                                "y": 0.05,
+                                "z": 3.45
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": false
+                        },
+                        {
+                            "prefabId": "",
+                            "resource": "default/default_divider_wall_large",
+                            "name": "default/default_divider_wall_large",
+                            "position": {
+                                "x": 4.2,
+                                "y": 0.05,
+                                "z": 3.45
+                            },
+                            "rotation": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0,
+                                "w": 1.0
+                            },
+                            "scale": {
+                                "x": 1.0,
+                                "y": 1.0,
+                                "z": 1.0
+                            },
+                            "rotationSteps": 0,
+                            "isFloor": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "current": "Floor_Example"
+}

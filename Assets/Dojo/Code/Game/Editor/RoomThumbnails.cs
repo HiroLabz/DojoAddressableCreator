@@ -122,6 +122,27 @@ namespace Dojo.Game.Editor
 
             try
             {
+                return RenderInstance(preview, instance);
+            }
+            finally
+            {
+                Object.DestroyImmediate(instance);
+            }
+        }
+
+        /// <summary>
+        /// One object already in the scene, framed to its own bounds and left where it is for the
+        /// caller to destroy: what <see cref="FloorThumbnails"/> renders, since a layout has no prefab.
+        /// Null when there is nothing to see.
+        /// </summary>
+        public static byte[] RenderInstance(PreviewRenderUtility preview, GameObject instance)
+        {
+            if (instance == null)
+            {
+                return null;
+            }
+
+            {
                 instance.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
 
                 var renderers = instance.GetComponentsInChildren<Renderer>(true);
@@ -175,10 +196,6 @@ namespace Dojo.Game.Editor
                 {
                     Object.DestroyImmediate(rendered);
                 }
-            }
-            finally
-            {
-                Object.DestroyImmediate(instance);
             }
         }
 

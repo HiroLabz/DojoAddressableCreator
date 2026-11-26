@@ -32,7 +32,7 @@ namespace Dojo.Game.Editor
     {
         const string Pack = "Assets/Process/default";
 
-        static readonly string[] Tabs = { "World", "Assets", "Rooms" };
+        static readonly string[] Tabs = { "World", "Assets", "Rooms", "Floors" };
 
         int tab;
         Vector2 scroll;
@@ -47,7 +47,7 @@ namespace Dojo.Game.Editor
         readonly HashSet<string> ticked = new HashSet<string>();
         MvpKitSettings settings;
 
-        [MenuItem("Tools/Dojo/Content/Builder (World, Assets, Rooms)", false, 0)]
+        [MenuItem("Tools/Dojo/Content/Builder (World, Assets, Rooms, Floors)", false, 0)]
         public static void Open()
         {
             var window = GetWindow<DojoBuilderWindow>("Dojo Builder");
@@ -70,7 +70,8 @@ namespace Dojo.Game.Editor
             {
                 case 0: WorldTab(); break;
                 case 1: AssetsTab(); break;
-                default: RoomsTab(); break;
+                case 2: RoomsTab(); break;
+                default: FloorsTab(); break;
             }
 
             EditorGUILayout.EndScrollView();
@@ -495,6 +496,69 @@ namespace Dojo.Game.Editor
                 if (GUILayout.Button("Check room openings"))
                 {
                     RoomOpeningsMarker.Check();
+                }
+            }
+        }
+
+        // ── Floors ────────────────────────────────────────────────────────────────────────────
+
+        void FloorsTab()
+        {
+            var playing = EditorApplication.isPlayingOrWillChangePlaymode;
+
+            EditorGUILayout.HelpBox(
+                "Floor layouts are whole floors shipped in the pack, built on the Rooms system (ClickUp 14ze67xgf0v). A layout is " +
+                "a one-floor world file in " + FloorsPack.Folder + ": the pack's are default_floor_<name>.json, listed in floors.json; " +
+                "one made in the floor editor is floor_<name>.json until Promote puts it in the pack. The editor and the LAYOUTS tab follow.",
+                MessageType.None);
+
+            EditorGUILayout.LabelField("Made, not yet in the pack", EditorStyles.boldLabel);
+            var made = Directory.Exists(FloorsPack.Folder) ? Directory.GetFiles(FloorsPack.Folder, "floor_*.json") : new string[0];
+            if (made.Length == 0)
+            {
+                EditorGUILayout.LabelField("None.", EditorStyles.miniLabel);
+            }
+
+            foreach (var file in made)
+            {
+                var path = file.Replace('\\', '/');
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    EditorGUILayout.LabelField(Path.GetFileNameWithoutExtension(path));
+                    using (new EditorGUI.DisabledScope(playing))
+                    {
+                        if (GUILayout.Button("Promote", GUILayout.Width(80f)))
+                        {
+                            var problem = FloorsPack.Promote(path);
+                            EditorUtility.DisplayDialog("Promote floor layout", problem ?? "In the pack, and listed last in floors.json.", "OK");
+                        }
+                    }
+                }
+            }
+
+            EditorGUILayout.Space(8f);
+            var pack = Directory.Exists(FloorsPack.Folder) ? Directory.GetFiles(FloorsPack.Folder, "default_floor_*.json") : new string[0];
+            EditorGUILayout.LabelField("In the pack (" + pack.Length + ")", EditorStyles.boldLabel);
+            foreach (var file in pack)
+            {
+                var slug = Path.GetFileNameWithoutExtension(file);
+                var thumb = FloorsPack.ThumbnailFolder + "/" + slug.Replace("default_floor_", "floor_") + ".png";
+                EditorGUILayout.LabelField(slug + (File.Exists(thumb) ? string.Empty : "   (no thumbnail)"), EditorStyles.miniLabel);
+            }
+
+            var problems = Directory.Exists(FloorsPack.Folder) ? FloorsPack.CheckIndex(FloorsPack.Folder, FloorsPack.Pack) : new List<string>();
+            if (problems.Count > 0)
+            {
+                EditorGUILayout.Space(4f);
+                EditorGUILayout.HelpBox("floors.json does not match the files:\n" + string.Join("\n", problems), MessageType.Warning);
+            }
+
+            EditorGUILayout.Space(6f);
+            using (new EditorGUI.DisabledScope(playing))
+            {
+                if (GUILayout.Button("Generate floor thumbnails"))
+                {
+                    FloorThumbnails.Generate();
                 }
             }
         }
