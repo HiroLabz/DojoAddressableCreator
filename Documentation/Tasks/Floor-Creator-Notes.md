@@ -65,7 +65,7 @@ Each row names the Rooms piece it follows, so a reviewer can diff against someth
 | `FloorLayoutCatalogTests` | the game's `RoomCatalogTests` (11): index read, custom appended, address and icon resolution, name free |
 | `FloorLayoutEditorTests` | the game's `RoomEditorTests` (25) and `RoomEditorGuardsTests` (5): begin keeps and restores the world, save recentres and snaps, empty refused, size stepper trims, cancel writes nothing |
 | `FloorLayoutPlacerTests` | the creator's `RoomAsOneUnitTests` (13): footprint, align to tiles, and the new rule: a taken cell is skipped and the piece there is untouched, the rest is laid |
-| `FloorsPackTests` | `RoomsPack.CheckIndex` behaviour: a bad index entry is named, Editor/ entries are released |
+| `FloorsPackTests` | `RoomsPack.CheckIndex` behaviour: an entry whose file is missing, one under another pack, a missing thumbnail, a pack layout the index does not list and an index that cannot be read are each named; the group and folder are the Floors' own |
 
 ## Order
 

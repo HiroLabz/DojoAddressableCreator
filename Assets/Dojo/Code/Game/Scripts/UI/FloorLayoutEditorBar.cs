@@ -55,17 +55,21 @@ namespace Dojo.Game.UI
         /// <summary>The styled popups the dialogs ask with, as the room bar's.</summary>
         Dojo.Game.Managers.PopupPrefabs popups;
 
+        /// <summary>What is in hand, for refusing to end the layout under a carried piece or room.</summary>
+        Dojo.Game.Placement.PlacementController placement;
+
         // What this bar put away when a layout started being made, to bring back when it ends.
         readonly List<GameObject> putAway = new List<GameObject>();
         bool focused;
 
         [Inject]
         public void Construct(FloorLayoutEditor floorEditor, FloorLayoutCatalog floorCatalog, IDialogManager dialogManager,
-            Dojo.Game.Managers.PopupPrefabs popupPrefabs)
+            Dojo.Game.Placement.PlacementController placementController, Dojo.Game.Managers.PopupPrefabs popupPrefabs)
         {
             editor = floorEditor;
             catalog = floorCatalog;
             dialogs = dialogManager;
+            placement = placementController;
             popups = popupPrefabs;
 
             editor.Changed += Refresh;
@@ -170,6 +174,11 @@ namespace Dojo.Game.UI
 
         void OnClear()
         {
+            if (Carrying())
+            {
+                return;
+            }
+
             if (editor == null)
             {
                 return;
@@ -192,9 +201,25 @@ namespace Dojo.Game.UI
                 MessagePopup.Tone.Alert, editor.Clear);
         }
 
+        /// <summary>
+        /// True, said on the bar, while a piece or a room is carried. Ending the layout then would
+        /// rebuild the world under the controller's hands, and a carried room keeps
+        /// RoomPlacer.MovingAny set, which would make the real world's saves skip silently after.
+        /// </summary>
+        bool Carrying()
+        {
+            if ((placement != null && placement.IsBusy) || Dojo.Game.Placement.RoomPlacer.MovingAny)
+            {
+                Say("Put down what is in hand first.");
+                return true;
+            }
+
+            return false;
+        }
+
         void OnSave()
         {
-            if (editor == null || dialogs == null)
+            if (editor == null || dialogs == null || Carrying())
             {
                 return;
             }
@@ -246,7 +271,7 @@ namespace Dojo.Game.UI
 
         void OnCancel()
         {
-            if (editor == null)
+            if (editor == null || Carrying())
             {
                 return;
             }

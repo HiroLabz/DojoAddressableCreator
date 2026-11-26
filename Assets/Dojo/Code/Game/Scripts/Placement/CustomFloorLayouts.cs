@@ -270,9 +270,6 @@ namespace Dojo.Game.Placement
             Remove(json);
             Remove(png);
 
-            // And off the pack's layout list, in case an earlier promotion put it there under this name.
-            RemoveFromIndex(slug);
-
             Sprite sprite;
             if (icons.TryGetValue(address, out sprite))
             {
@@ -553,8 +550,14 @@ namespace Dojo.Game.Placement
                 tag = FloorLayoutEntry.PromotedTag,
             };
 
-            // Onto the end of the list, off it under the made layout's own address first.
-            ListAtEnd(ListPath, entry, PackAddressFor(slug));
+            // Onto the end of the list. The file is renamed by now, so a list that cannot be
+            // written is the problem reported: the layout is in the pack's folder but not offered.
+            var listing = ListAtEnd(ListPath, entry);
+
+            if (listing != null)
+            {
+                return "Renamed to " + PackFilePrefix + x + ".json, but " + IndexFile + " could not be updated, so the pack does not list it: " + listing;
+            }
 
             if (toAsset != null)
             {
@@ -580,55 +583,28 @@ namespace Dojo.Game.Placement
 
         /// <summary>
         /// Puts <paramref name="entry"/> on the end of a layout list file, taking off any entry at
-        /// its address or at <paramref name="replaces"/> first. A list that is not there yet is made.
+        /// its address first. A list that is not there yet is made. Null when done; otherwise why
+        /// the list was left as it was.
         /// </summary>
-        static void ListAtEnd(string path, FloorLayoutEntry entry, string replaces)
+        static string ListAtEnd(string path, FloorLayoutEntry entry)
         {
-            FloorIndex index;
-
             try
             {
-                index = File.Exists(path) ? JsonUtility.FromJson<FloorIndex>(File.ReadAllText(path)) ?? new FloorIndex() : new FloorIndex();
+                var index = File.Exists(path) ? JsonUtility.FromJson<FloorIndex>(File.ReadAllText(path)) ?? new FloorIndex() : new FloorIndex();
                 index.floors = index.floors ?? new List<FloorLayoutEntry>();
+
+                index.floors.RemoveAll(f => f != null && string.Equals(f.address, entry.address, StringComparison.Ordinal));
+                index.floors.Add(entry);
+
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+                File.WriteAllText(path, JsonUtility.ToJson(index, true));
+                return null;
             }
             catch (Exception exception)
             {
-                Debug.LogError("[Floors] " + path + " could not be read, so it was left as it is: " + exception.Message);
-                return;
+                Debug.LogError("[Floors] " + path + " could not be updated, so it was left as it is: " + exception.Message);
+                return exception.Message;
             }
-
-            index.floors.RemoveAll(f => f != null
-                && (string.Equals(f.address, entry.address, StringComparison.Ordinal)
-                    || string.Equals(f.address, replaces, StringComparison.Ordinal)));
-            index.floors.Add(entry);
-
-            Directory.CreateDirectory(Path.GetDirectoryName(path));
-            File.WriteAllText(path, JsonUtility.ToJson(index, true));
-        }
-
-        /// <summary>Takes a layout off the layout list, and has the editor take the list in again.</summary>
-        void RemoveFromIndex(string slug)
-        {
-            if (!File.Exists(ListPath))
-            {
-                return;
-            }
-
-            var index = ReadIndex();
-            if (index == null)
-            {
-                return;
-            }
-
-            var address = PackAddressFor(slug);
-
-            if (index.floors.RemoveAll(f => f != null && string.Equals(f.address, address, StringComparison.Ordinal)) == 0)
-            {
-                return;
-            }
-
-            File.WriteAllText(ListPath, JsonUtility.ToJson(index, true));
-            ImportList();
         }
 
         /// <summary>

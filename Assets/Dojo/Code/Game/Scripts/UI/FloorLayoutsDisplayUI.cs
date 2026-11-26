@@ -124,9 +124,11 @@ namespace Dojo.Game.UI
                 return;
             }
 
-            if (!editor.Begin())
+            string problem;
+
+            if (!editor.Begin(out problem))
             {
-                Say("The floor editor is not set up in this scene. Run Tools > Dojo > Build Floor Editor and save the scene.");
+                Say(problem);
             }
         }
 

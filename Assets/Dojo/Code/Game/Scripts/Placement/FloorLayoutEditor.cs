@@ -87,10 +87,19 @@ namespace Dojo.Game.Placement
         /// <summary>
         /// Keeps the world and puts an empty floor in its place, with the frame drawn on it. False,
         /// having changed nothing, when the scene has no floor bar - without its SAVE LAYOUT and
-        /// CANCEL there would be no way back.
+        /// CANCEL there would be no way back - or when the room editor holds the world.
         /// </summary>
         public bool Begin()
         {
+            string problem;
+            return Begin(out problem);
+        }
+
+        /// <summary>As <see cref="Begin()"/>, saying in <paramref name="problem"/> why it refused.</summary>
+        public bool Begin(out string problem)
+        {
+            problem = null;
+
             if (IsEditing)
             {
                 return true;
@@ -98,6 +107,7 @@ namespace Dojo.Game.Placement
 
             if (UnityEngine.Object.FindObjectsByType<Dojo.Game.UI.FloorLayoutEditorBar>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length == 0)
             {
+                problem = "The floor editor is not set up in this scene. Run Tools > Dojo > Build Floor Editor and save the scene.";
                 Debug.LogError("[Floors] There is no floor bar in the scene, so a layout cannot be made: there would "
                     + "be no SAVE LAYOUT or CANCEL to get back to the world. Run Tools > Dojo > Build Floor Editor and "
                     + "save the scene.");
@@ -108,6 +118,7 @@ namespace Dojo.Game.Placement
             // Two editors nested would each keep the other's work as "the world".
             if (world.SavingSuspended)
             {
+                problem = "The room editor holds the world. Save or cancel the room first.";
                 Debug.LogWarning("[Floors] The world is held by the room editor, so a floor layout cannot be made now. Save or cancel the room first.");
                 return false;
             }
@@ -182,9 +193,8 @@ namespace Dojo.Game.Placement
                 return false;
             }
 
-            if (!Begin())
+            if (!Begin(out problem))
             {
-                problem = "The floor editor is not set up in this scene. Run Tools > Dojo > Build Floor Editor and save the scene.";
                 return false;
             }
 
@@ -274,7 +284,11 @@ namespace Dojo.Game.Placement
                 && position.z >= frame.yMin - grace && position.z <= frame.yMax + grace;
         }
 
-        /// <summary>How many pieces stand outside the frame now: what a save would drop.</summary>
+        /// <summary>
+        /// How many pieces stand outside the frame now: what a save would drop. Counted as the save
+        /// counts, on the world as captured, so only what is saved as a piece - not every
+        /// FurniturePiece on the floor, which would count an agent or an elevator stop too.
+        /// </summary>
         public int CountOutside()
         {
             if (!IsEditing)
@@ -282,19 +296,9 @@ namespace Dojo.Game.Placement
                 return 0;
             }
 
-            var outside = 0;
-            var pieces = new List<Transform>();
-            Storeys.AddPiecesUnder(storeys.Floor(0), pieces);
-            var frame = Frame;
-
-            foreach (var child in pieces)
-            {
-                if (child.GetComponent<FurniturePiece>() != null && !Inside(frame, storeys.ToFloor(0, child.position)))
-                {
-                    outside++;
-                }
-            }
-
+            Vector3 shift;
+            int outside;
+            ToLayout(world.Capture(), Frame, false, out shift, out outside);
             return outside;
         }
 
@@ -453,8 +457,9 @@ namespace Dojo.Game.Placement
         /// What was laid, as a layout: the ground floor's pieces, areas and rooms, centred on the
         /// layout's own origin in whole grid cells. Pieces outside <paramref name="frame"/> are
         /// counted in <paramref name="outside"/> and left out when <paramref name="dropOutside"/>;
-        /// a room with none of its pieces left goes with them. Agents, managers, elevators and
-        /// other floors are not part of a layout.
+        /// a room with none of its pieces left goes with them, and so do its areas. An area keeps
+        /// only its cells inside the frame, and goes when none are. Agents, managers, elevators
+        /// and other floors are not part of a layout.
         /// </summary>
         public static WorldSave ToLayout(WorldSave built, Rect frame, bool dropOutside, out Vector3 shift, out int outside)
         {
@@ -490,9 +495,8 @@ namespace Dojo.Game.Placement
                 ground.pieces.Add(piece);
             }
 
-            ground.blockAreas.AddRange(source.blockAreas);
-
-            // The rooms on the ground floor, kept as rooms: only those a piece still names.
+            // The rooms on the ground floor, kept as rooms: only those a piece still names. A
+            // room dropped whole takes its areas with it.
             var named = new HashSet<string>(StringComparer.Ordinal);
             foreach (var piece in ground.pieces)
             {
@@ -502,15 +506,56 @@ namespace Dojo.Game.Placement
                 }
             }
 
+            var droppedAreas = new HashSet<int>();
+
             if (built.rooms != null)
             {
                 foreach (var room in built.rooms)
                 {
-                    if (room != null && room.floor == 0 && !string.IsNullOrEmpty(room.id) && named.Contains(room.id))
+                    if (room == null || room.floor != 0 || string.IsNullOrEmpty(room.id))
+                    {
+                        continue;
+                    }
+
+                    if (named.Contains(room.id))
                     {
                         layout.rooms.Add(room);
                     }
+                    else if (room.areaIds != null)
+                    {
+                        foreach (var id in room.areaIds)
+                        {
+                            droppedAreas.Add(id);
+                        }
+                    }
                 }
+            }
+
+            // The areas: not a dropped room's, and only the cells inside the frame - an area with
+            // none left goes too. A layout carries no area it has no floor for.
+            foreach (var area in source.blockAreas)
+            {
+                if (area == null || area.area == null || droppedAreas.Contains(area.id))
+                {
+                    continue;
+                }
+
+                var inside = area.area.FindAll(cell => Inside(frame, cell));
+
+                if (inside.Count == 0)
+                {
+                    continue;
+                }
+
+                if (inside.Count == area.area.Count)
+                {
+                    ground.blockAreas.Add(area);
+                    continue;
+                }
+
+                var trimmed = JsonUtility.FromJson<WorldSave.SavedBlockArea>(JsonUtility.ToJson(area));
+                trimmed.area = inside;
+                ground.blockAreas.Add(trimmed);
             }
 
             // A piece naming a room that is not on this floor stands on its own.
