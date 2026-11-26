@@ -14,8 +14,10 @@ namespace Dojo.Game.Placement
     /// <see cref="RoomEditor"/> for floors (ClickUp 14ze67xgf0v), without the parts a layout has no
     /// use for: no openings, no area of its own, no department, nothing refused on lift. What it has
     /// instead is a size: a frame of <see cref="Columns"/> × <see cref="Rows"/> floor tiles drawn on
-    /// the ground as a guide, which the SIZE control changes. A piece laid outside the frame is
-    /// counted (<see cref="CountOutside"/>) and, if the designer agrees on save, dropped.
+    /// the ground as a guide, which the SIZE control changes. The frame follows what is laid: its
+    /// centre is the floor tiles' own (snapped to the grid, the same centre the save uses), so it
+    /// measures size, never position (Jacob, 26 Nov). A piece laid outside the frame is counted
+    /// (<see cref="CountOutside"/>) and, if the designer agrees on save, dropped.
     /// <para>
     /// A layout keeps its rooms as rooms: a room placed from the Rooms tab is saved with its
     /// <see cref="WorldSave.SavedRoom"/>, its pieces still named to it and its areas, so placing
@@ -129,6 +131,7 @@ namespace Dojo.Game.Placement
             editing = null;
             Columns = DefaultColumns;
             Rows = DefaultRows;
+            Centre = Vector2.zero;
 
             world.Show(Blank(), null);
 
@@ -225,6 +228,7 @@ namespace Dojo.Game.Placement
             FitSize(layout, out columns, out rows);
             Columns = columns;
             Rows = rows;
+            Centre = Vector2.zero;
 
             foreach (var rig in Rigs())
             {
@@ -252,8 +256,96 @@ namespace Dojo.Game.Placement
             Raise(SizeChanged);
         }
 
-        /// <summary>The frame as it stands, on the ground floor's own plane: x across, y along z.</summary>
-        public Rect Frame => FrameFor(Columns, Rows);
+        /// <summary>
+        /// Where the frame is centred: on the floor tiles laid so far (or on everything, with no
+        /// tiles), snapped to the grid as <see cref="ToLayout"/> centres the file; the origin while
+        /// the floor is empty. Read again by <see cref="RefreshFrame"/>.
+        /// </summary>
+        public Vector2 Centre { get; private set; }
+
+        /// <summary>The frame as it stands, centred on <see cref="Centre"/>, on the ground floor's own plane: x across, y along z.</summary>
+        public Rect Frame
+        {
+            get
+            {
+                var frame = FrameFor(Columns, Rows);
+                frame.position += Centre;
+                return frame;
+            }
+        }
+
+        /// <summary>
+        /// The centre of what stands on the ground floor now, by the rule the file is centred with:
+        /// the floor tiles when there are any, else every piece; snapped to the grid.
+        /// </summary>
+        Vector2 MeasureCentre()
+        {
+            if (!IsEditing)
+            {
+                return Vector2.zero;
+            }
+
+            var pieces = new List<Transform>();
+            Storeys.AddPiecesUnder(storeys.Floor(0), pieces);
+
+            var anyTile = false;
+            foreach (var child in pieces)
+            {
+                var piece = child.GetComponent<FurniturePiece>();
+                if (piece != null && piece.IsFloor)
+                {
+                    anyTile = true;
+                    break;
+                }
+            }
+
+            var min = new Vector2(float.MaxValue, float.MaxValue);
+            var max = new Vector2(float.MinValue, float.MinValue);
+            var any = false;
+
+            foreach (var child in pieces)
+            {
+                var piece = child.GetComponent<FurniturePiece>();
+
+                if (piece == null || (anyTile && !piece.IsFloor))
+                {
+                    continue;
+                }
+
+                var at = storeys.ToFloor(0, child.position);
+                min = Vector2.Min(min, new Vector2(at.x, at.z));
+                max = Vector2.Max(max, new Vector2(at.x, at.z));
+                any = true;
+            }
+
+            if (!any)
+            {
+                return Vector2.zero;
+            }
+
+            var centre = (min + max) * 0.5f;
+            return new Vector2(Mathf.Round(centre.x / Snap) * Snap, Mathf.Round(centre.y / Snap) * Snap);
+        }
+
+        /// <summary>
+        /// Moves the frame to where what is laid now stands, when that has changed. Called every
+        /// frame by the bar while a plan is being made; cheap enough for that.
+        /// </summary>
+        public void RefreshFrame()
+        {
+            if (!IsEditing)
+            {
+                return;
+            }
+
+            var centre = MeasureCentre();
+
+            if ((centre - Centre).sqrMagnitude > 0.0001f)
+            {
+                Centre = centre;
+                ShowFrame();
+            }
+        }
 
         /// <summary>A frame of so many tiles, centred on the origin.</summary>
         public static Rect FrameFor(int columns, int rows)
@@ -282,6 +374,8 @@ namespace Dojo.Game.Placement
                 return 0;
             }
 
+            Centre = MeasureCentre();
+
             var outside = 0;
             var pieces = new List<Transform>();
             Storeys.AddPiecesUnder(storeys.Floor(0), pieces);
@@ -307,6 +401,7 @@ namespace Dojo.Game.Placement
             }
 
             world.Show(Blank(), null);
+            Centre = Vector2.zero;
             ShowFrame();
             Debug.Log("[Floors] The floor was cleared.");
             Raise(Changed);
@@ -355,6 +450,9 @@ namespace Dojo.Game.Placement
             }
 
             var built = world.Capture();
+
+            // The frame where the laid tiles stand, as the designer sees it.
+            Centre = MeasureCentre();
 
             Vector3 shift;
             int outside;

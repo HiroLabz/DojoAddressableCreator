@@ -72,7 +72,7 @@ A floor plan (a "floor layout" in the code) is a whole floor shipped in the pack
 3. A layout made in the floor editor is `floor_<name>.json`; **Promote** puts it in the pack and on the list.
 
 ### Making a floor plan in Play
-4. Inventory ▸ **FLOOR** ▸ the **FLOOR PLANS** side of the switch at the top ▸ **+ CREATE FLOOR PLAN**: the world is kept and a blank floor takes its place, with an amber frame of 8 × 6 tiles drawn on it. **SIZE** opens the strip that steps the frame's columns and rows (4 to 24).
+4. Inventory ▸ **FLOOR** ▸ the **FLOOR PLANS** side of the switch at the top ▸ **+ CREATE FLOOR PLAN**: the world is kept and a blank floor takes its place, with an amber frame of 8 × 6 tiles drawn on it. **SIZE** opens the strip that steps the frame's columns and rows (4 to 24). The frame follows what you lay: it centres itself on your floor tiles, so it measures the plan's size, not where on the blank floor you built it.
 5. Lay the floor out from the other tabs, the Rooms tab included: a room placed here is saved as a room, so it comes back as one. The FLOOR tab shows tiles only meanwhile.
 6. **SAVE FLOOR PLAN** asks for a name. Pieces outside the frame are counted and, if you agree, dropped. **CANCEL** throws it away and brings the world back. **CLEAR** empties the floor.
 7. The card shows the plan with its thumbnail and size in tiles. **EDIT** opens it again; **DELETE** and **PROMOTE** are the same as a room's.

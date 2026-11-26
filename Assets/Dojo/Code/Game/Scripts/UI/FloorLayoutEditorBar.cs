@@ -107,6 +107,15 @@ namespace Dojo.Game.UI
             }
         }
 
+        /// <summary>The frame follows what is laid: measured again each frame while a plan is being made.</summary>
+        void Update()
+        {
+            if (editor != null && editor.IsEditing)
+            {
+                editor.RefreshFrame();
+            }
+        }
+
         /// <summary>Shown only while a layout is being made, with everything else put away.</summary>
         void Refresh()
         {
