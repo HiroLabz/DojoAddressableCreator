@@ -49,7 +49,11 @@ namespace Dojo.Game.Placement
             /// </summary>
             Room,
 
-            /// <summary>A floor layout from the FLOORS tab is following the cursor as a ghost; never refused.</summary>
+            /// <summary>
+            /// A floor plan from the FLOOR tab is following the cursor as a ghost. Refused in one
+            /// case only, where a tile of it would lie on floor already there; see
+            /// <c>PlacementController.Layouts.cs</c>.
+            /// </summary>
             Layout,
         }
 

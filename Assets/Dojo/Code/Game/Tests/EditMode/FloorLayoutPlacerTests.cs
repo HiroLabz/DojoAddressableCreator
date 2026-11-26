@@ -112,6 +112,28 @@ namespace Dojo.Game.Tests.EditMode
         }
 
         [Test]
+        public void Overlaps_AWallOrFurnitureByAnyAmount_AFloorTileOrAnAreaOnlyBeyondTheSlack()
+        {
+            var taken = new List<RoomPlacer.Taken>
+            {
+                new RoomPlacer.Taken(Rect.MinMaxRect(0f, 0f, 1.2f, 1.2f), "default_wood_floor_tile", PlacementGrid.Step, true),
+                new RoomPlacer.Taken(Rect.MinMaxRect(2f, 0f, 2.1f, 1.2f), "default_divider_wall_large", PlacementGrid.Step),
+                new RoomPlacer.Taken(Rect.MinMaxRect(4f, 0f, 5f, 1f), "default_dual_workstation_desk"),
+                new RoomPlacer.Taken(Rect.MinMaxRect(6f, 0f, 8f, 2f), "the Sales area", PlacementGrid.Step),
+            };
+            string blocker;
+
+            Assert.IsFalse(FloorLayoutPlacer.Overlaps(Rect.MinMaxRect(1.1f, 0f, 1.3f, 1.2f), taken, out blocker), "a wall a tenth over a floor tile's edge is reached over");
+            Assert.IsTrue(FloorLayoutPlacer.Overlaps(Rect.MinMaxRect(0.5f, 0f, 1.7f, 1.2f), taken, out blocker), "half over a floor tile");
+            Assert.IsTrue(FloorLayoutPlacer.Overlaps(Rect.MinMaxRect(2f, 0f, 2.1f, 1.2f), taken, out blocker), "a wall exactly on a standing wall");
+            Assert.That(blocker, Is.EqualTo("default_divider_wall_large"));
+            Assert.IsFalse(FloorLayoutPlacer.Overlaps(Rect.MinMaxRect(2.1f, 0f, 2.2f, 1.2f), taken, out blocker), "a wall flush against a standing wall is touching");
+            Assert.IsTrue(FloorLayoutPlacer.Overlaps(Rect.MinMaxRect(4.9f, 0f, 5.5f, 1f), taken, out blocker), "a tenth over furniture");
+            Assert.IsFalse(FloorLayoutPlacer.Overlaps(Rect.MinMaxRect(7.9f, 0f, 9f, 1f), taken, out blocker), "a tenth over a named area is reached over");
+            Assert.IsFalse(FloorLayoutPlacer.Overlaps(Rect.MinMaxRect(9f, 9f, 10f, 10f), null, out blocker));
+        }
+
+        [Test]
         public void CellIsTaken_ByAnAreaOrFurniture_NotByAFloorTileOrAWall()
         {
             var taken = new List<RoomPlacer.Taken>

@@ -359,7 +359,9 @@ namespace Dojo.Game.UI
 
                 if (plan == null)
                 {
+                    // Not cached: the file may be mended, or the content arrive, before the list changes.
                     Debug.LogWarning("[Floors] '" + layout.name + "' cannot be laid: " + problem, this);
+                    return null;
                 }
 
                 plans[layout.address] = plan;

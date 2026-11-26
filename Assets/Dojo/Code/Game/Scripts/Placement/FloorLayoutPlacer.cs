@@ -148,6 +148,44 @@ namespace Dojo.Game.Placement
         }
 
         /// <summary>
+        /// True when a piece of the plan standing on <paramref name="placed"/> would lie on
+        /// something already there that it must not take over: a standing wall, furniture, or any
+        /// other piece, measured to the touching tolerance alone. A floor tile holds no cells and
+        /// a named area is not a piece, so a wall may reach over their edge as a room's walls do;
+        /// over a standing wall or furniture it may not, by even the room rule's slack - laid
+        /// there, it would claim their cells, and deleting it later would free them under the
+        /// piece that was there first (Bob's review of #33).
+        /// </summary>
+        public static bool Overlaps(Rect placed, List<RoomPlacer.Taken> taken, out string blocker)
+        {
+            blocker = null;
+
+            if (taken == null)
+            {
+                return false;
+            }
+
+            foreach (var thing in taken)
+            {
+                var reachedOver = thing.Ground || IsArea(thing);
+                var allowed = RoomPlacer.Tolerance + (reachedOver ? thing.Slack : 0f);
+                var inner = Rect.MinMaxRect(placed.xMin + allowed, placed.yMin + allowed,
+                    placed.xMax - allowed, placed.yMax - allowed);
+
+                if (inner.Overlaps(thing.Rect))
+                {
+                    blocker = thing.What;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        static bool IsArea(RoomPlacer.Taken thing)
+            => !string.IsNullOrEmpty(thing.What) && thing.What.EndsWith(" area", System.StringComparison.Ordinal);
+
+        /// <summary>
         /// True when an area cell at <paramref name="centre"/> would lie on something the layout
         /// must leave alone: a named area, or furniture. Floor tiles and walls are not in an area's
         /// way, as they are not in a room's.
@@ -295,7 +333,7 @@ namespace Dojo.Game.Placement
                 Bounds bounds;
                 string blocker;
                 var clash = RoomPlacer.TrySolidBounds(child.gameObject, out bounds)
-                    && !RoomPlacer.IsFree(Rect.MinMaxRect(bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), taken, out blocker);
+                    && Overlaps(Rect.MinMaxRect(bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), taken, out blocker);
 
                 foreach (var renderer in child.GetComponentsInChildren<Renderer>(true))
                 {

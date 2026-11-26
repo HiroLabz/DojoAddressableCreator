@@ -644,6 +644,7 @@ namespace Dojo.Game.Placement
             // Every piece built where it would stand, then the ones on taken spots taken away again:
             // a piece's ground is only known from its colliders once it stands.
             var built = new List<FurniturePiece>();
+            var hiddenInPlan = new List<FurniturePiece>();
             var ground = layout.floors.Find(f => f != null && f.index == 0);
 
             foreach (var saved in ground != null ? ground.pieces : new List<WorldSave.SavedPiece>())
@@ -664,6 +665,7 @@ namespace Dojo.Game.Placement
                     rotationSteps = PlacementGrid.Normalise(saved.rotationSteps + steps),
                     isFloor = saved.isFloor,
                     room = saved.room,
+                    hidden = saved.hidden,
                 };
 
                 RoomContainer room;
@@ -673,6 +675,11 @@ namespace Dojo.Game.Placement
                 if (piece != null)
                 {
                     built.Add(piece);
+
+                    if (saved.hidden)
+                    {
+                        hiddenInPlan.Add(piece);
+                    }
                 }
                 else
                 {
@@ -688,18 +695,28 @@ namespace Dojo.Game.Placement
                 Bounds bounds;
                 string blocker;
 
+                // Skipped where it would lie on anything standing but ground: a wall exactly on a
+                // standing wall is a clash, not a fit (FloorLayoutPlacer.Overlaps).
                 if (RoomPlacer.TrySolidBounds(piece.gameObject, out bounds)
-                    && !RoomPlacer.IsFree(Rect.MinMaxRect(bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), taken, out blocker))
+                    && FloorLayoutPlacer.Overlaps(Rect.MinMaxRect(bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), taken, out blocker))
                 {
                     // Off its floor as well as switched off: Destroy waits for the end of the frame.
                     piece.gameObject.SetActive(false);
                     piece.transform.SetParent(null, true);
                     UnityEngine.Object.Destroy(piece.gameObject);
+                    hiddenInPlan.Remove(piece);
                     result.Skipped++;
                     continue;
                 }
 
                 kept.Add(piece);
+            }
+
+            // Walls the plan saved turned off: measured where they stand, then turned off again, as
+            // a load does, before anything claims cells.
+            foreach (var piece in hiddenInPlan)
+            {
+                RoomWalls.Hide(piece, null);
             }
 
             result.Built = kept.Count;
@@ -723,14 +740,17 @@ namespace Dojo.Game.Placement
 
             result.Rooms = live.Count;
 
-            // Each room's walls where it meets what is standing, as a placed room's are (RoomWalls).
+            // Each room's own walls where it meets what is standing, as a placed room's are
+            // (RoomWalls): the ones along a wall already there turned off, and below, the ones
+            // across a neighbour's entrance. Not RoomWalls.CutAt: that turns off the standing walls
+            // a room's entrance opens through, and a floor plan changes nothing that was already
+            // there (Bob's review of #33).
             var worldRoot = floorRoot != null ? floorRoot.parent : null;
 
             foreach (var container in live)
             {
                 Physics.SyncTransforms();
                 RoomWalls.HideShared(container, null);
-                RoomWalls.CutAt(container, placement);
             }
 
             Physics.SyncTransforms();
