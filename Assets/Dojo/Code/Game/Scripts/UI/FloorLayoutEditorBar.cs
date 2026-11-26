@@ -241,7 +241,7 @@ namespace Dojo.Game.UI
                 PopupAsk.Confirm(popups, dialogs, outside + (outside == 1 ? " piece is" : " pieces are") + " outside the frame",
                     "They stand outside the " + editor.Columns + " × " + editor.Rows + " frame and will be dropped from the floor plan. "
                     + "The rest is saved as '" + name.Trim() + "'.", "SAVE", MessagePopup.Tone.Alert, () => SaveAs(name, true));
-            });
+            }, null, "floor plan");
         }
 
         void SaveAs(string name, bool dropOutside)
