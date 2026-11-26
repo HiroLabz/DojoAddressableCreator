@@ -228,7 +228,7 @@ namespace Dojo.Game.Placement
             if (File.Exists(Path.Combine(ThumbnailFolder, slug + ".png"))
                 || File.Exists(Path.Combine(folder, PackFilePrefix + slug.Substring(FilePrefix.Length) + ".json")))
             {
-                problem = "'" + name.Trim() + "' is taken by one of the pack's layouts. Give the layout another name.";
+                problem = "'" + name.Trim() + "' is taken by one of the pack's floor plans. Give the floor plan another name.";
                 return false;
             }
 
@@ -246,7 +246,7 @@ namespace Dojo.Game.Placement
 
             if (!IsCustom(address))
             {
-                problem = "Only layouts you made can be deleted. The pack's own layouts stay.";
+                problem = "Only floor plans you made can be deleted. The pack's own floor plans stay.";
                 return false;
             }
 
@@ -254,7 +254,7 @@ namespace Dojo.Game.Placement
 
             if (slug.IndexOfAny(new[] { '/', '\\', '.' }) >= 0)
             {
-                problem = "'" + address + "' is not one of the layouts you made.";
+                problem = "'" + address + "' is not one of the floor plans you made.";
                 return false;
             }
 
@@ -263,7 +263,7 @@ namespace Dojo.Game.Placement
 
             if (!File.Exists(json))
             {
-                problem = "That layout is already gone.";
+                problem = "That floor plan is already gone.";
                 return false;
             }
 
@@ -382,7 +382,7 @@ namespace Dojo.Game.Placement
 
             if (entry == null || string.IsNullOrEmpty(entry.address) || IsCustom(entry.address))
             {
-                problem = "That is not one of the pack's layouts.";
+                problem = "That is not one of the pack's floor plans.";
                 return false;
             }
 
@@ -423,7 +423,7 @@ namespace Dojo.Game.Placement
             Announce();
             return true;
 #else
-            problem = "The pack's own layouts can only be edited in the editor. Save it under a new name to keep a copy.";
+            problem = "The pack's own floor plans can only be edited in the editor. Save it under a new name to keep a copy.";
             return false;
 #endif
         }
@@ -473,7 +473,7 @@ namespace Dojo.Game.Placement
         {
             if (!IsCustom(address))
             {
-                problem = "Only a layout you made can be promoted; this one is already the pack's.";
+                problem = "Only a floor plan you made can be promoted; this one is already the pack's.";
                 return false;
             }
 
@@ -503,7 +503,7 @@ namespace Dojo.Game.Placement
             if (string.IsNullOrEmpty(slug) || !slug.StartsWith(FilePrefix, StringComparison.Ordinal)
                 || slug.IndexOfAny(new[] { '/', '\\', '.' }) >= 0)
             {
-                return "Only a layout made in the floor editor - a floor_<name> file - can be promoted.";
+                return "Only a floor plan made in the floor plan editor - a floor_<name> file - can be promoted.";
             }
 
             var x = slug.Substring(FilePrefix.Length);
@@ -512,12 +512,12 @@ namespace Dojo.Game.Placement
 
             if (!File.Exists(from))
             {
-                return "That layout is gone.";
+                return "That floor plan is gone.";
             }
 
             if (File.Exists(to))
             {
-                return "The pack already has a layout called " + PackFilePrefix + x + ".";
+                return "The pack already has a floor plan called " + PackFilePrefix + x + ".";
             }
 
             var layout = ReadFile(from);
@@ -574,7 +574,7 @@ namespace Dojo.Game.Placement
 
             return null;
 #else
-            return "Layouts can only be promoted to the pack in the editor.";
+            return "Floor plans can only be promoted to the pack in the editor.";
 #endif
         }
 

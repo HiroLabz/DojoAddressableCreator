@@ -181,7 +181,7 @@ namespace Dojo.Game.Placement
 
             if (IsEditing)
             {
-                problem = "A floor layout is already being made. Save it or cancel first.";
+                problem = "A floor plan is already being made. Save it or cancel first.";
                 return false;
             }
 
@@ -208,7 +208,7 @@ namespace Dojo.Game.Placement
 
             if (!IsEditing)
             {
-                problem = "Start making a floor layout first.";
+                problem = "Start making a floor plan first.";
                 return false;
             }
 
@@ -216,7 +216,7 @@ namespace Dojo.Game.Placement
 
             if (layout == null)
             {
-                problem = "That layout could not be read.";
+                problem = "That floor plan could not be read.";
                 return false;
             }
 
@@ -418,13 +418,13 @@ namespace Dojo.Game.Placement
 
             if (!IsEditing)
             {
-                problem = "There is no floor layout being made.";
+                problem = "There is no floor plan being made.";
                 return false;
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                problem = "Give the layout a name.";
+                problem = "Give the floor plan a name.";
                 return false;
             }
 
@@ -434,7 +434,7 @@ namespace Dojo.Game.Placement
 
             if (overPack && !Application.isEditor)
             {
-                problem = "The pack's own layouts can only be changed in the editor. Save it under a new name to keep a copy.";
+                problem = "The pack's own floor plans can only be changed in the editor. Save it under a new name to keep a copy.";
                 return false;
             }
 
@@ -445,7 +445,7 @@ namespace Dojo.Game.Placement
 
             if (IsEmpty)
             {
-                problem = "Nothing has been laid yet, so there is no layout to save.";
+                problem = "Nothing has been laid yet, so there is no floor plan to save.";
                 return false;
             }
 
@@ -466,7 +466,7 @@ namespace Dojo.Game.Placement
 
             if (layout.PieceCount() == 0)
             {
-                problem = "Only what is on the ground floor, inside the frame, is saved, and nothing is laid there.";
+                problem = "Only what is on the ground floor, inside the frame, is saved as the floor plan, and nothing is laid there.";
                 return false;
             }
 

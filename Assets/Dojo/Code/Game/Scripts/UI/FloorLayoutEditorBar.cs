@@ -248,9 +248,18 @@ namespace Dojo.Game.UI
         {
             string problem;
 
-            if (!editor.Save(name, dropOutside, out problem))
+            if (editor.Save(name, dropOutside, out problem))
             {
-                Say(problem);
+                return;
+            }
+
+            // Said in a popup as well as on the bar, and the name asked for again, so a taken name
+            // is retyped rather than hunted for (Jacob, 26 Nov; placeholder wording for now).
+            Say(problem);
+
+            if (dialogs != null)
+            {
+                PopupAsk.Confirm(popups, dialogs, "Not saved", problem, "OK", MessagePopup.Tone.Alert, OnSave);
             }
         }
 
