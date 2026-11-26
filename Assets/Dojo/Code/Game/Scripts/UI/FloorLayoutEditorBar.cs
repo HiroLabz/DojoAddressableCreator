@@ -9,8 +9,9 @@ using VContainer;
 namespace Dojo.Game.UI
 {
     /// <summary>
-    /// The bar shown while a floor layout is being made: what is going on, SIZE for the frame,
-    /// CLEAR, SAVE LAYOUT and CANCEL. <see cref="RoomEditorBar"/> for floors (ClickUp 14ze67xgf0v).
+    /// The bar shown while a floor plan is being made: what is going on, SIZE for the frame,
+    /// CLEAR, SAVE FLOOR PLAN and CANCEL. <see cref="RoomEditorBar"/> for floors (ClickUp 14ze67xgf0v).
+    /// "Floor plan" is what the designer reads; the code keeps "layout" (Bob and Jacob, 26 Nov).
     /// </summary>
     /// <remarks>
     /// Laying things out is the inventory's, exactly as in the world, the Rooms tab included; this
@@ -126,8 +127,8 @@ namespace Dojo.Game.UI
             if (editing)
             {
                 Say(string.IsNullOrEmpty(editor.EditingName)
-                    ? "Lay out a whole floor with the inventory - tiles, walls, rooms and pieces - inside the frame, then save it."
-                    : "Editing '" + editor.EditingName + "'. Save it under its name to replace it.");
+                    ? "Lay out a whole floor with the inventory - tiles, walls, rooms and pieces - inside the frame, then save it as a floor plan."
+                    : "Editing the floor plan '" + editor.EditingName + "'. Save it under its name to replace it.");
                 RefreshSize();
             }
         }
@@ -217,7 +218,7 @@ namespace Dojo.Game.UI
                 made.Add(editor.EditingName);
             }
 
-            PopupAsk.SaveAs(popups, dialogs, "Save layout", "What is this floor layout called?", made,
+            PopupAsk.SaveAs(popups, dialogs, "Save floor plan", "What is this floor plan called?", made,
                 editor.EditingName ?? string.Empty, null, name =>
             {
                 var outside = editor.CountOutside();
@@ -229,7 +230,7 @@ namespace Dojo.Game.UI
                 }
 
                 PopupAsk.Confirm(popups, dialogs, outside + (outside == 1 ? " piece is" : " pieces are") + " outside the frame",
-                    "They stand outside the " + editor.Columns + " × " + editor.Rows + " frame and will be dropped from the layout. "
+                    "They stand outside the " + editor.Columns + " × " + editor.Rows + " frame and will be dropped from the floor plan. "
                     + "The rest is saved as '" + name.Trim() + "'.", "SAVE", MessagePopup.Tone.Alert, () => SaveAs(name, true));
             });
         }

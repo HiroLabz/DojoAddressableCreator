@@ -6,7 +6,7 @@ This is the build plan, written before Bob's approval of the design so the build
 
 **Status, 26 Nov:** the first PR (data and pipeline) is built on `jacob/floor_creator_data`: `CustomFloorLayouts`, `FloorLayoutCatalog`, `FloorsPack`, `FloorThumbnails`, the generator's folder table, the Builder's Floors tab, `floors.json` with one example layout. The store is a trimmed copy of `CustomRooms`, not a shared base class: the refactor would have touched most of the rooms' store for two callers, so the rooms' behaviour stays untouched and the duplication is said here. Bob approved the design on 26 Nov with one change: the tab is **FLOORS**, not LAYOUTS (its rail category is `layouts`, since `floors` is the single tiles' tab). PR 2 (`jacob/floor_creator_editor`) builds the floor editor and the FLOORS tab with its cards: `FloorLayoutEditor` (a copy of `RoomEditor` without openings, areas and departments, plus the frame), `FloorLayoutEditorBar` (SIZE · CLEAR · SAVE LAYOUT · CANCEL with the size strip), `FloorLayoutsDisplayUI` and `FloorLayoutCard`, and `Tools ▸ Dojo ▸ Build Floor Editor`, which makes them in RuntimeMVP from the room editor's objects. PR 3 (`jacob/floor_creator_placing`) lays a layout: `FloorLayoutPlacer` (footprint, ghost with the clashing pieces hidden, `Build`), `PlacementController`'s Layout state (the room gesture, never refused), and `WorldService.AddLayout` (pieces built where they stand and the ones on taken spots taken away again; rooms as rooms with their entrances; an area's cells over a named area or furniture dropped).
 
-**Naming note (for Bob, QA and the design team):** the rail now has FLOOR (single tiles) next to FLOORS (whole layouts). The code tells them apart (`floors` and `layouts`); a person may not. TILES for the tiles' tab, or LAYOUTS again for the new one, is one string in `FloorEditorBuilder` if it reads badly in testing.
+**Naming, settled 26 Nov (Bob and Jacob on Slack):** "floor plan". FLOORS next to FLOOR read alike, and LAYOUTS clashed with "room layout". The plans live inside the FLOOR tab behind a TILES | FLOOR PLANS switch rather than on a rail entry of their own (Jacob's proposal, Bob: "pwede"; he approves by the look). The code keeps the word "layout" (`FloorLayout…`, category `layouts`); only what the designer reads says floor plan.
 
 ## What Bob decided (25 Nov)
 
@@ -84,7 +84,7 @@ Each row names the Rooms piece it follows, so a reviewer can diff against someth
 
 **Bare or furnished.** Yuri's original wish on 14ze67xg670 was pre-laid flooring only, not a furnished floor. A layout can be either; which of Rold's ten (14ze67xgf0y) are bare floors is a content decision the system does not force.
 
-**Naming.** FLOOR (single tiles) sits next to FLOORS (layouts) on the rail; see the note above.
+**Naming.** Settled: "floor plan", inside the FLOOR tab; see the note above.
 
 **QA test list** (RuntimeMVP in Play), what the code runs did not cover: save the world after laying and reload it; move and delete a room that came from a layout; the side-view refusal; closing the inventory with a layout in hand; laying on 2F; laying half over an area or a desk; the SIZE limits; CLEAR, CANCEL and Esc with pieces on the floor; a name the pack holds, and EDIT on a pack layout saved over itself; the menu's world-acting entries while editing; a room with furniture on its desks saved and reopened; DELETE and PROMOTE on a made layout, then the Builder's Floors tab and the generator; the department popup after laying. The full list with expected results is on the ticket (26 Nov).
 

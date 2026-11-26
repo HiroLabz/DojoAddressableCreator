@@ -9,8 +9,9 @@ using VContainer;
 namespace Dojo.Game.UI
 {
     /// <summary>
-    /// The FLOORS tab: every floor layout the loaded packs offer and the ones made here, as cards
-    /// like the rooms. <see cref="RoomsDisplayUI"/> for floors (ClickUp 14ze67xgf0v).
+    /// The FLOOR PLANS side of the FLOOR tab: every floor plan the loaded packs offer and the ones
+    /// made here, as cards like the rooms. <see cref="RoomsDisplayUI"/> for floors (ClickUp
+    /// 14ze67xgf0v). "Floor plan" is what the designer reads; the code keeps "layout".
     /// </summary>
     /// <remarks>
     /// Clicking a card puts the layout on the cursor the way a room is - see
@@ -146,7 +147,7 @@ namespace Dojo.Game.UI
 
             if (!CustomFloorLayouts.IsCustom(layout.address) && !Application.isEditor)
             {
-                Say("'" + layout.name + "' is one of the pack's layouts, and can only be changed in the editor.");
+                Say("'" + layout.name + "' is one of the pack's floor plans, and can only be changed in the editor.");
                 return;
             }
 
@@ -167,7 +168,7 @@ namespace Dojo.Game.UI
 
             if (!CustomFloorLayouts.IsCustom(layout.address))
             {
-                Say("'" + layout.name + "' is one of the pack's layouts, and cannot be deleted.");
+                Say("'" + layout.name + "' is one of the pack's floor plans, and cannot be deleted.");
                 return;
             }
 
@@ -220,7 +221,7 @@ namespace Dojo.Game.UI
                     return;
                 }
 
-                Say("'" + layout.name + "' is one of the pack's layouts now.");
+                Say("'" + layout.name + "' is one of the pack's floor plans now.");
             }
 
             if (dialogs == null)
@@ -229,7 +230,7 @@ namespace Dojo.Game.UI
                 return;
             }
 
-            PopupAsk.Confirm(popups, dialogs, "Promote '" + layout.name + "'?", "It becomes one of the pack's layouts: it ships "
+            PopupAsk.Confirm(popups, dialogs, "Promote '" + layout.name + "'?", "It becomes one of the pack's floor plans: it ships "
                 + "with the content and can no longer be deleted here.", "PROMOTE", MessagePopup.Tone.Info, Promote);
         }
 
@@ -464,7 +465,7 @@ namespace Dojo.Game.UI
             }
 
             var floor = storeys != null ? storeys.Viewed : 0;
-            subtitleLabel.text = Storeys.LabelFor(floor) + " · " + cards.Count + (cards.Count == 1 ? " LAYOUT" : " LAYOUTS");
+            subtitleLabel.text = Storeys.LabelFor(floor) + " · " + cards.Count + (cards.Count == 1 ? " FLOOR PLAN" : " FLOOR PLANS");
         }
 
         void OnPicked(FloorLayoutEntry layout)
@@ -484,7 +485,7 @@ namespace Dojo.Game.UI
 
             if (plan == null)
             {
-                Say("That layout's file could not be read.");
+                Say("That floor plan's file could not be read.");
                 return;
             }
 
@@ -498,7 +499,7 @@ namespace Dojo.Game.UI
             }
             else
             {
-                Say("Layouts are laid from the Top or Perspective view.");
+                Say("Floor plans are laid from the Top or Perspective view.");
             }
         }
 

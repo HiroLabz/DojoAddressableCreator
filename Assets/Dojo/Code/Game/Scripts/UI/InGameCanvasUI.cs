@@ -425,7 +425,7 @@ namespace Dojo.Game.UI
                 {
                     dialogs.Confirm(makingRoom
                         ? "You are making a room. Save it or cancel it from the room bar first - the world is waiting, as you left it."
-                        : "You are making a floor layout. Save it or cancel it from the floor bar first - the world is waiting, as you left it.",
+                        : "You are making a floor plan. Save it or cancel it from its bar first - the world is waiting, as you left it.",
                         () => { });
                 }
 

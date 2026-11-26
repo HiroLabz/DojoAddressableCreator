@@ -155,7 +155,7 @@ namespace Dojo.Game.UI
 
             if (floors != null && floors.IsEditing)
             {
-                Say("Finish the floor layout first: save it or cancel it from the floor bar.");
+                Say("Finish the floor plan first: save it or cancel it from its bar.");
                 return;
             }
 
@@ -262,7 +262,7 @@ namespace Dojo.Game.UI
 
             if (floors != null && floors.IsEditing)
             {
-                Say("Finish the floor layout first: save it or cancel it from the floor bar.");
+                Say("Finish the floor plan first: save it or cancel it from its bar.");
                 return;
             }
 

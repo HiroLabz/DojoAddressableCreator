@@ -9,12 +9,13 @@ using UnityEngine.UI;
 namespace Dojo.Game.Editor
 {
     /// <summary>
-    /// Tools ▸ Dojo ▸ Build Floor Editor: puts the floor editor into RuntimeMVP from the room
-    /// editor's own objects, so the two look the same: the floor bar (SIZE · CLEAR · SAVE LAYOUT ·
-    /// CANCEL, with the size strip under it) as a copy of the room bar, the FLOORS tab as a copy of
-    /// the Rooms panel with the FloorLayoutCard prefab made from RoomCard, a FLOORS entry on the
-    /// rail after ROOMS with its own icon (and ROOMS given one of its own), and the inventory
-    /// screen wired to them. Safe to run again: what it made before is made afresh.
+    /// Tools ▸ Dojo ▸ Build Floor Editor: puts the floor plan editor into RuntimeMVP from the room
+    /// editor's own objects, so the two look the same: the bar (SIZE · CLEAR · SAVE FLOOR PLAN ·
+    /// CANCEL, with the size strip under it) as a copy of the room bar, the FLOOR PLANS panel as a
+    /// copy of the Rooms panel with the FloorLayoutCard prefab made from RoomCard, a TILES | FLOOR
+    /// PLANS switch inside the FLOOR tab (no rail entry of its own: Bob and Jacob, 26 Nov), ROOMS
+    /// given an icon of its own, and the inventory screen wired to them. Safe to run again: what it
+    /// made before is made afresh, and an older FLOORS rail entry is taken off.
     /// </summary>
     public static class FloorEditorBuilder
     {
@@ -22,11 +23,13 @@ namespace Dojo.Game.Editor
         const string RoomCardPath = "Assets/Dojo/Prefabs/UI/Inventory/RoomCard.prefab";
         const string CardPrefabPath = "Assets/Dojo/Prefabs/UI/Inventory/FloorLayoutCard.prefab";
         const string IconFolder = "Assets/Dojo/Art/2D/UI/icon";
-        const string FloorsIconPath = IconFolder + "/dojo_icon_floors_flat_idle_base@3x.png";
         const string RoomsIconPath = IconFolder + "/dojo_icon_rooms_flat_idle_base@3x.png";
 
-        /// <summary>The rail category of the FLOORS tab. Not "floors": that is the single tiles' tab.</summary>
+        /// <summary>The floor plans' own category, kept on the screen for a rail that has an entry for it. None does today.</summary>
         public const string Category = "layouts";
+
+        /// <summary>The FLOOR tab's category: the tiles' grid, and now the switch to the plans.</summary>
+        public const string FloorTab = "floors";
 
         [MenuItem("Tools/Dojo/Build Floor Editor")]
         public static void Build()
@@ -64,22 +67,27 @@ namespace Dojo.Game.Editor
             }
 
             var card = EnsureCardPrefab();
-            var floorsIcon = ImportIcon(FloorsIconPath);
             var roomsIcon = ImportIcon(RoomsIconPath);
 
             var bar = BuildBar(inGameUI.transform, roomBar);
             var panel = BuildPanel(inventory, rooms, card);
-            BuildRailEntry(rail, floorsIcon, roomsIcon);
+            TidyRail(rail, roomsIcon);
+            Button tiles, plans;
+            var floorSwitch = BuildSwitch(inventory, rooms, out tiles, out plans);
 
             var so = new SerializedObject(screen);
             so.FindProperty("floorLayoutsHud").objectReferenceValue = panel;
             so.FindProperty("floorLayoutsCategory").stringValue = Category;
+            so.FindProperty("floorTilesCategory").stringValue = FloorTab;
+            so.FindProperty("floorSwitch").objectReferenceValue = floorSwitch;
+            so.FindProperty("tilesButton").objectReferenceValue = tiles;
+            so.FindProperty("plansButton").objectReferenceValue = plans;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
 
-            Debug.Log("[FloorEditorBuilder] Built " + bar.name + ", the FLOORS tab (" + panel.name + "), the rail entry and "
+            Debug.Log("[FloorEditorBuilder] Built " + bar.name + ", the FLOOR PLANS panel (" + panel.name + "), the FLOOR tab's switch and "
                 + (card != null ? card.name + ".prefab" : "no card prefab") + " into " + ScenePath + ", and saved it.");
         }
 
@@ -115,14 +123,19 @@ namespace Dojo.Game.Editor
                 }
             }
 
-            SetText(go.transform, "Title", "FLOOR EDITOR");
-            SetText(go.transform, "Status", "Lay out a whole floor with the inventory, then save it.");
-            SetText(go.transform, "Save/Label", "SAVE LAYOUT");
+            SetText(go.transform, "Title", "FLOOR PLAN EDITOR");
+            SetText(go.transform, "Status", "Lay out a whole floor with the inventory, then save it as a floor plan.");
+            SetText(go.transform, "Save/Label", "SAVE FLOOR PLAN");
 
             var save = go.transform.Find("Save");
             var cancel = go.transform.Find("Cancel");
-            var clear = CloneButton(save, go.transform, "Clear", "CLEAR", -370f);
-            var size = CloneButton(save, go.transform, "Size", "SIZE", -488f);
+
+            // SAVE FLOOR PLAN is a longer word than SAVE ROOM: a wider button, and the others moved along.
+            var saveRect = save.GetComponent<RectTransform>();
+            saveRect.sizeDelta = new Vector2(150f, saveRect.sizeDelta.y);
+            saveRect.anchoredPosition = new Vector2(-134f, saveRect.anchoredPosition.y);
+            var clear = CloneButton(save, go.transform, "Clear", "CLEAR", -292f, 110f);
+            var size = CloneButton(save, go.transform, "Size", "SIZE", -410f, 110f);
 
             // The size strip hangs under the bar's right end: COLUMNS − +  ROWS − +  8 × 6 tiles.
             var strip = new GameObject("SizeStrip", typeof(RectTransform), typeof(Image), typeof(HorizontalLayoutGroup));
@@ -181,13 +194,14 @@ namespace Dojo.Game.Editor
             return bar;
         }
 
-        static Transform CloneButton(Transform source, Transform parent, string name, string label, float x)
+        static Transform CloneButton(Transform source, Transform parent, string name, string label, float x, float width)
         {
             var go = Object.Instantiate(source.gameObject, parent);
             go.name = name;
             go.transform.SetSiblingIndex(source.GetSiblingIndex());
             var rect = go.GetComponent<RectTransform>();
             rect.anchoredPosition = new Vector2(x, rect.anchoredPosition.y);
+            rect.sizeDelta = new Vector2(width, rect.sizeDelta.y);
             SetText(go.transform, "Label", label);
             return go.transform;
         }
@@ -254,12 +268,19 @@ namespace Dojo.Game.Editor
                 create.name = "CreateLayout";
             }
 
-            SetText(go.transform, "Title", "FLOORS");
-            SetText(go.transform, "Subtitle", "1F · 0 LAYOUTS");
-            SetText(go.transform, "CreateLayout/Label", "+ CREATE LAYOUT");
-            SetText(go.transform, "Hint", "Click a layout, then click on the floor to lay it; what is already there stays and the pieces over it are skipped. Scroll or middle-click turns it; right-click or Esc puts it back.");
+            SetText(go.transform, "Title", "FLOOR PLANS");
+            SetText(go.transform, "Subtitle", "1F · 0 FLOOR PLANS");
+            SetText(go.transform, "CreateLayout/Label", "+ CREATE FLOOR PLAN");
+            SetText(go.transform, "Hint", "Click a floor plan, then click on the floor to lay it; what is already there stays and the pieces over it are skipped. Scroll or middle-click turns it; right-click or Esc puts it back.");
             SetText(go.transform, "Status", string.Empty);
-            SetText(go.transform, "List/Empty/Label", "No floor layouts yet.\n+ CREATE LAYOUT makes the first.");
+            SetText(go.transform, "List/Empty/Label", "No floor plans yet.\n+ CREATE FLOOR PLAN makes the first.");
+
+            // Room for the switch at the right of the subtitle's row.
+            var subtitle = go.transform.Find("Subtitle") as RectTransform;
+            if (subtitle != null)
+            {
+                subtitle.sizeDelta = new Vector2(236f, subtitle.sizeDelta.y);
+            }
 
             var ui = go.AddComponent<FloorLayoutsDisplayUI>();
             var so = new SerializedObject(ui);
@@ -325,7 +346,11 @@ namespace Dojo.Game.Editor
 
         // ── The rail ────────────────────────────────────────────────────────────────────────
 
-        static void BuildRailEntry(InventoryRail rail, Sprite floorsIcon, Sprite roomsIcon)
+        /// <summary>
+        /// The rail as it was before a FLOORS entry: that entry taken off if an earlier build made
+        /// it, the entries back at their spacing, and ROOMS given its own icon.
+        /// </summary>
+        static void TidyRail(InventoryRail rail, Sprite roomsIcon)
         {
             var so = new SerializedObject(rail);
             var entries = so.FindProperty("entries");
@@ -338,39 +363,21 @@ namespace Dojo.Game.Editor
                 }
             }
 
-            var existing = rail.transform.Find("Entry_FLOORS");
-            if (existing != null)
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            var old = rail.transform.Find("Entry_FLOORS");
+            if (old != null)
             {
-                Object.DestroyImmediate(existing.gameObject);
+                Object.DestroyImmediate(old.gameObject);
             }
 
             var roomsEntry = rail.transform.Find("Entry_ROOMS");
-            if (roomsEntry == null)
-            {
-                Debug.LogError("[FloorEditorBuilder] The rail has no Entry_ROOMS to copy the FLOORS entry from.");
-                so.ApplyModifiedPropertiesWithoutUndo();
-                return;
-            }
-
-            var go = Object.Instantiate(roomsEntry.gameObject, rail.transform);
-            go.name = "Entry_FLOORS";
-            go.transform.SetSiblingIndex(roomsEntry.GetSiblingIndex() + 1);
-            SetText(go.transform, "Label", "FLOORS");
-
-            var icon = go.transform.Find("Icon");
-            if (icon != null && floorsIcon != null)
-            {
-                icon.GetComponent<Image>().sprite = floorsIcon;
-            }
-
-            // ROOMS has borrowed the walls icon so far; now it has its own.
-            var roomsIconImage = roomsEntry.Find("Icon");
+            var roomsIconImage = roomsEntry != null ? roomsEntry.Find("Icon") : null;
             if (roomsIconImage != null && roomsIcon != null)
             {
                 roomsIconImage.GetComponent<Image>().sprite = roomsIcon;
             }
 
-            // Thirteen entries where twelve fitted: everyone moves up a little.
             var count = rail.transform.childCount;
             var spacing = count <= 12 ? 70f : 64f;
             var height = count <= 12 ? 66f : 60f;
@@ -393,25 +400,62 @@ namespace Dojo.Game.Editor
                     label.anchoredPosition = new Vector2(0f, 15f - (66f - height) * 0.5f);
                 }
             }
+        }
 
-            var roomsIndex = -1;
-            var roomsButton = roomsEntry.GetComponent<Button>();
+        // ── The FLOOR tab's switch ──────────────────────────────────────────────────────────
 
-            for (var i = 0; i < entries.arraySize; i++)
+        /// <summary>
+        /// TILES | FLOOR PLANS, two small buttons at the right of the panels' second row, shown
+        /// with the FLOOR tab. Made from the Rooms panel's Close button so they share its look.
+        /// </summary>
+        static GameObject BuildSwitch(Transform inventory, Transform rooms, out Button tiles, out Button plans)
+        {
+            var existing = inventory.Find("FloorSwitch");
+            if (existing != null)
             {
-                if (entries.GetArrayElementAtIndex(i).FindPropertyRelative("button").objectReferenceValue == roomsButton)
-                {
-                    roomsIndex = i;
-                }
+                Object.DestroyImmediate(existing.gameObject);
             }
 
-            var at = roomsIndex >= 0 ? roomsIndex + 1 : entries.arraySize;
-            entries.InsertArrayElementAtIndex(at);
-            var added = entries.GetArrayElementAtIndex(at);
-            added.FindPropertyRelative("button").objectReferenceValue = go.GetComponent<Button>();
-            added.FindPropertyRelative("category").stringValue = Category;
-            added.FindPropertyRelative("selected").objectReferenceValue = go.transform.Find("Selected") != null ? go.transform.Find("Selected").gameObject : null;
-            so.ApplyModifiedPropertiesWithoutUndo();
+            var go = new GameObject("FloorSwitch", typeof(RectTransform));
+            go.transform.SetParent(inventory, false);
+            go.transform.SetAsLastSibling();
+
+            var rect = go.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0f, 1f);
+            rect.anchorMax = new Vector2(0f, 1f);
+            rect.pivot = new Vector2(1f, 1f);
+            rect.anchoredPosition = new Vector2(176f + 432f - 16f, -88f - 42f);
+            rect.sizeDelta = new Vector2(170f, 26f);
+
+            var close = rooms.Find("Close");
+            var save = GameObject.Find("GameCanvas/InGameUI/RoomEditor/Save");
+            tiles = SwitchButton(go.transform, save != null ? save.transform : close, "Tiles", "TILES", -108f, 60f);
+            plans = SwitchButton(go.transform, save != null ? save.transform : close, "Plans", "FLOOR PLANS", 0f, 104f);
+            go.SetActive(false);
+
+            return go;
+        }
+
+        static Button SwitchButton(Transform parent, Transform source, string name, string label, float x, float width)
+        {
+            var go = Object.Instantiate(source.gameObject, parent);
+            go.name = name;
+
+            var rect = go.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(1f, 0.5f);
+            rect.anchorMax = new Vector2(1f, 0.5f);
+            rect.pivot = new Vector2(1f, 0.5f);
+            rect.anchoredPosition = new Vector2(x, 0f);
+            rect.sizeDelta = new Vector2(width, 26f);
+
+            var text = go.GetComponentInChildren<TMP_Text>(true);
+            if (text != null)
+            {
+                text.text = label;
+                text.fontSize = 10f;
+            }
+
+            return go.GetComponent<Button>();
         }
 
         // ── Helpers ─────────────────────────────────────────────────────────────────────────

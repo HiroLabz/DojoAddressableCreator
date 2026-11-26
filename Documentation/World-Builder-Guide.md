@@ -64,23 +64,23 @@ A model whose materials aren't in the kit gets a material made from its own text
 
 **Generate room thumbnails** and **Check room openings** are on the same tab.
 
-## Floor layouts
-A floor layout is a whole floor shipped in the pack, built on the Rooms system: a one-floor world file in `Assets/Process/default/Floors`, the same shape as a room file. The pack's layouts are `default_floor_<name>.json`, listed in `floors.json` in the order the tab shows them, with a thumbnail at `Thumbnails/floor_<name>.png`; they build into their own `Content_Floors` group when the Addressable Generator runs on the pack.
+## Floor plans
+A floor plan (a "floor layout" in the code) is a whole floor shipped in the pack, built on the Rooms system: a one-floor world file in `Assets/Process/default/Floors`, the same shape as a room file. The pack's plans are `default_floor_<name>.json`, listed in `floors.json` in the order the panel shows them, with a thumbnail at `Thumbnails/floor_<name>.png`; they build into their own `Content_Floors` group when the Addressable Generator runs on the pack.
 
 1. Builder ▸ **Floors** tab lists the pack's layouts and warns when `floors.json` does not match the files.
 2. **Generate floor thumbnails** renders every layout's picture from its file (no prefab is needed).
 3. A layout made in the floor editor is `floor_<name>.json`; **Promote** puts it in the pack and on the list.
 
-### Making a layout in Play
-4. Inventory ▸ **FLOORS** ▸ **+ CREATE LAYOUT**: the world is kept and a blank floor takes its place, with an amber frame of 8 × 6 tiles drawn on it. **SIZE** opens the strip that steps the frame's columns and rows (4 to 24).
-5. Lay the floor out from the other tabs, the Rooms tab included: a room placed here is saved as a room, so it comes back as one.
-6. **SAVE LAYOUT** asks for a name. Pieces outside the frame are counted and, if you agree, dropped. **CANCEL** throws it away and brings the world back. **CLEAR** empties the floor.
-7. The card shows the layout with its thumbnail and size in tiles. **EDIT** opens it again; **DELETE** and **PROMOTE** are the same as a room's.
+### Making a floor plan in Play
+4. Inventory ▸ **FLOOR** ▸ the **FLOOR PLANS** side of the switch at the top ▸ **+ CREATE FLOOR PLAN**: the world is kept and a blank floor takes its place, with an amber frame of 8 × 6 tiles drawn on it. **SIZE** opens the strip that steps the frame's columns and rows (4 to 24).
+5. Lay the floor out from the other tabs, the Rooms tab included: a room placed here is saved as a room, so it comes back as one. The FLOOR tab shows tiles only meanwhile.
+6. **SAVE FLOOR PLAN** asks for a name. Pieces outside the frame are counted and, if you agree, dropped. **CANCEL** throws it away and brings the world back. **CLEAR** empties the floor.
+7. The card shows the plan with its thumbnail and size in tiles. **EDIT** opens it again; **DELETE** and **PROMOTE** are the same as a room's.
 
-### Laying a layout on a floor
-8. Inventory ▸ **FLOORS**, click a card: the layout follows the cursor as a ghost, snapped to the grid and lined up with the floor's tiles. Scroll or middle-click turns it; right-click or Esc puts it back. A left click lays it.
-9. A layout is never refused. Whatever is already on the floor stays exactly where it is: a piece of the layout whose spot is taken is left out (the ghost hides it, and the panel counts them), and the rest is laid. Rooms inside a layout come back as rooms.
+### Laying a floor plan on a floor
+8. Inventory ▸ **FLOOR** ▸ **FLOOR PLANS**, click a card: the plan follows the cursor as a ghost, snapped to the grid and lined up with the floor's tiles. Scroll or middle-click turns it; right-click or Esc puts it back. A left click lays it.
+9. A floor plan is never refused. Whatever is already on the floor stays exactly where it is: a piece of the plan whose spot is taken is left out (the ghost hides it, and the panel counts them), and the rest is laid. Rooms inside a plan come back as rooms.
 
-**Naming note (for Bob, QA and the design team):** the rail has two neighbouring tabs that read almost the same, **FLOOR** (single floor tiles) and **FLOORS** (whole floor layouts, Bob's name for the new tab). If it reads badly in testing, the tiles' tab could become TILES, or the new one go back to LAYOUTS; it is one string in the builder.
+**Naming:** "floor plan" was settled on 26 Nov (Bob and Jacob): FLOORS next to FLOOR read alike, and LAYOUTS clashed with "room layout". The plans live inside the FLOOR tab behind the TILES | FLOOR PLANS switch rather than on a tab of their own. The code keeps the word "layout".
 
-The floor editor and the FLOORS tab are built into RuntimeMVP by **Tools ▸ Dojo ▸ Build Floor Editor**, from the room editor's own objects. The plan is in `Documentation/Tasks/Floor-Creator-Notes.md`; the game's own floor creator is ClickUp 14ze67xgf0x.
+The floor plan editor and the FLOOR tab's switch are built into RuntimeMVP by **Tools ▸ Dojo ▸ Build Floor Editor**, from the room editor's own objects. The plan is in `Documentation/Tasks/Floor-Creator-Notes.md`; the game's own floor creator is ClickUp 14ze67xgf0x.
