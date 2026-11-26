@@ -181,6 +181,18 @@ namespace Dojo.Game.UI
         RoomEditor editor;
         CustomRooms madeRooms;
 
+        /// <summary>The floor editor, where the scene has one: a layout stands in the world's place while it is made.</summary>
+        FloorLayoutEditor floors;
+
+        [Inject]
+        public void ConstructFloors(IObjectResolver resolver)
+        {
+            if (resolver != null)
+            {
+                resolver.TryResolve(out floors);
+            }
+        }
+
         /// <summary>
         /// True for the entries that act on the world - leaving it, saving, loading, resetting -
         /// which have nothing to act on while a room is being made in its place.
@@ -402,14 +414,19 @@ namespace Dojo.Game.UI
 
         void OnEntrySelected(int index)
         {
-            if (editor != null && editor.IsEditing && ActsOnWorld(index))
+            var makingRoom = editor != null && editor.IsEditing;
+            var makingFloor = floors != null && floors.IsEditing;
+
+            if ((makingRoom || makingFloor) && ActsOnWorld(index))
             {
                 SetState(InGameMenuState.Closed);
 
                 if (dialogs != null)
                 {
-                    dialogs.Confirm("You are making a room. Save it or cancel it from the room bar first - "
-                        + "the world is waiting, as you left it.", () => { });
+                    dialogs.Confirm(makingRoom
+                        ? "You are making a room. Save it or cancel it from the room bar first - the world is waiting, as you left it."
+                        : "You are making a floor layout. Save it or cancel it from the floor bar first - the world is waiting, as you left it.",
+                        () => { });
                 }
 
                 return;

@@ -267,11 +267,12 @@ namespace Dojo.Game.Systems
             builder.Register<CustomRooms>(Lifetime.Singleton);
             builder.Register<RoomEditor>(Lifetime.Singleton);
 
-            // Floor layouts, the same two halves as rooms: which layouts the packs offer, and the
-            // ones made here, kept on disk. The floor editor and the LAYOUTS tab come after
-            // (ClickUp 14ze67xgf0v).
+            // Floor layouts, the same halves as rooms: which layouts the packs offer, the ones
+            // made here, kept on disk, and the session that swaps the world for a blank floor
+            // with the frame on it and back (ClickUp 14ze67xgf0v).
             builder.Register<FloorLayoutCatalog>(Lifetime.Singleton);
             builder.Register<CustomFloorLayouts>(Lifetime.Singleton);
+            builder.Register<FloorLayoutEditor>(Lifetime.Singleton);
 
             // Writes the selected world back whenever anything in it changes. Registered here
             // rather than on the root, because it is only meaningful where there is a world root
@@ -444,6 +445,18 @@ namespace Dojo.Game.Systems
                     foreach (var bar in FindObjectsByType<RoomEditorBar>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                     {
                         container.Inject(bar);
+                    }
+
+                    // The floor bar and the FLOORS tab, down whenever no layout is being made and
+                    // the tab is not up.
+                    foreach (var floorBar in FindObjectsByType<FloorLayoutEditorBar>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                    {
+                        container.Inject(floorBar);
+                    }
+
+                    foreach (var floors in FindObjectsByType<FloorLayoutsDisplayUI>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                    {
+                        container.Inject(floors);
                     }
 
                     // The areas' locators, which mark the world's areas on its floors.

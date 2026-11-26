@@ -75,6 +75,18 @@ namespace Dojo.Game.UI
         RoomEditor editor;
         IDialogManager dialogs;
 
+        /// <summary>The floor editor, where the scene has one: no room is made or edited while a layout is.</summary>
+        FloorLayoutEditor floors;
+
+        [Inject]
+        public void ConstructFloors(IObjectResolver resolver)
+        {
+            if (resolver != null && resolver.TryResolve(out floors) && floors != null)
+            {
+                floors.Changed += OnEditorChanged;
+            }
+        }
+
         /// <summary>The styled popups the room dialogs ask with, as in the game (fcfe344); the old dialogs without them.</summary>
         Dojo.Game.Managers.PopupPrefabs popups;
 
@@ -138,6 +150,12 @@ namespace Dojo.Game.UI
             if (placement != null && placement.IsBusy)
             {
                 Say("Put down what is in hand first.");
+                return;
+            }
+
+            if (floors != null && floors.IsEditing)
+            {
+                Say("Finish the floor layout first: save it or cancel it from the floor bar.");
                 return;
             }
 
@@ -218,6 +236,11 @@ namespace Dojo.Game.UI
                 editor.Saved -= OnRoomSaved;
             }
 
+            if (floors != null)
+            {
+                floors.Changed -= OnEditorChanged;
+            }
+
             if (catalog != null && catalog.Custom != null)
             {
                 catalog.Custom.Changed -= OnRoomsChanged;
@@ -237,18 +260,24 @@ namespace Dojo.Game.UI
                 return;
             }
 
+            if (floors != null && floors.IsEditing)
+            {
+                Say("Finish the floor layout first: save it or cancel it from the floor bar.");
+                return;
+            }
+
             if (!editor.Begin())
             {
                 Say("The room editor is not set up in this scene. Run Tools > Dojo > Add Rooms Tab and save the scene.");
             }
         }
 
-        /// <summary>No CREATE ROOM while one is being made: there is nowhere to go from there.</summary>
+        /// <summary>No CREATE ROOM while a room or a floor layout is being made: there is nowhere to go from there.</summary>
         void OnEditorChanged()
         {
             if (createRoomButton != null)
             {
-                createRoomButton.gameObject.SetActive(editor == null || !editor.IsEditing);
+                createRoomButton.gameObject.SetActive((editor == null || !editor.IsEditing) && (floors == null || !floors.IsEditing));
             }
         }
 

@@ -64,6 +64,13 @@ namespace Dojo.Game.UI
         [Tooltip("The category that opens the departments panel instead of the item grid.")]
         [SerializeField] string departmentsCategory = "departments";
 
+        [Tooltip("The floor layouts the packs offer and the ones made here, each opened in the floor editor.")]
+        [SerializeField] FloorLayoutsDisplayUI floorLayoutsHud;
+
+        [Tooltip("The category that opens the floor layouts panel instead of the item grid. Not 'floors': " +
+                 "that is the single tiles' tab.")]
+        [SerializeField] string floorLayoutsCategory = "layouts";
+
         [Header("Chrome")]
         [Tooltip("The X in the header. Closes the whole screen.")]
         [SerializeField] Button closeButton;
@@ -113,7 +120,7 @@ namespace Dojo.Game.UI
             if (rail != null)
             {
                 rail.SetAside(editing
-                    ? new[] { areasCategory, roomsCategory, departmentsCategory, agentsCategory, youCategory }
+                    ? new[] { areasCategory, roomsCategory, departmentsCategory, agentsCategory, youCategory, floorLayoutsCategory }
                     : null);
             }
 
@@ -130,6 +137,38 @@ namespace Dojo.Game.UI
             }
 
             // Off whichever tab was up if it has just been set aside, onto the floors.
+            if (rail != null && (string.IsNullOrEmpty(rail.Selected) || !rail.IsShown(rail.Selected)))
+            {
+                rail.Select(defaultCategory);
+            }
+        }
+
+        /// <summary>
+        /// For making a floor layout: the tabs a floor is laid from - floors, walls, the rest of
+        /// the pieces, and the rooms - and the screen held open; or, with <paramref name="editing"/>
+        /// false, back to how it was.
+        /// </summary>
+        public void SetFloorEditing(bool editing)
+        {
+            if (rail != null)
+            {
+                rail.SetAside(editing
+                    ? new[] { areasCategory, departmentsCategory, agentsCategory, youCategory, floorLayoutsCategory }
+                    : null);
+            }
+
+            holdOpen = editing;
+
+            if (!editing)
+            {
+                return;
+            }
+
+            if (!IsOpen)
+            {
+                Open();
+            }
+
             if (rail != null && (string.IsNullOrEmpty(rail.Selected) || !rail.IsShown(rail.Selected)))
             {
                 rail.Select(defaultCategory);
@@ -340,6 +379,26 @@ namespace Dojo.Game.UI
             bool departments = !string.IsNullOrEmpty(departmentsCategory)
                 && string.Equals(category, departmentsCategory, StringComparison.OrdinalIgnoreCase);
 
+            bool layouts = !string.IsNullOrEmpty(floorLayoutsCategory)
+                && string.Equals(category, floorLayoutsCategory, StringComparison.OrdinalIgnoreCase);
+
+            if (floorLayoutsHud != null)
+            {
+                if (layouts)
+                {
+                    floorLayoutsHud.Show();
+                }
+                else
+                {
+                    floorLayoutsHud.Dismiss();
+                }
+            }
+            else if (layouts)
+            {
+                Debug.LogWarning("[InventoryScreen] The Floors tab has no panel behind it. "
+                    + "Run Tools > Dojo > Build Floor Editor.", this);
+            }
+
             if (departmentsHud != null)
             {
                 if (departments)
@@ -433,7 +492,7 @@ namespace Dojo.Game.UI
             }
 
             // The grid answers for every category that is not one of the special tabs.
-            bool grid = !agents && !you && !areas && !rooms && !departments;
+            bool grid = !agents && !you && !areas && !rooms && !departments && !layouts;
 
             if (hud != null)
             {

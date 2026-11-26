@@ -71,4 +71,10 @@ A floor layout is a whole floor shipped in the pack, built on the Rooms system: 
 2. **Generate floor thumbnails** renders every layout's picture from its file (no prefab is needed).
 3. A layout made in the floor editor is `floor_<name>.json`; **Promote** puts it in the pack and on the list.
 
-The floor editor, the inventory's LAYOUTS tab and placing a layout follow (ClickUp 14ze67xgf0v, 14ze67xgf0x); the plan is in `Documentation/Tasks/Floor-Creator-Notes.md`.
+### Making a layout in Play
+4. Inventory ▸ **FLOORS** ▸ **+ CREATE LAYOUT**: the world is kept and a blank floor takes its place, with an amber frame of 8 × 6 tiles drawn on it. **SIZE** opens the strip that steps the frame's columns and rows (4 to 24).
+5. Lay the floor out from the other tabs, the Rooms tab included: a room placed here is saved as a room, so it comes back as one.
+6. **SAVE LAYOUT** asks for a name. Pieces outside the frame are counted and, if you agree, dropped. **CANCEL** throws it away and brings the world back. **CLEAR** empties the floor.
+7. The card shows the layout with its thumbnail and size in tiles. **EDIT** opens it again; **DELETE** and **PROMOTE** are the same as a room's.
+
+Placing a layout on a floor comes next (ClickUp 14ze67xgf0v, 14ze67xgf0x); the plan is in `Documentation/Tasks/Floor-Creator-Notes.md`. The floor editor is built into RuntimeMVP by **Tools ▸ Dojo ▸ Build Floor Editor**, from the room editor's own objects.
