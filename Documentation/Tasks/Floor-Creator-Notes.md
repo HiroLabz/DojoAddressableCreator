@@ -76,6 +76,18 @@ Each row names the Rooms piece it follows, so a reviewer can diff against someth
 3. **Third PR, the inventory and placement:** the LAYOUTS tab, `FloorLayoutsDisplayUI`, `FloorLayoutPlacer` with the skip-taken rule, the ghost. Proof: place a layout on an empty floor and on a floor with pieces; the pieces stay.
 4. Then the game port (14ze67xgf0x): its own `IPlayerFloorLayoutStore` like `IPlayerRoomStore`, the popups from the design, the YOURS section. Nothing is shared between the repos today (every Rooms file has diverged), so it is a port, not a copy.
 
+## For review before the PRs merge (Bob, QA, the design team; 26 Nov)
+
+**A floor layout against a room, as built.** A room is one unit: placed, it moves, turns and deletes whole; it has an entrance and an exit, its own area and department; it is refused where it does not fit. A floor layout is a whole floor laid at once: tiles, walls, pieces and rooms. Laid, it dissolves: the pieces become the floor's own, and the rooms inside it come back as rooms (each still one unit); the layout itself is never picked up again as one. It is never refused: what is already on the floor stays, and the pieces of the layout over taken spots are skipped. It has a size (the frame, 4 to 24 tiles each way) but no entrance, exit, area or department of its own.
+
+**The department question.** After a layout is laid, each room inside it whose area has no department is asked about, exactly as placing that room from the ROOMS tab asks; a layout with no rooms asks nothing. Open: keep it, never ask (departments set later by the player), or ask once for the whole floor?
+
+**Bare or furnished.** Yuri's original wish on 14ze67xg670 was pre-laid flooring only, not a furnished floor. A layout can be either; which of Rold's ten (14ze67xgf0y) are bare floors is a content decision the system does not force.
+
+**Naming.** FLOOR (single tiles) sits next to FLOORS (layouts) on the rail; see the note above.
+
+**QA test list** (RuntimeMVP in Play), what the code runs did not cover: save the world after laying and reload it; move and delete a room that came from a layout; the side-view refusal; closing the inventory with a layout in hand; laying on 2F; laying half over an area or a desk; the SIZE limits; CLEAR, CANCEL and Esc with pieces on the floor; a name the pack holds, and EDIT on a pack layout saved over itself; the menu's world-acting entries while editing; a room with furniture on its desks saved and reopened; DELETE and PROMOTE on a made layout, then the Builder's Floors tab and the generator; the department popup after laying. The full list with expected results is on the ticket (26 Nov).
+
 ## Needs Bob
 
 - Approval of the design (AC 1) before PR 2 and 3 start; PR 1 has no UI and can start first if he agrees.
