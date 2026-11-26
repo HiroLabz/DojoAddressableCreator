@@ -79,7 +79,7 @@ A floor plan (a "floor layout" in the code) is a whole floor shipped in the pack
 
 ### Laying a floor plan on a floor
 8. Inventory ▸ **FLOOR** ▸ **FLOOR PLANS**, click a card: the plan follows the cursor as a ghost, snapped to the grid and lined up with the floor's tiles. Scroll or middle-click turns it; right-click or Esc puts it back. A left click lays it.
-9. A floor plan is never refused. Whatever is already on the floor stays exactly where it is: a piece of the plan whose spot is taken is left out (the ghost hides it, and the panel counts them), and the rest is laid. Rooms inside a plan come back as rooms.
+9. A floor plan is laid on open ground only: where any of its tiles would lie on floor already there, the footprint turns red and the click does nothing. On open ground it is never refused: whatever is already there stays exactly where it is, a piece of the plan whose spot is taken is left out (the ghost hides it, and the panel counts them), and the rest is laid. Rooms inside a plan come back as rooms.
 
 **Naming:** "floor plan" was settled on 26 Nov (Bob and Jacob): FLOORS next to FLOOR read alike, and LAYOUTS clashed with "room layout". The plans live inside the FLOOR tab behind the TILES | FLOOR PLANS switch rather than on a tab of their own. The code keeps the word "layout".
 

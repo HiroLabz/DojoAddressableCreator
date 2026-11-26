@@ -97,6 +97,21 @@ namespace Dojo.Game.Tests.EditMode
         }
 
         [Test]
+        public void OverlapsFloor_WhereATileWouldLieOnFloorAlreadyThere_NotWhenTouching()
+        {
+            var size = new Vector2(1.2f, 1.2f);
+            var own = new List<RoomPlacer.Tile> { new RoomPlacer.Tile(new Vector2(0f, 0f), size), new RoomPlacer.Tile(new Vector2(1.2f, 0f), size) };
+            var floor = new List<RoomPlacer.Tile> { new RoomPlacer.Tile(new Vector2(3.6f, 0f), size) };
+
+            Assert.IsFalse(FloorLayoutPlacer.OverlapsFloor(own, floor, Vector2.zero, 0), "a tile away");
+            Assert.IsFalse(FloorLayoutPlacer.OverlapsFloor(own, floor, new Vector2(1.2f, 0f), 0), "edge to edge is touching, not lying on");
+            Assert.IsTrue(FloorLayoutPlacer.OverlapsFloor(own, floor, new Vector2(1.8f, 0f), 0), "half a tile over");
+            Assert.IsTrue(FloorLayoutPlacer.OverlapsFloor(own, floor, new Vector2(3.6f, 1.2f), 1), "turned a quarter (x to -z), the second tile lands on it");
+            Assert.IsFalse(FloorLayoutPlacer.OverlapsFloor(own, new List<RoomPlacer.Tile>(), Vector2.zero, 0), "nothing there");
+            Assert.IsFalse(FloorLayoutPlacer.OverlapsFloor(null, floor, Vector2.zero, 0));
+        }
+
+        [Test]
         public void CellIsTaken_ByAnAreaOrFurniture_NotByAFloorTileOrAWall()
         {
             var taken = new List<RoomPlacer.Taken>

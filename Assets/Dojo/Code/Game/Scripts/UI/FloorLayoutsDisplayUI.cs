@@ -323,10 +323,13 @@ namespace Dojo.Game.UI
 
             if (inHand != null)
             {
+                var blocker = placement.LayoutBlocker;
                 var clashes = placement.LayoutClashes;
-                Say(clashes == 0
-                    ? string.Empty
-                    : clashes + (clashes == 1 ? " piece is" : " pieces are") + " skipped here: their spots are taken. What is on the floor stays.");
+                Say(blocker != null
+                    ? "It would lie on " + blocker + ". Lay it on open ground."
+                    : clashes == 0
+                        ? string.Empty
+                        : clashes + (clashes == 1 ? " piece is" : " pieces are") + " skipped here: their spots are taken. What is on the floor stays.");
                 carrying = true;
             }
             else if (carrying)

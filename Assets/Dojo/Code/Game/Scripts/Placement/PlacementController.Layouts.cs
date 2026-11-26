@@ -11,11 +11,12 @@ namespace Dojo.Game.Placement
     /// The room gesture over again (<see cref="PlacementController"/>'s Rooms part): a click on the
     /// card puts the layout on the cursor as a ghost, it follows snapped to the grid and lined up
     /// with the floor's tiles, the wheel or the middle button turns it a quarter at a time, a left
-    /// click lays it, and a right click or Esc puts it back. Unlike a room it is never refused:
-    /// the footprint stays green, the ghost hides each piece whose spot is taken, and laying it
-    /// leaves those pieces out and everything already on the floor as it was (ClickUp 14ze67xgf0v,
-    /// AC 7). Once laid, the pieces are the floor's own - loose, or in their rooms - and a layout
-    /// is not picked up again as one.
+    /// click lays it, and a right click or Esc puts it back. It is refused in one case only: where
+    /// any of its floor tiles would lie on floor already there, the footprint turns red and the
+    /// click does nothing (Jacob, 26 Nov). On open ground the ghost hides each piece whose spot is
+    /// taken, and laying it leaves those pieces out and everything already on the floor as it was
+    /// (ClickUp 14ze67xgf0v, AC 7). Once laid, the pieces are the floor's own - loose, or in their
+    /// rooms - and a layout is not picked up again as one.
     /// </remarks>
     public sealed partial class PlacementController
     {
@@ -27,6 +28,8 @@ namespace Dojo.Game.Placement
         int layoutSteps;
         Vector2 layoutOffset;
         int layoutClashes;
+        bool layoutFits;
+        string layoutBlocker;
 
         // The layout's floor tiles, relative to its origin, and the floor's: what lines it up with
         // the floor it is laid beside.
@@ -41,6 +44,9 @@ namespace Dojo.Game.Placement
 
         /// <summary>How many of the layout's pieces would be skipped where it is now: their spots are taken.</summary>
         public int LayoutClashes => state == State.Layout ? layoutClashes : 0;
+
+        /// <summary>Why the layout cannot be laid where it is - it lies on floor already there - or null when it can.</summary>
+        public string LayoutBlocker => state == State.Layout ? layoutBlocker : null;
 
         /// <summary>
         /// Puts a layout on the cursor. False when a gesture is already running or the view is
@@ -85,7 +91,7 @@ namespace Dojo.Game.Placement
             MoveLayoutToCursor(mouse);
 
             Log("LIFTED layout '" + plan.Entry.name + "' out of the inventory, footprint " + plan.Footprint.size
-                + " (" + layoutClashes + " piece(s) on taken spots)");
+                + " (" + (layoutFits ? layoutClashes + " piece(s) on taken spots" : "on floor already there") + ")");
 
             return true;
         }
@@ -133,6 +139,13 @@ namespace Dojo.Game.Placement
                 return;
             }
 
+            if (!layoutFits)
+            {
+                // Left in hand, like a refused room, so it can be moved on instead of fetched again.
+                Log("layout refused: it would lie on " + layoutBlocker + " on " + Storeys.LabelFor(layoutFloor));
+                return;
+            }
+
             var plan = layoutPlan;
             var placer = layoutPlacer;
             var floor = layoutFloor;
@@ -163,7 +176,7 @@ namespace Dojo.Game.Placement
         /// <summary>
         /// Centres the layout's footprint on the cursor, snapped and lined up with the floor's
         /// tiles, hides the ghost's pieces that stand on taken spots, and lights the footprint:
-        /// green always, since a layout is never refused.
+        /// red where its tiles would lie on floor already there, green anywhere else.
         /// </summary>
         void MoveLayoutToCursor(Mouse mouse)
         {
@@ -182,6 +195,9 @@ namespace Dojo.Game.Placement
 
             var placed = new Rect(footprint.position + layoutOffset, footprint.size);
 
+            layoutFits = !FloorLayoutPlacer.OverlapsFloor(layoutTiles, layoutFloorTiles, layoutOffset, layoutSteps);
+            layoutBlocker = layoutFits ? null : "the floor already there";
+
             if (layoutGhost != null)
             {
                 layoutGhost.SetPositionAndRotation(
@@ -196,7 +212,7 @@ namespace Dojo.Game.Placement
                 floorY,
                 placed.size,
                 Quaternion.identity,
-                true);
+                layoutFits);
         }
 
         /// <summary>Puts the ghost away and hands the input back.</summary>
@@ -220,6 +236,8 @@ namespace Dojo.Game.Placement
             layoutPlacer = null;
             layoutTaken = null;
             layoutClashes = 0;
+            layoutFits = false;
+            layoutBlocker = null;
 
             highlight.Hide();
             state = State.Idle;

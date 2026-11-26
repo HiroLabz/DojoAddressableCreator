@@ -11,11 +11,13 @@ namespace Dojo.Game.Placement
     /// cursor with the pieces that would be skipped hidden, and laying it for real.
     /// </summary>
     /// <remarks>
-    /// <see cref="RoomPlacer"/> for floors (ClickUp 14ze67xgf0v, AC 6 and 7), with the one real
-    /// difference: a layout is never refused. What is already on the floor stays exactly as it is;
-    /// a piece of the layout whose spot is taken is left out, and the rest is laid. The gesture is
-    /// <see cref="PlacementController"/>'s, as a room's is. The measuring - what the floor has
-    /// taken, its tiles' lattice - is the room placer's own, used through it.
+    /// <see cref="RoomPlacer"/> for floors (ClickUp 14ze67xgf0v, AC 6 and 7). A layout is laid on
+    /// open ground only: where any of its floor tiles would lie on a floor tile already there, the
+    /// footprint turns red and the click is refused (Jacob, 26 Nov). On open ground it is never
+    /// refused: what is already there stays exactly as it is, a piece of the layout whose spot is
+    /// taken is left out, and the rest is laid. The gesture is <see cref="PlacementController"/>'s,
+    /// as a room's is. The measuring - what the floor has taken, its tiles' lattice - is the room
+    /// placer's own, used through it.
     /// </remarks>
     public sealed class FloorLayoutPlacer
     {
@@ -31,6 +33,9 @@ namespace Dojo.Game.Placement
 
         /// <summary>What an edge reaches past the outermost piece centre: half a wall's thickness.</summary>
         const float Margin = 0.08f;
+
+        /// <summary>How far two tiles may overlap and still count as touching, as the room placer allows.</summary>
+        const float Tolerance = 0.05f;
 
         readonly FloorLayoutCatalog catalog;
         readonly WorldService world;
@@ -101,6 +106,45 @@ namespace Dojo.Game.Placement
 
         /// <summary>The floor tiles on a floor, for lining the layout's own up with them.</summary>
         public List<RoomPlacer.Tile> FloorTilesOn(int floor) => rooms.FloorTilesOn(floor, null);
+
+        /// <summary>
+        /// True when any of the layout's floor tiles, turned <paramref name="steps"/> quarter turns
+        /// and moved to <paramref name="offset"/>, lies on a floor tile already there. Touching edge
+        /// to edge is not lying on. A floor plan is laid on open ground only.
+        /// </summary>
+        public static bool OverlapsFloor(List<RoomPlacer.Tile> own, List<RoomPlacer.Tile> floor, Vector2 offset, int steps)
+        {
+            if (own == null || floor == null || own.Count == 0 || floor.Count == 0)
+            {
+                return false;
+            }
+
+            steps = PlacementGrid.Normalise(steps);
+            var turn = Quaternion.Euler(0f, steps * 90f, 0f);
+            var odd = (steps & 1) == 1;
+
+            foreach (var tile in own)
+            {
+                var turned = turn * new Vector3(tile.Centre.x, 0f, tile.Centre.y);
+                var centre = new Vector2(turned.x + offset.x, turned.z + offset.y);
+                var size = odd ? new Vector2(tile.Size.y, tile.Size.x) : tile.Size;
+                var inner = new Rect(centre.x - size.x * 0.5f + Tolerance, centre.y - size.y * 0.5f + Tolerance,
+                    size.x - 2f * Tolerance, size.y - 2f * Tolerance);
+
+                foreach (var other in floor)
+                {
+                    var rect = new Rect(other.Centre.x - other.Size.x * 0.5f, other.Centre.y - other.Size.y * 0.5f,
+                        other.Size.x, other.Size.y);
+
+                    if (inner.Overlaps(rect))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// True when an area cell at <paramref name="centre"/> would lie on something the layout

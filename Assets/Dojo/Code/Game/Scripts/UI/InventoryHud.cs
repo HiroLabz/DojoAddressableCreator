@@ -348,9 +348,12 @@ namespace Dojo.Game.UI
         {
             if (titleLabel != null)
             {
+                // The floors category is the single tiles: said so, since the floor plans share its tab.
                 titleLabel.text = string.IsNullOrEmpty(category)
                     ? string.Empty
-                    : category.ToUpperInvariant();
+                    : string.Equals(category, ItemCategories.Floors, StringComparison.OrdinalIgnoreCase)
+                        ? "FLOOR TILES"
+                        : category.ToUpperInvariant();
             }
 
             if (countLabel != null)
