@@ -1,5 +1,5 @@
 {
-    "generatedUtc": "2026-11-27T10:09:30.2381925Z",
+    "generatedUtc": "2026-11-27T10:17:35.2127948Z",
     "pixelSize": 256,
     "sourceFolder": "Assets/Process/default/Prefabs",
     "pack": "default",
@@ -475,39 +475,6 @@
             "thumbnailFile": "default_straight_wall_panel_glass.png",
             "thumbnailPath": "Assets/Process/default/Thumbnails/default_straight_wall_panel_glass.png",
             "thumbnailResource": "default/Thumbnails/default_straight_wall_panel_glass",
-            "pack": "default"
-        },
-        {
-            "prefabId": "9f8002f05dd952d41ba136e912f48272",
-            "prefabName": "default_superComputer",
-            "prefabPath": "Assets/Process/default/Prefabs/default_superComputer.prefab",
-            "prefabResource": "default/default_superComputer",
-            "thumbnailId": "5c429e2af864d04418e72547a50956d2",
-            "thumbnailFile": "default_superComputer.png",
-            "thumbnailPath": "Assets/Process/default/Thumbnails/default_superComputer.png",
-            "thumbnailResource": "default/Thumbnails/default_superComputer",
-            "pack": "default"
-        },
-        {
-            "prefabId": "9f1fdd92e09dda340a8e73d476b3dc1d",
-            "prefabName": "default_superComputer_2",
-            "prefabPath": "Assets/Process/default/Prefabs/default_superComputer_2.prefab",
-            "prefabResource": "default/default_superComputer_2",
-            "thumbnailId": "142e97608488ca34782ac06b620de741",
-            "thumbnailFile": "default_superComputer_2.png",
-            "thumbnailPath": "Assets/Process/default/Thumbnails/default_superComputer_2.png",
-            "thumbnailResource": "default/Thumbnails/default_superComputer_2",
-            "pack": "default"
-        },
-        {
-            "prefabId": "729e38d53f82c394299828b309abc31c",
-            "prefabName": "default_superComputer_3",
-            "prefabPath": "Assets/Process/default/Prefabs/default_superComputer_3.prefab",
-            "prefabResource": "default/default_superComputer_3",
-            "thumbnailId": "8d5c0568371a84a42b2ef4a460e640e5",
-            "thumbnailFile": "default_superComputer_3.png",
-            "thumbnailPath": "Assets/Process/default/Thumbnails/default_superComputer_3.png",
-            "thumbnailResource": "default/Thumbnails/default_superComputer_3",
             "pack": "default"
         },
         {
