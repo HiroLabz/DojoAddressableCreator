@@ -64,12 +64,32 @@ namespace Dojo.Game.UI
         [Tooltip("The category that opens the departments panel instead of the item grid.")]
         [SerializeField] string departmentsCategory = "departments";
 
-        [Tooltip("The floor layouts the packs offer and the ones made here, each opened in the floor editor.")]
+        [Tooltip("The floor plans the packs offer and the ones made here, each opened in the floor plan editor. " +
+                 "Shown inside the FLOOR tab, on the FLOOR PLANS side of its switch.")]
         [SerializeField] FloorLayoutsDisplayUI floorLayoutsHud;
 
-        [Tooltip("The category that opens the floor layouts panel instead of the item grid. Not 'floors': " +
-                 "that is the single tiles' tab.")]
+        [Tooltip("A category that opens the floor plans panel on its own, when a rail has an entry for it. " +
+                 "The rail has none today: the plans sit inside the FLOOR tab.")]
         [SerializeField] string floorLayoutsCategory = "layouts";
+
+        [Header("Floor tab switch")]
+        [Tooltip("The TILES | FLOOR PLANS switch shown with the FLOOR tab.")]
+        [SerializeField] GameObject floorSwitch;
+
+        [Tooltip("Shows the single tiles' grid in the FLOOR tab.")]
+        [SerializeField] Button tilesButton;
+
+        [Tooltip("Shows the floor plans panel in the FLOOR tab.")]
+        [SerializeField] Button plansButton;
+
+        [Tooltip("The FLOOR tab's category: the one the switch belongs to. The tiles' grid is this category's.")]
+        [SerializeField] string floorTilesCategory = "floors";
+
+        /// <summary>Which side of the FLOOR tab's switch is up: the plans, or the tiles.</summary>
+        bool floorPlansShown;
+
+        /// <summary>False while a room or a floor plan is being made: the FLOOR tab shows tiles only.</summary>
+        bool plansAllowed = true;
 
         [Header("Chrome")]
         [Tooltip("The X in the header. Closes the whole screen.")]
@@ -124,6 +144,7 @@ namespace Dojo.Game.UI
                     : null);
             }
 
+            AllowPlans(!editing);
             holdOpen = editing;
 
             if (!editing)
@@ -157,6 +178,7 @@ namespace Dojo.Game.UI
                     : null);
             }
 
+            AllowPlans(!editing);
             holdOpen = editing;
 
             if (!editing)
@@ -238,9 +260,90 @@ namespace Dojo.Game.UI
                 closeButton.onClick.AddListener(Close);
             }
 
+            if (tilesButton != null)
+            {
+                tilesButton.onClick.AddListener(() => ShowFloorPlans(false));
+            }
+
+            if (plansButton != null)
+            {
+                plansButton.onClick.AddListener(() => ShowFloorPlans(true));
+            }
+
+            if (floorSwitch != null)
+            {
+                floorSwitch.SetActive(false);
+            }
+
             // Authored visible so the screen can be arranged, and shut on the first frame so the
             // game does not open onto it.
             root.SetActive(false);
+        }
+
+        /// <summary>
+        /// Turns the FLOOR tab to its floor plans or back to its tiles, and shows the tab again so
+        /// the right panel comes up.
+        /// </summary>
+        public void ShowFloorPlans(bool plans)
+        {
+            floorPlansShown = plans && plansAllowed;
+
+            if (rail != null && string.Equals(rail.Selected, floorTilesCategory, StringComparison.OrdinalIgnoreCase))
+            {
+                OnCategorySelected(rail.Selected);
+            }
+        }
+
+        /// <summary>
+        /// Whether the FLOOR tab may show its plans: not while a room or a floor plan is being made,
+        /// when the tab is for laying tiles.
+        /// </summary>
+        void AllowPlans(bool allowed)
+        {
+            plansAllowed = allowed;
+
+            if (!allowed && floorPlansShown)
+            {
+                floorPlansShown = false;
+            }
+
+            if (plansButton != null)
+            {
+                plansButton.gameObject.SetActive(allowed);
+            }
+
+            if (rail != null && string.Equals(rail.Selected, floorTilesCategory, StringComparison.OrdinalIgnoreCase))
+            {
+                OnCategorySelected(rail.Selected);
+            }
+        }
+
+        /// <summary>Lights the side of the switch that is up: full colour, the other dimmed.</summary>
+        void RefreshFloorSwitch(bool shown)
+        {
+            if (floorSwitch != null && floorSwitch.activeSelf != shown)
+            {
+                floorSwitch.SetActive(shown);
+            }
+
+            Light(tilesButton, !floorPlansShown);
+            Light(plansButton, floorPlansShown);
+        }
+
+        static readonly Color Dim = new Color(0.55f, 0.6f, 0.7f, 0.85f);
+
+        static void Light(Button button, bool on)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            var face = button.targetGraphic;
+            if (face != null)
+            {
+                face.color = on ? Color.white : Dim;
+            }
         }
 
         void OnDestroy()
@@ -379,8 +482,14 @@ namespace Dojo.Game.UI
             bool departments = !string.IsNullOrEmpty(departmentsCategory)
                 && string.Equals(category, departmentsCategory, StringComparison.OrdinalIgnoreCase);
 
-            bool layouts = !string.IsNullOrEmpty(floorLayoutsCategory)
-                && string.Equals(category, floorLayoutsCategory, StringComparison.OrdinalIgnoreCase);
+            // The FLOOR tab: its switch is shown, and its plans side takes the grid's place.
+            bool floorTab = !string.IsNullOrEmpty(floorTilesCategory)
+                && string.Equals(category, floorTilesCategory, StringComparison.OrdinalIgnoreCase);
+            RefreshFloorSwitch(floorTab);
+
+            bool layouts = (floorTab && floorPlansShown)
+                || (!string.IsNullOrEmpty(floorLayoutsCategory)
+                    && string.Equals(category, floorLayoutsCategory, StringComparison.OrdinalIgnoreCase));
 
             if (floorLayoutsHud != null)
             {
@@ -395,7 +504,7 @@ namespace Dojo.Game.UI
             }
             else if (layouts)
             {
-                Debug.LogWarning("[InventoryScreen] The Floors tab has no panel behind it. "
+                Debug.LogWarning("[InventoryScreen] The FLOOR tab has no floor plans panel behind it. "
                     + "Run Tools > Dojo > Build Floor Editor.", this);
             }
 

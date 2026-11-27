@@ -563,6 +563,295 @@ namespace Dojo.Game.Placement
             return saved;
         }
 
+        /// <summary>What <see cref="AddLayout"/> did: the pieces built, skipped where a spot was taken, or not found, and the rooms and areas made.</summary>
+        public struct LayoutResult
+        {
+            public int Built;
+            public int Skipped;
+            public int Missing;
+            public int Rooms;
+            public int Areas;
+        }
+
+        /// <summary>
+        /// Lays a floor layout onto one floor: its pieces, its rooms as rooms, and its named areas,
+        /// turned <paramref name="steps"/> quarter turns about its own origin and then moved by
+        /// <paramref name="offset"/>. Nothing already on the floor is removed or moved: a piece of
+        /// the layout whose ground overlaps something in <paramref name="taken"/> is left out, an
+        /// area's cells over a named area or furniture are dropped, and a room none of whose pieces
+        /// landed is not made (ClickUp 14ze67xgf0v, AC 6 and 7).
+        /// </summary>
+        /// <remarks>
+        /// A layout is a world file of one floor, as a room is, so its pieces go through
+        /// <see cref="BuildPiece"/> exactly as a loaded world's do. Unlike a room's they are not
+        /// grouped: laid, they are the floor's own - loose, or under the container of the room they
+        /// came in - and the layout is not picked up again as one. Where it goes is the caller's
+        /// choice; what it skips is decided here, piece by piece, against what stood before.
+        /// </remarks>
+        public LayoutResult AddLayout(WorldSave layout, int floorIndex, Vector3 offset, int steps, string layoutName, List<RoomPlacer.Taken> taken)
+        {
+            var result = new LayoutResult();
+
+            if (layout == null)
+            {
+                return result;
+            }
+
+            layout.Normalised();
+            taken = taken ?? new List<RoomPlacer.Taken>();
+
+            var floorRoot = storeys.Floor(floorIndex);
+            var layer = ResolveLayer();
+            var turn = Quaternion.Euler(0f, PlacementGrid.Normalise(steps) * 90f, 0f);
+
+            // The layout's rooms as rooms: a fresh container for each, standing where the room does
+            // once the layout is turned and moved, with its entrances turned and moved the same.
+            var containers = new Dictionary<string, RoomContainer>(StringComparer.Ordinal);
+
+            foreach (var saved in layout.rooms)
+            {
+                if (saved == null || string.IsNullOrEmpty(saved.id) || saved.floor != 0 || containers.ContainsKey(saved.id))
+                {
+                    continue;
+                }
+
+                var at = turn * saved.position + offset;
+                var container = RoomContainer.Create(floorRoot, NewRoomId(), saved.name, saved.address, storeys.FromFloor(floorIndex, at));
+                var entrances = new List<RoomContainer.Entrance>();
+
+                foreach (var entrance in saved.entrances ?? new List<WorldSave.SavedOpening>())
+                {
+                    if (entrance == null || entrance.width <= 0f)
+                    {
+                        continue;
+                    }
+
+                    var centre = turn * new Vector3(entrance.centre.x, 0f, entrance.centre.z) + offset;
+                    var facing = turn * new Vector3(entrance.facing.x, 0f, entrance.facing.z);
+
+                    entrances.Add(new RoomContainer.Entrance
+                    {
+                        Centre = new Vector2(centre.x, centre.z),
+                        Facing = new Vector2Int(Mathf.RoundToInt(facing.x), Mathf.RoundToInt(facing.z)),
+                        Width = entrance.width,
+                    });
+                }
+
+                container.SetEntrances(entrances);
+                containers[saved.id] = container;
+            }
+
+            // Every piece built where it would stand, then the ones on taken spots taken away again:
+            // a piece's ground is only known from its colliders once it stands.
+            var built = new List<FurniturePiece>();
+            var hiddenInPlan = new List<FurniturePiece>();
+            var ground = layout.floors.Find(f => f != null && f.index == 0);
+
+            foreach (var saved in ground != null ? ground.pieces : new List<WorldSave.SavedPiece>())
+            {
+                if (saved == null)
+                {
+                    continue;
+                }
+
+                var moved = new WorldSave.SavedPiece
+                {
+                    prefabId = saved.prefabId,
+                    resource = saved.resource,
+                    name = saved.name,
+                    position = turn * saved.position + offset,
+                    rotation = turn * saved.rotation,
+                    scale = saved.scale,
+                    rotationSteps = PlacementGrid.Normalise(saved.rotationSteps + steps),
+                    isFloor = saved.isFloor,
+                    room = saved.room,
+                    hidden = saved.hidden,
+                };
+
+                RoomContainer room;
+                var into = !string.IsNullOrEmpty(saved.room) && containers.TryGetValue(saved.room, out room) ? room.transform : floorRoot;
+                var piece = BuildPiece(moved, floorIndex, into, layer);
+
+                if (piece != null)
+                {
+                    built.Add(piece);
+
+                    if (saved.hidden)
+                    {
+                        hiddenInPlan.Add(piece);
+                    }
+                }
+                else
+                {
+                    result.Missing++;
+                }
+            }
+
+            Physics.SyncTransforms();
+            var kept = new List<FurniturePiece>();
+
+            foreach (var piece in built)
+            {
+                Bounds bounds;
+                string blocker;
+
+                // Skipped where it would lie on anything standing but ground: a wall exactly on a
+                // standing wall is a clash, not a fit (FloorLayoutPlacer.Overlaps).
+                if (RoomPlacer.TrySolidBounds(piece.gameObject, out bounds)
+                    && FloorLayoutPlacer.Overlaps(Rect.MinMaxRect(bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z), taken, out blocker))
+                {
+                    // Off its floor as well as switched off: Destroy waits for the end of the frame.
+                    piece.gameObject.SetActive(false);
+                    piece.transform.SetParent(null, true);
+                    UnityEngine.Object.Destroy(piece.gameObject);
+                    hiddenInPlan.Remove(piece);
+                    result.Skipped++;
+                    continue;
+                }
+
+                kept.Add(piece);
+            }
+
+            // Walls the plan saved turned off: measured where they stand, then turned off again, as
+            // a load does, before anything claims cells.
+            foreach (var piece in hiddenInPlan)
+            {
+                RoomWalls.Hide(piece, null);
+            }
+
+            result.Built = kept.Count;
+
+            // A room with none of its pieces landed is not a room.
+            var live = new List<RoomContainer>();
+
+            foreach (var pair in containers)
+            {
+                if (pair.Value.transform.childCount == 0)
+                {
+                    pair.Value.gameObject.SetActive(false);
+                    pair.Value.transform.SetParent(null, true);
+                    UnityEngine.Object.Destroy(pair.Value.gameObject);
+                }
+                else
+                {
+                    live.Add(pair.Value);
+                }
+            }
+
+            result.Rooms = live.Count;
+
+            // Each room's own walls where it meets what is standing, as a placed room's are
+            // (RoomWalls): the ones along a wall already there turned off, and below, the ones
+            // across a neighbour's entrance. Not RoomWalls.CutAt: that turns off the standing walls
+            // a room's entrance opens through, and a floor plan changes nothing that was already
+            // there (Bob's review of #33).
+            var worldRoot = floorRoot != null ? floorRoot.parent : null;
+
+            foreach (var container in live)
+            {
+                Physics.SyncTransforms();
+                RoomWalls.HideShared(container, null);
+            }
+
+            Physics.SyncTransforms();
+
+            foreach (var container in live)
+            {
+                RoomWalls.CutByNeighbours(container, worldRoot, null);
+            }
+
+            Physics.SyncTransforms();
+            RoomWalls.Reconsider(worldRoot, placement);
+
+            // As a load does: everything standing before the floor list, the cells held and what
+            // rests on what are worked out.
+            Physics.SyncTransforms();
+            placement.RefreshFloors();
+
+            foreach (var piece in kept)
+            {
+                piece.SizeTo(grid.CellSize);
+
+                if (!RoomWalls.IsHidden(piece))
+                {
+                    placement.Register(piece);
+                }
+            }
+
+            placement.ResolveSupports();
+
+            // Its areas, cell by cell: a cell over a named area or furniture is dropped, one over a
+            // floor tile or a wall is kept, as a room's area may reach over those.
+            var areaIds = new Dictionary<int, int>();
+
+            foreach (var saved in ground != null ? ground.blockAreas : new List<WorldSave.SavedBlockArea>())
+            {
+                if (saved == null || saved.area == null || saved.area.Count == 0)
+                {
+                    continue;
+                }
+
+                var cells = new List<Vector3>(saved.area.Count);
+
+                foreach (var point in saved.area)
+                {
+                    var at = turn * point + offset;
+
+                    if (!FloorLayoutPlacer.CellIsTaken(new Vector2(at.x, at.z), taken))
+                    {
+                        cells.Add(storeys.FromFloor(floorIndex, at));
+                    }
+                }
+
+                if (cells.Count == 0)
+                {
+                    continue;
+                }
+
+                var name = string.IsNullOrWhiteSpace(saved.name) ? layoutName : saved.name;
+                var placed = blockAreas.Add(name, floorIndex, cells, saved.areaCellSize > 0f ? saved.areaCellSize : grid.CellSize);
+                placed.Department = saved.department ?? string.Empty;
+                placed.ConferenceRoom = saved.conferenceRoom;
+                areaIds[saved.id] = placed.Id;
+                result.Areas++;
+            }
+
+            // The rooms remember the areas they brought, under the areas' new ids.
+            foreach (var saved in layout.rooms)
+            {
+                RoomContainer container;
+
+                if (saved == null || string.IsNullOrEmpty(saved.id) || !containers.TryGetValue(saved.id, out container) || !live.Contains(container))
+                {
+                    continue;
+                }
+
+                var ids = new List<int>();
+
+                foreach (var old in saved.areaIds ?? new List<int>())
+                {
+                    int fresh;
+
+                    if (areaIds.TryGetValue(old, out fresh))
+                    {
+                        ids.Add(fresh);
+                    }
+                }
+
+                container.SetAreas(ids);
+            }
+
+            storeys.Refresh();
+
+            Debug.Log("[World] laid floor layout '" + layoutName + "' on " + Storeys.LabelFor(floorIndex) + " at ("
+                + offset.x + ", " + offset.z + "), turned " + PlacementGrid.Normalise(steps) * 90 + " degrees - " + result.Built + " piece(s)"
+                + (result.Skipped > 0 ? ", " + result.Skipped + " skipped where the spot was taken" : "")
+                + ", " + result.Rooms + " room(s), " + result.Areas + " area(s)"
+                + (result.Missing > 0 ? ", " + result.Missing + " could not be found" : "") + ".", world);
+
+            return result;
+        }
+
         /// <summary>
         /// A room file's entrances where the room is put: turned by <paramref name="turn"/> about its
         /// origin and moved by <paramref name="offset"/>, in world x and z.

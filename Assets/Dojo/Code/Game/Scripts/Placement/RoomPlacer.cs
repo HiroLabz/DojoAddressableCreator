@@ -46,11 +46,15 @@ namespace Dojo.Game.Placement
             /// <summary>How far a room's edge may reach over it, beyond <see cref="Tolerance"/>.</summary>
             public readonly float Slack;
 
-            public Taken(Rect rect, string what, float slack = 0f)
+            /// <summary>A floor tile: ground holds no cells, so lying over its edge takes nothing from it.</summary>
+            public readonly bool Ground;
+
+            public Taken(Rect rect, string what, float slack = 0f, bool ground = false)
             {
                 Rect = rect;
                 What = what;
                 Slack = slack;
+                Ground = ground;
             }
         }
 
@@ -87,7 +91,7 @@ namespace Dojo.Game.Placement
         /// How far two things may overlap and still count as touching. Colliders are measured, not
         /// authored to the grid, so two flush edges can disagree by a few millimetres.
         /// </summary>
-        const float Tolerance = 0.05f;
+        public const float Tolerance = 0.05f;
 
         /// <summary>
         /// What a room's edge reaches past its outermost piece centre or area cell: half a wall's
@@ -241,7 +245,7 @@ namespace Dojo.Game.Placement
                     if (TrySolidBounds(child.gameObject, out bounds))
                     {
                         taken.Add(new Taken(Rect.MinMaxRect(bounds.min.x, bounds.min.z, bounds.max.x, bounds.max.z),
-                            NameOf(child), MayOverhang(child) ? Overhang : 0f));
+                            NameOf(child), MayOverhang(child) ? Overhang : 0f, IsGround(child)));
                     }
                 }
             }
@@ -266,6 +270,13 @@ namespace Dojo.Game.Placement
             }
 
             return taken;
+        }
+
+        /// <summary>A floor tile.</summary>
+        static bool IsGround(Transform piece)
+        {
+            var furniture = piece.GetComponent<FurniturePiece>();
+            return furniture != null && furniture.IsFloor;
         }
 
         /// <summary>Floor tiles and walls: what a room's walls may stand over the edge of.</summary>
@@ -942,7 +953,7 @@ namespace Dojo.Game.Placement
         /// collider, and a switched-off collider reports a zero-sized box at the world origin, which
         /// would stretch the piece's footprint all the way back to the middle of the map.
         /// </remarks>
-        static bool TrySolidBounds(GameObject root, out Bounds bounds)
+        public static bool TrySolidBounds(GameObject root, out Bounds bounds)
         {
             bounds = new Bounds();
             var found = false;

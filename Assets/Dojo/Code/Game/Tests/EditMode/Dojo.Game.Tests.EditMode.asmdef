@@ -5,6 +5,7 @@
         "Dojo.Game",
         "Dojo.Game.Editor",
         "Dojo.Framework",
+        "VContainer",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

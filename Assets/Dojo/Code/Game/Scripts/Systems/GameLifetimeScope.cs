@@ -273,6 +273,7 @@ namespace Dojo.Game.Systems
             builder.Register<FloorLayoutCatalog>(Lifetime.Singleton);
             builder.Register<CustomFloorLayouts>(Lifetime.Singleton);
             builder.Register<FloorLayoutEditor>(Lifetime.Singleton);
+            builder.Register<FloorLayoutPlacer>(Lifetime.Singleton);
 
             // Writes the selected world back whenever anything in it changes. Registered here
             // rather than on the root, because it is only meaningful where there is a world root

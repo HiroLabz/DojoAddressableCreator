@@ -9,14 +9,17 @@ using VContainer;
 namespace Dojo.Game.UI
 {
     /// <summary>
-    /// The FLOORS tab: every floor layout the loaded packs offer and the ones made here, as cards
-    /// like the rooms. <see cref="RoomsDisplayUI"/> for floors (ClickUp 14ze67xgf0v).
+    /// The FLOOR PLANS side of the FLOOR tab: every floor plan the loaded packs offer and the ones
+    /// made here, as cards like the rooms. <see cref="RoomsDisplayUI"/> for floors (ClickUp
+    /// 14ze67xgf0v). "Floor plan" is what the designer reads; the code keeps "layout".
     /// </summary>
     /// <remarks>
-    /// + CREATE LAYOUT leaves the world for a blank floor with the frame on it; EDIT on a card
-    /// opens that layout in the floor editor, to be saved over itself; DELETE and PROMOTE are the
-    /// store's. Placing a layout from its card - laying it on the viewed floor, skipping the spots
-    /// that are taken - is the next PR; until then a click on a card says so.
+    /// Clicking a card puts the layout on the cursor the way a room is - see
+    /// <see cref="PlacementController.BeginLayoutFromInventory"/> - and the card stays lit until it
+    /// is laid or put back; the status line counts the pieces that would be skipped where spots are
+    /// taken. + CREATE LAYOUT leaves the world for a blank floor with the frame on it; EDIT on a
+    /// card opens that layout in the floor editor, to be saved over itself; DELETE and PROMOTE are
+    /// the store's.
     /// </remarks>
     public sealed class FloorLayoutsDisplayUI : MonoBehaviour
     {
@@ -39,6 +42,7 @@ namespace Dojo.Game.UI
         [SerializeField] Button createButton;
 
         FloorLayoutCatalog catalog;
+        FloorLayoutPlacer placer;
         Storeys storeys;
         PlacementController placement;
         FloorLayoutEditor editor;
@@ -48,17 +52,20 @@ namespace Dojo.Game.UI
 
         readonly List<FloorLayoutCard> cards = new List<FloorLayoutCard>();
 
-        // Read and measured once per layout: the size on its card.
+        // Read and measured once per layout: the size on its card, and what is carried when it is
+        // picked up.
         readonly Dictionary<string, Vector2Int> sizes = new Dictionary<string, Vector2Int>();
+        readonly Dictionary<string, FloorLayoutPlacer.Plan> plans = new Dictionary<string, FloorLayoutPlacer.Plan>();
 
         bool listening;
 
         [Inject]
-        public void Construct(FloorLayoutCatalog floorCatalog, Storeys floors, PlacementController placementController,
-            FloorLayoutEditor floorEditor, RoomEditor roomEditor, IDialogManager dialogManager,
-            Dojo.Game.Managers.PopupPrefabs popupPrefabs)
+        public void Construct(FloorLayoutCatalog floorCatalog, FloorLayoutPlacer layoutPlacer, Storeys floors,
+            PlacementController placementController, FloorLayoutEditor floorEditor, RoomEditor roomEditor,
+            IDialogManager dialogManager, Dojo.Game.Managers.PopupPrefabs popupPrefabs)
         {
             catalog = floorCatalog;
+            placer = layoutPlacer;
             storeys = floors;
             placement = placementController;
             editor = floorEditor;
@@ -142,7 +149,7 @@ namespace Dojo.Game.UI
 
             if (!CustomFloorLayouts.IsCustom(layout.address) && !Application.isEditor)
             {
-                Say("'" + layout.name + "' is one of the pack's layouts, and can only be changed in the editor.");
+                Say("'" + layout.name + "' is one of the pack's floor plans, and can only be changed in the editor.");
                 return;
             }
 
@@ -163,7 +170,7 @@ namespace Dojo.Game.UI
 
             if (!CustomFloorLayouts.IsCustom(layout.address))
             {
-                Say("'" + layout.name + "' is one of the pack's layouts, and cannot be deleted.");
+                Say("'" + layout.name + "' is one of the pack's floor plans, and cannot be deleted.");
                 return;
             }
 
@@ -183,6 +190,7 @@ namespace Dojo.Game.UI
                 }
 
                 sizes.Remove(layout.address);
+                plans.Remove(layout.address);
                 Rebuild();
                 Say("'" + layout.name + "' deleted.");
                 Debug.Log("[Floors] Deleted floor layout '" + layout.name + "' (" + layout.address + "): its file, thumbnail and metas.");
@@ -215,7 +223,7 @@ namespace Dojo.Game.UI
                     return;
                 }
 
-                Say("'" + layout.name + "' is one of the pack's layouts now.");
+                Say("'" + layout.name + "' is one of the pack's floor plans now.");
             }
 
             if (dialogs == null)
@@ -224,7 +232,7 @@ namespace Dojo.Game.UI
                 return;
             }
 
-            PopupAsk.Confirm(popups, dialogs, "Promote '" + layout.name + "'?", "It becomes one of the pack's layouts: it ships "
+            PopupAsk.Confirm(popups, dialogs, "Promote '" + layout.name + "'?", "It becomes one of the pack's floor plans: it ships "
                 + "with the content and can no longer be deleted here.", "PROMOTE", MessagePopup.Tone.Info, Promote);
         }
 
@@ -244,6 +252,7 @@ namespace Dojo.Game.UI
         void OnLayoutsChanged()
         {
             sizes.Clear();
+            plans.Clear();
 
             if (gameObject.activeInHierarchy)
             {
@@ -271,6 +280,7 @@ namespace Dojo.Game.UI
         void OnLayoutSaved(FloorLayoutEntry layout)
         {
             sizes.Remove(layout.address);
+            plans.Remove(layout.address);
 
             var listed = cards.Exists(card => card != null && card.Layout != null && card.Layout.address == layout.address);
 
@@ -295,6 +305,69 @@ namespace Dojo.Game.UI
         {
             Unlisten();
             gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// Lights the card whose layout is on the cursor, and while it is there, says how many of
+        /// its pieces would be skipped where spots are taken.
+        /// </summary>
+        void Update()
+        {
+            var inHand = placement != null ? placement.LayoutInHand : null;
+
+            foreach (var card in cards)
+            {
+                if (card != null)
+                {
+                    card.SetSelected(inHand != null && card.Layout != null && card.Layout.address == inHand.address);
+                }
+            }
+
+            if (inHand != null)
+            {
+                var blocker = placement.LayoutBlocker;
+                var clashes = placement.LayoutClashes;
+                Say(blocker != null
+                    ? "It would lie on " + blocker + ". Lay it on open ground."
+                    : clashes == 0
+                        ? string.Empty
+                        : clashes + (clashes == 1 ? " piece is" : " pieces are") + " skipped here: their spots are taken. What is on the floor stays.");
+                carrying = true;
+            }
+            else if (carrying)
+            {
+                Say(string.Empty);
+                carrying = false;
+            }
+        }
+
+        bool carrying;
+
+        FloorLayoutPlacer.Plan PlanFor(FloorLayoutEntry layout)
+        {
+            if (layout == null || placer == null)
+            {
+                return null;
+            }
+
+            FloorLayoutPlacer.Plan plan;
+
+            if (!plans.TryGetValue(layout.address, out plan))
+            {
+                string problem;
+                plan = placer.Prepare(layout, out problem);
+
+                if (plan == null)
+                {
+                    // Not cached: the file may be mended, or the content arrive, before the list changes.
+                    Debug.LogWarning("[Floors] '" + layout.name + "' cannot be laid: " + problem, this);
+                    return null;
+                }
+
+                plans[layout.address] = plan;
+            }
+
+            return plan;
         }
 
         void Listen()
@@ -399,18 +472,42 @@ namespace Dojo.Game.UI
             }
 
             var floor = storeys != null ? storeys.Viewed : 0;
-            subtitleLabel.text = Storeys.LabelFor(floor) + " · " + cards.Count + (cards.Count == 1 ? " LAYOUT" : " LAYOUTS");
+            subtitleLabel.text = Storeys.LabelFor(floor) + " · " + cards.Count + (cards.Count == 1 ? " FLOOR PLAN" : " FLOOR PLANS");
         }
 
         void OnPicked(FloorLayoutEntry layout)
         {
-            if (layout == null)
+            if (placement == null || layout == null)
             {
                 return;
             }
 
-            // Placing a layout - laid on the viewed floor, taken spots skipped - is the next PR.
-            Say("Placing '" + layout.name + "' on a floor comes next. EDIT opens it in the floor editor.");
+            if ((editor != null && editor.IsEditing) || (rooms != null && rooms.IsEditing))
+            {
+                Say("Save or cancel the editor first.");
+                return;
+            }
+
+            var plan = PlanFor(layout);
+
+            if (plan == null)
+            {
+                Say("That floor plan's file could not be read.");
+                return;
+            }
+
+            if (placement.BeginLayoutFromInventory(placer, plan))
+            {
+                Say(string.Empty);
+            }
+            else if (placement.IsBusy)
+            {
+                Say("Put down what is in hand first.");
+            }
+            else
+            {
+                Say("Floor plans are laid from the Top or Perspective view.");
+            }
         }
 
         void Say(string text)

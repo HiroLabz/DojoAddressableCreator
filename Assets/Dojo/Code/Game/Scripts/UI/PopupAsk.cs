@@ -137,9 +137,12 @@ namespace Dojo.Game.UI
         /// name that is already one of <paramref name="existing"/> asks "Replace?" in the alert tone
         /// first, and answers with the existing name's own spelling. The old save-as dialog, with its
         /// rows of names to replace, stands in only where the Prompt popup is missing.
+        /// <paramref name="what"/> is the kind of thing being saved, as the question names it: a
+        /// room, or a floor plan.
         /// </summary>
         public static void SaveAs(PopupPrefabs popups, IDialogManager dialogs, string heading, string question,
-            IList<string> existing, string suggestion, string hint, Action<string> onName, Action cancelled = null)
+            IList<string> existing, string suggestion, string hint, Action<string> onName, Action cancelled = null,
+            string what = "room")
         {
             if (Layer(popups?.Prompt) == null)
             {
@@ -158,7 +161,7 @@ namespace Dojo.Game.UI
                 }
 
                 Confirm(popups, dialogs, "Replace '" + replacing + "'?",
-                    "You already have a room called that. Saving replaces it.", "REPLACE",
+                    "You already have a " + what + " called that. Saving replaces it.", "REPLACE",
                     MessagePopup.Tone.Alert, () => onName?.Invoke(replacing), cancelled);
             }, cancelled);
         }
