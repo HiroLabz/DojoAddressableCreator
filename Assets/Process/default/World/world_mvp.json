@@ -2,7 +2,7 @@
     "version": 2,
     "worlds": [
         {
-            "name": "Main World",
+            "name": "World1",
             "savedUtc": "2026-11-27T09:17:49.1400951Z",
             "floors": [
                 {
@@ -8182,5 +8182,5 @@
             "managerAreas": []
         }
     ],
-    "current": "Main World"
+    "current": "World1"
 }
