@@ -16,45 +16,6 @@
             "data": ""
         },
         {
-            "id": "default.defaultsupercomputer",
-            "category": "appliances",
-            "name": "default_superComputer",
-            "address": "default/default_superComputer",
-            "icon": "default/Thumbnails/default_superComputer",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "default.defaultsupercomputer2",
-            "category": "appliances",
-            "name": "default_superComputer_2",
-            "address": "default/default_superComputer_2",
-            "icon": "default/Thumbnails/default_superComputer_2",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "default.defaultsupercomputer3",
-            "category": "appliances",
-            "name": "default_superComputer_3",
-            "address": "default/default_superComputer_3",
-            "icon": "default/Thumbnails/default_superComputer_3",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
             "id": "default.defaultknowledgeshelf",
             "category": "drawers",
             "name": "default_knowledge_shelf",
@@ -73,19 +34,6 @@
             "name": "default_accent_side_table",
             "address": "default/default_accent_side_table",
             "icon": "default/Thumbnails/default_accent_side_table",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
-            "id": "default.defaultbaseplatform",
-            "category": "floors",
-            "name": "default_base_platform",
-            "address": "default/default_base_platform",
-            "icon": "default/Thumbnails/default_base_platform",
             "target": "",
             "footprint": {
                 "x": 0,
@@ -562,19 +510,6 @@
             "data": ""
         },
         {
-            "id": "default.defaultstraightwallpanel",
-            "category": "walls",
-            "name": "default_straight_wall_panel",
-            "address": "default/default_straight_wall_panel",
-            "icon": "default/Thumbnails/default_straight_wall_panel",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
             "id": "default.defaulttablehologrameffect",
             "category": "appliances",
             "name": "default_table_hologram_effect",
@@ -645,6 +580,58 @@
             "name": "default_elevator_mvp",
             "address": "default/default_elevator_mvp",
             "icon": "default/Thumbnails/default_elevator_mvp",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultsupercomputermvp",
+            "category": "appliances",
+            "name": "default_supercomputer_mvp",
+            "address": "default/default_supercomputer_mvp",
+            "icon": "default/Thumbnails/default_supercomputer_mvp",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultstraightwallpanelglass",
+            "category": "walls",
+            "name": "default_straight_wall_panel_glass",
+            "address": "default/default_straight_wall_panel_glass",
+            "icon": "default/Thumbnails/default_straight_wall_panel_glass",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultstraightwallpanel",
+            "category": "walls",
+            "name": "default_straight_wall_panel",
+            "address": "default/default_straight_wall_panel",
+            "icon": "default/Thumbnails/default_straight_wall_panel",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultbaseplatform",
+            "category": "floors",
+            "name": "default_base_platform",
+            "address": "default/default_base_platform",
+            "icon": "default/Thumbnails/default_base_platform",
             "target": "",
             "footprint": {
                 "x": 0,

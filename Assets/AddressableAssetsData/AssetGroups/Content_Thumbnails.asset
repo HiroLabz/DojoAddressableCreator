@@ -33,12 +33,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 142e97608488ca34782ac06b620de741
-    m_Address: default/Thumbnails/default_superComputer_2
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 18c6c8bcc9ce87e42909da10b16aa227
     m_Address: default/Thumbnails/default_triple_monitor
     m_ReadOnly: 0
@@ -129,12 +123,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 5c429e2af864d04418e72547a50956d2
-    m_Address: default/Thumbnails/default_superComputer
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5e603276b5131c249a69e973cf9dd738
     m_Address: default/Thumbnails/default_base_platform
     m_ReadOnly: 0
@@ -201,6 +189,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 83a40f9dc4f4fe0458dc4e7312d79073
+    m_Address: default/Thumbnails/default_straight_wall_panel_glass
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 83c7d1234dd1ff44b84c7d4f9de597b7
     m_Address: default/Thumbnails/default_led_trim_light
     m_ReadOnly: 0
@@ -225,12 +219,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 8d5c0568371a84a42b2ef4a460e640e5
-    m_Address: default/Thumbnails/default_superComputer_3
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8e7d604ffca54e340ba7fda846b6d6e6
     m_Address: default/Thumbnails/default_front_counter
     m_ReadOnly: 0
@@ -245,6 +233,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 98243c021721a8b4b943aa15822788a3
     m_Address: default/Thumbnails/default_lounge_pod_chair
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9cb964436f913be4a9e10ed92076391c
+    m_Address: default/Thumbnails/default_supercomputer_mvp
     m_ReadOnly: 0
     m_SerializedLabels:
     - default

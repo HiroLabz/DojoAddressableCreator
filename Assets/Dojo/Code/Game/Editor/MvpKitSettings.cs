@@ -44,6 +44,10 @@ namespace Dojo.Game.Editor
 
         [Tooltip("The inventory tab it goes under. Empty: the Addressable Generator's guess from the name.")]
         public string category;
+
+        [Tooltip("A clip in the model to loop, by name (e.g. SuperComputersphere|SuperComputersphereAction). " +
+                 "Empty: the piece is built static and its clips are not used.")]
+        public string animation;
     }
 
     /// <summary>

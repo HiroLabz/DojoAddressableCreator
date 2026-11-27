@@ -1,4 +1,3 @@
-using Dojo.Game.InGame.Terminals;
 using UnityEngine;
 using UnityEngine.AI;
 using VContainer;
@@ -110,15 +109,10 @@ namespace Dojo.Game.Placement
                 piece.gameObject.AddComponent<PlacedPiece>();
             }
 
-            // What the game makes of two of the kit's models, by name, so the creator shows them as
-            // the game does (Jacob, 19 Nov): the server rack, the bridge to Niru, glows; the display
-            // shelf, the knowledge base, holds a book per document.
-            if (prefab.name.IndexOf("server_rack", System.StringComparison.OrdinalIgnoreCase) >= 0
-                && piece.GetComponent<Dojo.Game.InGame.Terminals.TerminalPulse>() == null)
-            {
-                piece.gameObject.AddComponent<Dojo.Game.InGame.Terminals.TerminalPulse>();
-            }
-
+            // What the game makes of the kit's display shelf, by name, so the creator shows it as the
+            // game does (Jacob, 19 Nov): the knowledge base, holding a book per document. The server
+            // rack no longer glows: it stopped being the bridge to Niru when the MVP supercomputer
+            // came, and is plain furniture in the game too (Jacob, 27 Nov).
             if (prefab.name.IndexOf("display_shelf", System.StringComparison.OrdinalIgnoreCase) >= 0
                 && piece.GetComponent<Dojo.Game.InGame.Knowledge.KnowledgeShelfBooks>() == null)
             {
