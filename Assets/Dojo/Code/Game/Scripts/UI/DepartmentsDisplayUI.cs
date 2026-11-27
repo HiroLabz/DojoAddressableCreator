@@ -37,6 +37,19 @@ namespace Dojo.Game.UI
 
         readonly List<DepartmentRow> rows = new List<DepartmentRow>();
 
+        /// <summary>The cards' pictures of their departments, released when the cards are rebuilt.</summary>
+        readonly List<Sprite> snapshots = new List<Sprite>();
+
+        void ReleaseSnapshots()
+        {
+            foreach (var snapshot in snapshots)
+            {
+                AreaPictures.Release(snapshot);
+            }
+
+            snapshots.Clear();
+        }
+
         [Inject]
         public void Construct(BlockAreas blockAreas, Storeys floors, IAgentRegistry agentRegistry, AgentPortraits agentPortraits)
         {
@@ -45,6 +58,8 @@ namespace Dojo.Game.UI
             registry = agentRegistry;
             portraits = agentPortraits;
         }
+
+        void OnDestroy() => ReleaseSnapshots();
 
         public void Show()
         {
@@ -66,11 +81,15 @@ namespace Dojo.Game.UI
             {
                 if (row != null)
                 {
+                    // Out of the list at once: Destroy waits for the end of the frame, and the old
+                    // cards laid out beside the new ones opened the list scrolled down (Jacob, 27 Nov).
+                    row.transform.SetParent(null, false);
                     Destroy(row.gameObject);
                 }
             }
 
             rows.Clear();
+            ReleaseSnapshots();
 
             var lines = areas != null
                 ? DepartmentSummary.Summarise(areas.All, id => DepartmentSummary.AgentNamesIn(areas, registry, id))
@@ -83,7 +102,9 @@ namespace Dojo.Game.UI
                     var row = Instantiate(rowPrefab, listContent);
                     row.gameObject.SetActive(true);
                     var ids = DepartmentSummary.AgentIdsIn(areas, line.AreaList);
-                    row.Bind(line, ids.Count > 0 && portraits != null ? portraits.For(ids[0]) : null);
+                    var snapshot = AreaPictures.Picture(line.AreaList);
+                    if (snapshot != null) snapshots.Add(snapshot);
+                    row.Bind(line, ids.Count > 0 && portraits != null ? portraits.For(ids[0]) : null, snapshot);
                     rows.Add(row);
                 }
 
@@ -91,6 +112,14 @@ namespace Dojo.Game.UI
                 if (content != null)
                 {
                     LayoutRebuilder.ForceRebuildLayoutImmediate(content);
+
+                    // The list starts at its first card.
+                    var scroll = content.GetComponentInParent<ScrollRect>(true);
+                    if (scroll != null)
+                    {
+                        scroll.StopMovement();
+                        scroll.verticalNormalizedPosition = 1f;
+                    }
                 }
             }
             else

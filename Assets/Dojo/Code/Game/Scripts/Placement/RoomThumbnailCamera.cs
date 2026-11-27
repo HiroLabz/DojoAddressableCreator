@@ -5,19 +5,28 @@ using UnityEngine.Rendering;
 namespace Dojo.Game.Placement
 {
     /// <summary>
-    /// Renders a thumbnail of a room while the game runs, for a room the player has just made.
+    /// Renders a thumbnail of a room while the game runs, for a room the player has just made, and
+    /// any other part of the world as a picture (the Departments tab's snapshots).
     /// </summary>
     /// <remarks>
     /// The same view as the pack rooms' thumbnails, which the editor renders: orthographic, from a
     /// three-quarter angle a little above, framed to the room, on a clear background. Drawn by a
     /// camera made for the one frame and only seeing the layer placed pieces are on, so the UI,
     /// the characters and the placement highlight are not in the picture.
+    /// <para>
+    /// Taken from DojoAddressableCreator as it is. The room editor (<see cref="RoomEditor"/>)
+    /// hands it its own root, far from the world, so nothing of the world is ever framed.
+    /// </para>
+    /// <para>
+    /// Framed by <see cref="ThumbnailFraming"/>, so the whole room is in the picture: it used to
+    /// size the view to the room's largest half-width, which cut off its corners.
+    /// </para>
     /// </remarks>
     public static class RoomThumbnailCamera
     {
         const int Size = 256;
-        const float Yaw = 135f;
-        const float Pitch = 40f;
+        public const float Yaw = 135f;
+        public const float Pitch = 40f;
         const float Padding = 1.1f;
 
         /// <summary>A PNG of everything drawn under <paramref name="root"/> on <paramref name="layer"/>, or null.</summary>
@@ -30,24 +39,46 @@ namespace Dojo.Game.Placement
                 return null;
             }
 
+            var picture = RenderBounds(bounds, 1 << layer, Size);
+
+            if (picture == null)
+            {
+                return null;
+            }
+
+            try
+            {
+                return picture.EncodeToPNG();
+            }
+            finally
+            {
+                Discard(picture);
+            }
+        }
+
+        /// <summary>
+        /// A square picture of whatever <paramref name="cullingMask"/> draws inside
+        /// <paramref name="bounds"/>, from the thumbnails' angle, on a clear background; null when it
+        /// could not be drawn. The caller owns the texture.
+        /// </summary>
+        public static Texture2D RenderBounds(Bounds bounds, int cullingMask, int size = Size, float padding = Padding)
+        {
+            if (bounds.size == Vector3.zero || size <= 0)
+            {
+                return null;
+            }
+
             var go = new GameObject("RoomThumbnailCamera");
             var camera = go.AddComponent<Camera>();
-            var target = new RenderTexture(Size, Size, 24, RenderTextureFormat.ARGB32);
-            var read = new Texture2D(Size, Size, TextureFormat.RGBA32, false);
+            var target = new RenderTexture(size, size, 24, RenderTextureFormat.ARGB32);
+            var read = new Texture2D(size, size, TextureFormat.RGBA32, false);
             var previous = RenderTexture.active;
 
             try
             {
-                var direction = Quaternion.Euler(Pitch, Yaw, 0f) * Vector3.forward;
-                var extent = Mathf.Max(bounds.extents.x, Mathf.Max(bounds.extents.y, bounds.extents.z));
-
                 camera.enabled = false;
-                camera.orthographic = true;
-                camera.orthographicSize = extent * Padding;
-                camera.transform.SetPositionAndRotation(bounds.center - direction * (extent * 4f), Quaternion.LookRotation(direction));
-                camera.nearClipPlane = 0.01f;
-                camera.farClipPlane = extent * 20f;
-                camera.cullingMask = 1 << layer;
+                ThumbnailFraming.Apply(camera, ThumbnailFraming.Fit(bounds, Pitch, Yaw, padding));
+                camera.cullingMask = cullingMask;
                 camera.clearFlags = CameraClearFlags.SolidColor;
                 camera.backgroundColor = new Color(0f, 0f, 0f, 0f);
                 camera.targetTexture = target;
@@ -66,19 +97,39 @@ namespace Dojo.Game.Placement
                 }
 
                 RenderTexture.active = target;
-                read.ReadPixels(new Rect(0f, 0f, Size, Size), 0, 0);
+                read.ReadPixels(new Rect(0f, 0f, size, size), 0, 0);
                 read.Apply(false, false);
 
-                return read.EncodeToPNG();
+                var picture = read;
+                read = null;
+                return picture;
             }
             finally
             {
                 RenderTexture.active = previous;
                 camera.targetTexture = null;
-                Object.Destroy(go);
-                Object.Destroy(read);
+                Discard(go);
+
+                if (read != null)
+                {
+                    Discard(read);
+                }
+
                 target.Release();
-                Object.Destroy(target);
+                Discard(target);
+            }
+        }
+
+        /// <summary>Destroys at the end of the frame in play, at once outside it, where Destroy is refused.</summary>
+        static void Discard(Object thing)
+        {
+            if (Application.isPlaying)
+            {
+                Object.Destroy(thing);
+            }
+            else
+            {
+                Object.DestroyImmediate(thing);
             }
         }
 
