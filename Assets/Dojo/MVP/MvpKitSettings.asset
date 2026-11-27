@@ -17,179 +17,234 @@ MonoBehaviour:
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: BasePlatform
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: ControlConsole
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: CurvedWallFacade
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: DeskBeacon
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: DeskPlant
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: DevLabDeskBench
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: DisplayShelf
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: DividerWallLarge
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: DividerWallMedium
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: DividerWallSmall
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: DualMonitor
     prefabName: 
     kind: 0
-    category: 
+    category: appliances
+    animation: 
   - model: DualWorkstationDesk
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: Elevator
     prefabName: 
     kind: 0
-    category: 
+    category: others
+    animation: 
   - model: EntryPortalWall
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: ErgonomicOfficeChair
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: FrontCounter
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: GlassPartition
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: GlassPerimeterRailing
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: Hologram Projector
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: LargePresentationWallDisplay
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: LEDTrimLight
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: LightGrayFloorTile
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: LongPlanter
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: LoungePodChair
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: LowLoungeTable
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: MediumPlanter
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: MeetingChair
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: MeetingTable
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: PartitionEndCap
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: PlanterWallBox
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: PrinterStorageModule
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: ServerRackTower
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: ServerWallModule
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: SingleMonitor
     prefabName: 
     kind: 0
-    category: 
+    category: appliances
+    animation: 
   - model: SingleWorkstationDesk
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: SmallPottedPlant
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: StorageCabinet
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: StraightWallPanel
     prefabName: 
-    kind: 0
+    kind: 6
     category: 
+    animation: 
+  - model: StraightWallPanelGlass
+    prefabName: 
+    kind: 0
+    category: walls
+    animation: 
+  - model: Supercomputer
+    prefabName: default_supercomputer_mvp
+    kind: 1
+    category: appliances
+    animation: SuperComputersphere|SuperComputersphereAction
   - model: TableHologramEffect
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: TallPottedPlant
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: TripleMonitor
     prefabName: 
     kind: 0
-    category: 
+    category: appliances
+    animation: 
   - model: WallDashboardScreen
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: WoodFloorTile
     prefabName: 
     kind: 0
     category: 
+    animation: 
   - model: WorkStationReturnTable
     prefabName: 
     kind: 0
     category: 
+    animation: 
