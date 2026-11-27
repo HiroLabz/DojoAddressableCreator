@@ -443,6 +443,11 @@ namespace Dojo.Game.Placement
                 Destroy(roomGhost.gameObject);
             }
 
+            if (layoutGhost != null)
+            {
+                Destroy(layoutGhost.gameObject);
+            }
+
             // A room lifted out of the world is part of it: torn down mid-move, it goes back.
             if (roomMove != null && roomPlacer != null && roomMove.Room != null)
             {

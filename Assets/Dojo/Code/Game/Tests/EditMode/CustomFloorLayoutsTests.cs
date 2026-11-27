@@ -168,7 +168,7 @@ namespace Dojo.Game.Tests.EditMode
             string problem;
 
             Assert.IsFalse(store.IsNameFree("Open Plan", out problem));
-            Assert.That(problem, Does.Contain("taken by one of the pack's layouts"));
+            Assert.That(problem, Does.Contain("taken by one of the pack's floor plans"));
 
             Assert.IsTrue(store.IsNameFree("Corner", out problem));
             store.Save("Corner", Layout("Corner"), null);
@@ -231,7 +231,7 @@ namespace Dojo.Game.Tests.EditMode
             string problem;
 
             Assert.IsFalse(store.Promote(address, out problem));
-            Assert.That(problem, Does.Contain("already has a layout called default_floor_corner"));
+            Assert.That(problem, Does.Contain("already has a floor plan called default_floor_corner"));
             Assert.IsTrue(File.Exists(Path.Combine(folder, "floor_corner.json")), "the made file was touched");
         }
 
