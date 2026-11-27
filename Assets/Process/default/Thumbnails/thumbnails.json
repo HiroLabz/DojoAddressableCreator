@@ -1,5 +1,5 @@
 {
-    "generatedUtc": "2026-11-18T12:30:03.8388003Z",
+    "generatedUtc": "2026-11-27T10:09:30.2381925Z",
     "pixelSize": 256,
     "sourceFolder": "Assets/Process/default/Prefabs",
     "pack": "default",
@@ -467,6 +467,17 @@
             "pack": "default"
         },
         {
+            "prefabId": "5e3dac2e872e2104ebd0dd90f868be8a",
+            "prefabName": "default_straight_wall_panel_glass",
+            "prefabPath": "Assets/Process/default/Prefabs/default_straight_wall_panel_glass.prefab",
+            "prefabResource": "default/default_straight_wall_panel_glass",
+            "thumbnailId": "83a40f9dc4f4fe0458dc4e7312d79073",
+            "thumbnailFile": "default_straight_wall_panel_glass.png",
+            "thumbnailPath": "Assets/Process/default/Thumbnails/default_straight_wall_panel_glass.png",
+            "thumbnailResource": "default/Thumbnails/default_straight_wall_panel_glass",
+            "pack": "default"
+        },
+        {
             "prefabId": "9f8002f05dd952d41ba136e912f48272",
             "prefabName": "default_superComputer",
             "prefabPath": "Assets/Process/default/Prefabs/default_superComputer.prefab",
@@ -497,6 +508,17 @@
             "thumbnailFile": "default_superComputer_3.png",
             "thumbnailPath": "Assets/Process/default/Thumbnails/default_superComputer_3.png",
             "thumbnailResource": "default/Thumbnails/default_superComputer_3",
+            "pack": "default"
+        },
+        {
+            "prefabId": "9fb3e8943c4afef4a863368479d3fb89",
+            "prefabName": "default_supercomputer_mvp",
+            "prefabPath": "Assets/Process/default/Prefabs/default_supercomputer_mvp.prefab",
+            "prefabResource": "default/default_supercomputer_mvp",
+            "thumbnailId": "9cb964436f913be4a9e10ed92076391c",
+            "thumbnailFile": "default_supercomputer_mvp.png",
+            "thumbnailPath": "Assets/Process/default/Thumbnails/default_supercomputer_mvp.png",
+            "thumbnailResource": "default/Thumbnails/default_supercomputer_mvp",
             "pack": "default"
         },
         {

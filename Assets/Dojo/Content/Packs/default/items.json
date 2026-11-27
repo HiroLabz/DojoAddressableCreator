@@ -81,19 +81,6 @@
             "data": ""
         },
         {
-            "id": "default.defaultbaseplatform",
-            "category": "floors",
-            "name": "default_base_platform",
-            "address": "default/default_base_platform",
-            "icon": "default/Thumbnails/default_base_platform",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
             "id": "default.defaultcontrolconsole",
             "category": "appliances",
             "name": "default_control_console",
@@ -562,19 +549,6 @@
             "data": ""
         },
         {
-            "id": "default.defaultstraightwallpanel",
-            "category": "walls",
-            "name": "default_straight_wall_panel",
-            "address": "default/default_straight_wall_panel",
-            "icon": "default/Thumbnails/default_straight_wall_panel",
-            "target": "",
-            "footprint": {
-                "x": 0,
-                "y": 0
-            },
-            "data": ""
-        },
-        {
             "id": "default.defaulttablehologrameffect",
             "category": "appliances",
             "name": "default_table_hologram_effect",
@@ -645,6 +619,58 @@
             "name": "default_elevator_mvp",
             "address": "default/default_elevator_mvp",
             "icon": "default/Thumbnails/default_elevator_mvp",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultsupercomputermvp",
+            "category": "appliances",
+            "name": "default_supercomputer_mvp",
+            "address": "default/default_supercomputer_mvp",
+            "icon": "default/Thumbnails/default_supercomputer_mvp",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultstraightwallpanelglass",
+            "category": "walls",
+            "name": "default_straight_wall_panel_glass",
+            "address": "default/default_straight_wall_panel_glass",
+            "icon": "default/Thumbnails/default_straight_wall_panel_glass",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultstraightwallpanel",
+            "category": "walls",
+            "name": "default_straight_wall_panel",
+            "address": "default/default_straight_wall_panel",
+            "icon": "default/Thumbnails/default_straight_wall_panel",
+            "target": "",
+            "footprint": {
+                "x": 0,
+                "y": 0
+            },
+            "data": ""
+        },
+        {
+            "id": "default.defaultbaseplatform",
+            "category": "floors",
+            "name": "default_base_platform",
+            "address": "default/default_base_platform",
+            "icon": "default/Thumbnails/default_base_platform",
             "target": "",
             "footprint": {
                 "x": 0,

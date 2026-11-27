@@ -159,6 +159,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5e3dac2e872e2104ebd0dd90f868be8a
+    m_Address: default/default_straight_wall_panel_glass
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6b249fa5f679dd74398d08d64feb57a4
     m_Address: strawberry/default_wall_2
     m_ReadOnly: 0
@@ -251,6 +257,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9f8002f05dd952d41ba136e912f48272
     m_Address: default/default_superComputer
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9fb3e8943c4afef4a863368479d3fb89
+    m_Address: default/default_supercomputer_mvp
     m_ReadOnly: 0
     m_SerializedLabels:
     - default

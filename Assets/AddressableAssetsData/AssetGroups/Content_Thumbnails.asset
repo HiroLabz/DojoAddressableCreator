@@ -201,6 +201,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - strawberry
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 83a40f9dc4f4fe0458dc4e7312d79073
+    m_Address: default/Thumbnails/default_straight_wall_panel_glass
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 83c7d1234dd1ff44b84c7d4f9de597b7
     m_Address: default/Thumbnails/default_led_trim_light
     m_ReadOnly: 0
@@ -245,6 +251,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 98243c021721a8b4b943aa15822788a3
     m_Address: default/Thumbnails/default_lounge_pod_chair
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9cb964436f913be4a9e10ed92076391c
+    m_Address: default/Thumbnails/default_supercomputer_mvp
     m_ReadOnly: 0
     m_SerializedLabels:
     - default

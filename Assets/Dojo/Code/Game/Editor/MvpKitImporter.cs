@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Dojo.Game.Placement;
 using UnityEditor;
@@ -74,6 +75,16 @@ namespace Dojo.Game.Editor
             public string Emission;
             public string Opacity;
             public float Smoothness = 0.5f;
+
+            /// <summary>The material's Metallic value when it has no metallic map. Kept by every build.</summary>
+            public float MetallicValue;
+
+            /// <summary>
+            /// For a look with a roughness map: the least smoothness anywhere. The map's own smoothness
+            /// (1 - roughness) is scaled into the range above it, so its grain stays but the surface
+            /// reads as polished. 0 keeps the map as it is.
+            /// </summary>
+            public float GlossFloor;
             public bool ScreenGlow;
         }
 
@@ -81,7 +92,9 @@ namespace Dojo.Game.Editor
         static readonly Dictionary<string, Look> Kit = new Dictionary<string, Look>
         {
             // RoughnessMetallic.png is one flat grey (66 of 255): roughness 0.26 across the kit.
-            { "BaseMaterial", new Look { Name = "mvp_Base", Base = "BaseColor.png", Emission = "Emissive.png", Smoothness = 0.74f } },
+            // Metallic 0.5: the kit's painted-metal look (set by hand on 26 Nov, kept here so a build
+            // no longer puts it back to 0).
+            { "BaseMaterial", new Look { Name = "mvp_Base", Base = "BaseColor.png", Emission = "Emissive.png", Smoothness = 0.74f, MetallicValue = 0.5f } },
             { "Chair", new Look { Name = "mvp_Chair", Base = "Chair_BaseColor.png", Normal = "Chair_Normal.png", Metallic = "Chair_Metallic.png", Roughness = "Chair_Roughness.png" } },
             { "PlantColor", new Look { Name = "mvp_Plant", Base = "Plant_BaseColor.jpg", Normal = "Plant_Normal.png", Metallic = "Plant_Metallic.JPEG", Roughness = "Plant_Roughness.JPEG" } },
             { "Tree", new Look { Name = "mvp_Tree", Base = "Tree_BaseColor.jpg", Normal = "Tree_normal.png", Metallic = "Tree_Metallic.JPEG", Roughness = "Tree_Roughness.JPEG" } },
@@ -90,8 +103,10 @@ namespace Dojo.Game.Editor
             { "DesktopScreenReplaceable", new Look { Name = "mvp_DesktopScreen", Base = "DesktopScreenReplaceable.png", ScreenGlow = true, Smoothness = 0.8f } },
             { "ScreenPreview", new Look { Name = "mvp_ScreenPreview", Base = "Screen_Replaceable.png", ScreenGlow = true, Smoothness = 0.8f } },
             { "LargePresentationWallDisplay_Replaceable", new Look { Name = "mvp_PresentationScreen", Base = "PresentationWallScreen.png", ScreenGlow = true, Smoothness = 0.8f } },
-            { "Material", new Look { Name = "mvp_LightGrayFloorTile", Base = "LightGrayFloorTile_Base_Color.png", Normal = "LightGrayFloorTile_Base_Color_normal.png", Roughness = "LightGrayFloorTile_roughness.png" } },
-            { "WoodFloorTile", new Look { Name = "mvp_WoodFloorTile", Base = "WoodFloorTile_BaseColor.png", Normal = "WoodFloorTile_Normal.png", Roughness = "WoodFloorTile_Roughness.png" } },
+            // The floors' roughness maps alone leave them matte (smoothness 0.2-0.3); GlossFloor 0.5
+            // makes them polished (about 0.5-0.8) with the maps' grain kept (27 Nov).
+            { "Material", new Look { Name = "mvp_LightGrayFloorTile", Base = "LightGrayFloorTile_Base_Color.png", Normal = "LightGrayFloorTile_Base_Color_normal.png", Roughness = "LightGrayFloorTile_roughness.png", GlossFloor = 0.5f } },
+            { "WoodFloorTile", new Look { Name = "mvp_WoodFloorTile", Base = "WoodFloorTile_BaseColor.png", Normal = "WoodFloorTile_Normal.png", Roughness = "WoodFloorTile_Roughness.png", GlossFloor = 0.5f } },
         };
 
         [MenuItem("Tools/Dojo/Content/1. Build MVP Kit Prefabs", false, 1)]
@@ -555,8 +570,11 @@ namespace Dojo.Game.Editor
 
         static string Build(string modelPath, string model, Pose pose, Dictionary<string, Material> materials)
         {
-            var source = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
             var name = PrefabName(model);
+
+            // Found before the model is copied out: making the clip loop reimports the model.
+            var clip = LoopingClip(modelPath, model);
+            var source = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
             var instance = Object.Instantiate(source);
             instance.transform.SetPositionAndRotation(Vector3.zero, pose.Rotation);
             instance.transform.localScale = pose.Scale;
@@ -565,7 +583,10 @@ namespace Dojo.Game.Editor
 
             try
             {
-                var renderers = instance.GetComponentsInChildren<MeshRenderer>(true);
+                // Skinned meshes too: built static, in the pose they were modelled in, unless the
+                // piece's settings name a clip to loop.
+                var renderers = instance.GetComponentsInChildren<Renderer>(true)
+                    .Where(r => r is MeshRenderer || r is SkinnedMeshRenderer).ToArray();
                 var bounds = new Bounds();
                 var measured = false;
 
@@ -591,21 +612,8 @@ namespace Dojo.Game.Editor
                 // Pivot at the bottom middle, as every other piece in the pack has it.
                 var shift = new Vector3(-bounds.center.x, -bounds.min.y, -bounds.center.z);
 
-                foreach (var renderer in renderers)
+                Material[] KitMaterials(Material[] from)
                 {
-                    var filter = renderer.GetComponent<MeshFilter>();
-                    if (filter == null || filter.sharedMesh == null)
-                    {
-                        continue;
-                    }
-
-                    var part = new GameObject(renderer.name + "_mesh");
-                    part.transform.SetParent(root.transform, false);
-                    part.transform.SetPositionAndRotation(renderer.transform.position + shift, renderer.transform.rotation);
-                    part.transform.localScale = renderer.transform.lossyScale;
-                    part.AddComponent<MeshFilter>().sharedMesh = filter.sharedMesh;
-
-                    var from = renderer.sharedMaterials;
                     var to = new Material[from.Length];
 
                     for (var i = 0; i < from.Length; i++)
@@ -623,7 +631,51 @@ namespace Dojo.Game.Editor
                         to[i] = made;
                     }
 
-                    part.AddComponent<MeshRenderer>().sharedMaterials = to;
+                    return to;
+                }
+
+                if (clip != null)
+                {
+                    // A piece with a clip to loop (the Supercomputer's sphere): the model is kept whole,
+                    // so the clip still finds the parts it moves by their names, under an Animator.
+                    instance.name = model;
+                    instance.transform.SetParent(root.transform, true);
+                    instance.transform.position += shift;
+
+                    foreach (var renderer in renderers)
+                    {
+                        renderer.sharedMaterials = KitMaterials(renderer.sharedMaterials);
+                    }
+
+                    var animator = instance.GetComponent<Animator>();
+                    if (animator == null)
+                    {
+                        animator = instance.AddComponent<Animator>();
+                    }
+
+                    animator.runtimeAnimatorController = LoopController(clip, name);
+                    animator.applyRootMotion = false;
+                    animator.cullingMode = AnimatorCullingMode.CullUpdateTransforms;
+                }
+                else
+                {
+                    foreach (var renderer in renderers)
+                    {
+                        var skin = renderer as SkinnedMeshRenderer;
+                        var filter = renderer.GetComponent<MeshFilter>();
+                        var mesh = skin != null ? skin.sharedMesh : filter != null ? filter.sharedMesh : null;
+                        if (mesh == null)
+                        {
+                            continue;
+                        }
+
+                        var part = new GameObject(renderer.name + "_mesh");
+                        part.transform.SetParent(root.transform, false);
+                        part.transform.SetPositionAndRotation(renderer.transform.position + shift, renderer.transform.rotation);
+                        part.transform.localScale = renderer.transform.lossyScale;
+                        part.AddComponent<MeshFilter>().sharedMesh = mesh;
+                        part.AddComponent<MeshRenderer>().sharedMaterials = KitMaterials(renderer.sharedMaterials);
+                    }
                 }
 
                 var size = bounds.size;
@@ -673,6 +725,60 @@ namespace Dojo.Game.Editor
                 Object.DestroyImmediate(instance);
                 Object.DestroyImmediate(root);
             }
+        }
+
+        /// <summary>
+        /// The clip the settings say <paramref name="model"/> loops, set to loop in the model's import
+        /// settings; null when it names none, or names one the model doesn't have.
+        /// </summary>
+        static AnimationClip LoopingClip(string modelPath, string model)
+        {
+            var settings = MvpKitSettings.Load(false);
+            var piece = settings != null ? settings.Find(model) : null;
+            var wanted = piece != null && !string.IsNullOrWhiteSpace(piece.animation) ? piece.animation.Trim() : null;
+            var importer = AssetImporter.GetAtPath(modelPath) as ModelImporter;
+            if (wanted == null || importer == null || !importer.importAnimation)
+            {
+                return null;
+            }
+
+            var clips = importer.clipAnimations.Length > 0 ? importer.clipAnimations : importer.defaultClipAnimations;
+            var entry = clips.FirstOrDefault(c => c.name == wanted);
+            if (entry == null)
+            {
+                Debug.LogWarning("[MVP Kit] " + model + " has no clip '" + wanted + "', so it is built static. Its clips: "
+                    + string.Join(", ", clips.Select(c => c.name)));
+                return null;
+            }
+
+            if (!entry.loopTime)
+            {
+                entry.loopTime = true;
+                importer.clipAnimations = clips;
+                importer.SaveAndReimport();
+            }
+
+            return AssetDatabase.LoadAllAssetsAtPath(modelPath).OfType<AnimationClip>().FirstOrDefault(c => c.name == wanted);
+        }
+
+        /// <summary>An Animator Controller that plays <paramref name="clip"/> and nothing else, saved in the pack.</summary>
+        static RuntimeAnimatorController LoopController(AnimationClip clip, string name)
+        {
+            Directory.CreateDirectory(PackFolder + "/Animations");
+            var path = PackFolder + "/Animations/" + name + ".controller";
+            var controller = AssetDatabase.LoadAssetAtPath<UnityEditor.Animations.AnimatorController>(path);
+
+            if (controller == null)
+            {
+                return UnityEditor.Animations.AnimatorController.CreateAnimatorControllerAtPathWithClip(path, clip);
+            }
+
+            // Rebuilt in place, so the controller keeps its GUID and anything pointing at it.
+            var state = controller.layers[0].stateMachine.defaultState;
+            state.motion = clip;
+            EditorUtility.SetDirty(controller);
+            AssetDatabase.SaveAssetIfDirty(controller);
+            return controller;
         }
 
         /// <summary>
@@ -754,7 +860,7 @@ namespace Dojo.Game.Editor
                 : Texture(look.Base, false);
             var normalMap = look.Normal != null ? Texture(look.Normal, true) : null;
             var metallicMap = look.Roughness != null
-                ? MetallicSmoothness(look.Metallic, look.Roughness, look.Name + "_metallicSmoothness")
+                ? MetallicSmoothness(look.Metallic, look.Roughness, look.Name + "_metallicSmoothness", look.GlossFloor)
                 : null;
             var emission = look.ScreenGlow ? baseMap : look.Emission != null ? Texture(look.Emission, false) : null;
 
@@ -773,7 +879,7 @@ namespace Dojo.Game.Editor
             }
 
             material.SetColor("_BaseColor", Color.white);
-            material.SetFloat("_Metallic", 0f);
+            material.SetFloat("_Metallic", look.MetallicValue);
             material.SetFloat("_Smoothness", look.Smoothness);
             material.SetTexture("_BumpMap", null);
             material.DisableKeyword("_NORMALMAP");
@@ -864,7 +970,7 @@ namespace Dojo.Game.Editor
         }
 
         /// <summary>URP's metallic map: metal in red, smoothness (one minus roughness) in alpha.</summary>
-        static Texture2D MetallicSmoothness(string metallicFile, string roughnessFile, string name)
+        static Texture2D MetallicSmoothness(string metallicFile, string roughnessFile, string name, float glossFloor = 0f)
         {
             var rough = Read(roughnessFile);
             var metal = metallicFile != null ? Read(metallicFile) : null;
@@ -877,7 +983,13 @@ namespace Dojo.Game.Editor
             for (var i = 0; i < r.Length; i++)
             {
                 var metallic = m != null ? m[i].r : (byte)0;
-                o[i] = new Color32(metallic, metallic, metallic, (byte)(255 - r[i].r));
+                var smooth = 255 - r[i].r;
+                if (glossFloor > 0f)
+                {
+                    smooth = Mathf.RoundToInt(255f * glossFloor + smooth * (1f - glossFloor));
+                }
+
+                o[i] = new Color32(metallic, metallic, metallic, (byte)Mathf.Clamp(smooth, 0, 255));
             }
 
             return Write(o, width, height, name, false);
