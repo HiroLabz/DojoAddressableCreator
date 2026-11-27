@@ -81,14 +81,7 @@ namespace Dojo.Game.Placement
         {
             var found = new List<FloorLayoutEntry>();
 
-            // The layouts made here, by file name, so the pack's list does not offer them again.
             var madeLayouts = custom != null ? custom.All() : new List<FloorLayoutEntry>();
-            var made = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var layout in madeLayouts)
-            {
-                made.Add(CustomFloorLayouts.SlugOf(layout.address));
-            }
 
             if (content == null)
             {
@@ -136,12 +129,11 @@ namespace Dojo.Game.Placement
 
                 foreach (var layout in index.floors)
                 {
-                    // A layout made here is on the list too once promoted, but read from its own
-                    // file rather than from the pack, which only has it after the generator's next
-                    // run. And only the layouts the scene's kit offers, as rooms are.
-                    if (layout != null && !string.IsNullOrWhiteSpace(layout.address)
-                        && !made.Contains(CustomFloorLayouts.SlugOf(layout.address))
-                        && WorldSettings.ActiveOffers(layout.address))
+                    // A promoted layout is on this list under its pack address and its made file is
+                    // gone, so nothing is offered twice. Not filtered by the scene's kit as rooms
+                    // are: a layout is a whole floor of the pack's own, and the kit list would have
+                    // to name each one by hand.
+                    if (layout != null && !string.IsNullOrWhiteSpace(layout.address))
                     {
                         found.Add(layout);
                     }

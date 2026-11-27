@@ -181,20 +181,18 @@ namespace Dojo.Game.Tests.EditMode
         }
 
         [Test]
-        public void AMadeLayoutThePackAlsoLists_IsOfferedOnce_FromItsFile()
+        public void APromotedLayout_IsOfferedOnce_FromThePacksList()
         {
-            var content = new FakeContent(new[] { "default" });
-            var index = new TextAsset("{\"floors\":[{\"name\":\"Corner (pack copy)\",\"address\":\"default/Floors/floor_corner\",\"icon\":\"default/Floors/Thumbnails/floor_corner\",\"tag\":\"promoted\"}]}");
-            made.Add(index);
-            content.Assets["default/Floors/floors"] = index;
-
+            File.WriteAllText(Path.Combine(folder, "floors.json"), "{\"floors\":[]}");
             var store = Store();
             store.Save("Corner", Layout("Corner", 2), null);
+            string problem;
+            Assert.IsTrue(store.Promote("custom/floor_corner", out problem), problem);
 
-            var layouts = new FloorLayoutCatalog(content, store).All();
+            var layouts = new FloorLayoutCatalog(Content("default"), store).All();
 
-            Assert.That(layouts.Count, Is.EqualTo(1));
-            Assert.That(layouts[0].address, Is.EqualTo("custom/floor_corner"), "read from its own file, not the pack");
+            Assert.That(layouts.Count, Is.EqualTo(1), "on the pack's list once, its made file gone");
+            Assert.That(layouts[0].address, Is.EqualTo("default/Floors/default_floor_corner"));
         }
 
         [Test]

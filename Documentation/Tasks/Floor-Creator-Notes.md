@@ -4,7 +4,7 @@ Ticket: [Hiro Dojo] Addressable Creator: floor creator for the design team (floo
 
 This is the build plan, written before Bob's approval of the design so the build can start the day he says yes. Where the design changes, only the "Inventory" and "Editor bar" rows move.
 
-**Status, 26 Nov:** the first PR (data and pipeline) is built on `jacob/floor_creator_data`: `CustomFloorLayouts`, `FloorLayoutCatalog`, `FloorsPack`, `FloorThumbnails`, the generator's folder table, the Builder's Floors tab, `floors.json` with one example layout. The store is a trimmed copy of `CustomRooms`, not a shared base class: the refactor would have touched most of the rooms' store for two callers, so the rooms' behaviour stays untouched and the duplication is said here. The editor (PR 2) and the LAYOUTS tab (PR 3) wait on the design approval.
+**Status, 26 Nov:** the first PR (data and pipeline) is built on `jacob/floor_creator_data`: `CustomFloorLayouts`, `FloorLayoutCatalog`, `FloorsPack`, `FloorThumbnails`, the generator's folder table, the Builder's Floors tab, `floors.json` with one example layout. The store is a trimmed copy of `CustomRooms`, not a shared base class: the refactor would have touched most of the rooms' store for two callers, so the rooms' behaviour stays untouched and the duplication is said here. Bob approved the design on 26 Nov with one change: the tab is **FLOORS**, not LAYOUTS (its rail category is `layouts`, since `floors` is the single tiles' tab). PR 2 (`jacob/floor_creator_editor`) builds the floor editor and the FLOORS tab with its cards: `FloorLayoutEditor` (a copy of `RoomEditor` without openings, areas and departments, plus the frame), `FloorLayoutEditorBar` (SIZE · CLEAR · SAVE LAYOUT · CANCEL with the size strip), `FloorLayoutsDisplayUI` and `FloorLayoutCard`, and `Tools ▸ Dojo ▸ Build Floor Editor`, which makes them in RuntimeMVP from the room editor's objects. Placing a layout (`FloorLayoutPlacer`, the skip-taken rule) is PR 3.
 
 ## What Bob decided (25 Nov)
 
@@ -65,7 +65,7 @@ Each row names the Rooms piece it follows, so a reviewer can diff against someth
 | `FloorLayoutCatalogTests` | the game's `RoomCatalogTests` (11): index read, custom appended, address and icon resolution, name free |
 | `FloorLayoutEditorTests` | the game's `RoomEditorTests` (25) and `RoomEditorGuardsTests` (5): begin keeps and restores the world, save recentres and snaps, empty refused, size stepper trims, cancel writes nothing |
 | `FloorLayoutPlacerTests` | the creator's `RoomAsOneUnitTests` (13): footprint, align to tiles, and the new rule: a taken cell is skipped and the piece there is untouched, the rest is laid |
-| `FloorsPackTests` | `RoomsPack.CheckIndex` behaviour: a bad index entry is named, Editor/ entries are released |
+| `FloorsPackTests` | `RoomsPack.CheckIndex` behaviour: an entry whose file is missing, one under another pack, a missing thumbnail, a pack layout the index does not list and an index that cannot be read are each named; the group and folder are the Floors' own |
 
 ## Order
 

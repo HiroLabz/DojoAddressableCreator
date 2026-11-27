@@ -122,6 +122,14 @@ namespace Dojo.Game.Placement
                 return false;
             }
 
+            // Saving is only ever suspended by an editor holding the world: the floor editor, here.
+            // Two editors nested would each keep the other's work as "the world".
+            if (world.SavingSuspended)
+            {
+                Debug.LogWarning("[Rooms] The world is held by the floor editor, so a room cannot be made now. Save or cancel the layout first.");
+                return false;
+            }
+
             kept = world.Capture();
             keptName = world.OpenWorldName;
             keptFloor = storeys.Viewed;
