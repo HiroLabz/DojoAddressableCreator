@@ -162,15 +162,9 @@ namespace Dojo.Game.Editor
                 preview.BeginStaticPreview(new Rect(0f, 0f, Size, Size));
 
                 var camera = preview.camera;
-                var direction = Quaternion.Euler(Pitch, Yaw, 0f) * Vector3.forward;
-                var extent = Mathf.Max(bounds.extents.x, Mathf.Max(bounds.extents.y, bounds.extents.z));
-
-                camera.transform.position = bounds.center - direction * (extent * 4f);
-                camera.transform.rotation = Quaternion.LookRotation(direction);
-                camera.orthographic = true;
-                camera.orthographicSize = extent * Padding;
-                camera.nearClipPlane = 0.01f;
-                camera.farClipPlane = extent * 20f;
+                // Framed to the piece as the camera sees it, corners and all (ThumbnailFraming): the
+                // old fit to its largest half-width cut off anything square-ish (Jacob, 27 Nov).
+                Dojo.Game.Placement.ThumbnailFraming.Apply(camera, Dojo.Game.Placement.ThumbnailFraming.Fit(bounds, Pitch, Yaw, Padding));
                 camera.clearFlags = CameraClearFlags.SolidColor;
                 camera.backgroundColor = KeyColour;
 

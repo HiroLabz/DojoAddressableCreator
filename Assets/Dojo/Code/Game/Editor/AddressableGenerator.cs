@@ -2168,17 +2168,11 @@ namespace Dojo.Game.Editor
             preview.BeginStaticPreview(new Rect(0f, 0f, size, size));
 
             var camera = preview.camera;
-            var direction = Quaternion.Euler(pitch, yaw, 0f) * Vector3.forward;
-            var extent = Mathf.Max(bounds.extents.x, Mathf.Max(bounds.extents.y, bounds.extents.z));
-
             // Orthographic so every icon shares one scale-independent look, and so a long sofa
             // and a small chair are framed the same way rather than by perspective distance.
-            camera.transform.position = bounds.center - direction * (extent * 4f);
-            camera.transform.rotation = Quaternion.LookRotation(direction);
-            camera.orthographic = true;
-            camera.orthographicSize = extent * padding;
-            camera.nearClipPlane = 0.01f;
-            camera.farClipPlane = extent * 20f;
+            // Framed to the piece as the camera sees it, corners and all (ThumbnailFraming): the
+            // old fit to its largest half-width cut off anything square-ish (Jacob, 27 Nov).
+            Dojo.Game.Placement.ThumbnailFraming.Apply(camera, Dojo.Game.Placement.ThumbnailFraming.Fit(bounds, pitch, yaw, padding));
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = backdrop;
 

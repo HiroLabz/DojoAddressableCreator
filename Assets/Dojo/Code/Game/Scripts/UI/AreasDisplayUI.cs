@@ -151,8 +151,16 @@ namespace Dojo.Game.UI
         {
             gameObject.SetActive(true);
             Listen();
+            scrollToTop = true;
             Rebuild();
         }
+
+        /// <summary>
+        /// The list opens at its first area. Set as the panel is raised and used by the next
+        /// <see cref="RefreshScrolling"/>; a rebuild while it is open (a rename, a new area) keeps
+        /// the place.
+        /// </summary>
+        bool scrollToTop;
 
         /// <summary>Hides the panel, dropping a painting under way: nothing would say what it was for.</summary>
         public void Dismiss()
@@ -264,6 +272,8 @@ namespace Dojo.Game.UI
         /// <summary>
         /// Scrolls only when the rows are taller than the list. While they fit, the list stays put at
         /// the top and its scrollbar is hidden (the scroll view hides it and gives the rows its room).
+        /// Opened, it starts at the top either way: a list taller than its view used to open
+        /// scrolled to the middle (Jacob, 27 Nov).
         /// </summary>
         void RefreshScrolling()
         {
@@ -285,10 +295,13 @@ namespace Dojo.Game.UI
             var fits = content.rect.height <= listScroll.viewport.rect.height + 0.5f;
             listScroll.vertical = !fits;
 
-            if (fits)
+            if (fits || scrollToTop)
             {
+                listScroll.StopMovement();
                 listScroll.verticalNormalizedPosition = 1f;
             }
+
+            scrollToTop = false;
         }
 
         /// <summary>Who uses an area, in words.</summary>

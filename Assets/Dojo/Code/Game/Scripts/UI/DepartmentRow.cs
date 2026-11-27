@@ -22,7 +22,7 @@ namespace Dojo.Game.UI
         [Tooltip("The agents assigned to it, by name, or that there are none.")]
         [SerializeField] TextMeshProUGUI agentsLabel;
 
-        [Tooltip("The assigned agent's picture, inside its frame. Hidden, leaving the empty frame, when nobody is assigned.")]
+        [Tooltip("The assigned agent's picture, inside its frame; with nobody assigned, a picture of the department's area (AreaPictures). Hidden, leaving the empty frame, only when there is neither.")]
         [SerializeField] Image portrait;
 
         [Tooltip("The agents line when someone is assigned.")]
@@ -35,13 +35,17 @@ namespace Dojo.Game.UI
         const int NamedAgents = 4;
 
         /// <param name="picture">The first assigned agent's picture, or null.</param>
-        public void Bind(DepartmentLine line, Sprite picture = null)
+        /// <param name="snapshot">What the department looks like (<see cref="Dojo.Game.Placement.AreaPictures"/>), shown when nobody is assigned; or null.</param>
+        public void Bind(DepartmentLine line, Sprite picture = null, Sprite snapshot = null)
         {
             if (portrait != null)
             {
-                portrait.sprite = picture;
+                // The agent's face when someone is assigned; otherwise the department itself, so the
+                // frame is never an empty grey square (Jacob, 27 Nov).
+                var shown = picture != null && line.Agents > 0 ? picture : snapshot;
+                portrait.sprite = shown;
                 portrait.preserveAspect = true;
-                portrait.enabled = picture != null && line.Agents > 0;
+                portrait.enabled = shown != null;
             }
 
             if (nameLabel != null)
